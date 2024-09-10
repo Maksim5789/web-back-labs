@@ -1,4 +1,4 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, redirect
 app = Flask (__name__)
 
 @app.route("/web")
@@ -9,6 +9,7 @@ def web():
                 <h1>web-сервер на flask</h1>
                 <a href="/author">author</a>
                 <a href="/lab1/oak">lab1/oak</a>
+                <a href="/lab1/counter">lab1/counter</a>
             </body> 
         </html>"""
   
@@ -53,6 +54,11 @@ def counter():
 <html>
     <body>
         Сколько раз заходили: ''' + str(count) + '''
+        <a href="/web">web</a>  
     </body>
 </html>
 '''
+
+@app.route ("/info")
+def info():
+    return redirect("/author")
