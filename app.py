@@ -18,7 +18,7 @@ def index():
                     <hr>
                 </header>
                 
-                <div style="text-align: center;">
+                <div style="text-align: center; margin: 20px;">
                 <a href="/lab1">Первая лабораторная работа</a>
                 </div>
                 
