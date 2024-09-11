@@ -62,10 +62,19 @@ def counter():
 <html>
     <body>
         Сколько раз заходили: ''' + str(count) + '''
+        <p> </p>
         <a href="/web">web</a>  
+        <a href="/lab1/reset">lab1/reset</a> 
     </body>
 </html>
 '''
+
+@app.route ('/lab1/reset')
+def reset_counter():
+    global count
+    count = 0
+    return "Счётчик успешно сброшен"
+
 
 @app.route ("/info")
 def info():
