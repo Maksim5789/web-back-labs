@@ -1,0 +1,11 @@
+img {
+    width: 1000px;
+    height: 700px;
+}
+
+body {
+    background-color: lightblue;
+    color: black; /* Цвет шрифта */
+    font-size: 20px; /* Размер шрифта */
+}
+
