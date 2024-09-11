@@ -4,8 +4,28 @@ img {
 }
 
 body {
-    background-color: lightblue;
     color: black; /* Цвет шрифта */
     font-size: 20px; /* Размер шрифта */
+    background-color: #659DBD;
+    font-family: Arial;
+    margin: 0px;
 }
 
+footer {
+    background-color: black; 
+    color: LightGreen; 
+    padding: 10px; 
+    font-size: 16pt; 
+    text-align: right;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+}
+
+header {
+    background-color: black; 
+    color: LightGreen; 
+    padding: 10px; 
+    font-size: 16pt;
+}

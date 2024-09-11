@@ -1,6 +1,35 @@
 from flask import Flask, url_for, redirect
 app = Flask (__name__)
 
+
+@app.route ("/")
+def index():
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>НГТУ, ФБ, Лабораторные работы</title>   
+            </head>
+ 
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+                    <hr>
+                </header>
+                
+                <div style="text-align: center;">
+                <a href="/lab1">Первая лабораторная работа</a>
+                </div>
+                
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>   
+            </body>
+        </html>'''
+
+
 @app.route("/lab1/web")
 def web():
     return """<!doctype html> 
@@ -36,19 +65,19 @@ def oak():
     path = url_for("static", filename="oak.jpg")
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     return '''
-<!doctype html>
-<html>
-    <head>
-        <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
-    </head>
-    <body>
-        <h1>Дуб</h1>
-        <img src="''' + path + '''">
-        <p> </p>
-        <a href="/web">web</a>    
-    </body>
-</html>
-'''
+        <!doctype html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+            </head>
+            <body>
+                <h1>Дуб</h1>
+                <img src="''' + path + '''">
+                <p> </p>
+                <a href="/web">web</a>    
+            </body>
+        </html>
+        '''
 
 
 count = 0
