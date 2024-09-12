@@ -3,8 +3,8 @@ app = Flask (__name__)
 
 
 @app.route ("/")
-@app.route ("index")
-def index():
+@app.route ("/index")
+def main():
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     return '''<!DOCTYPE html>
         <html>
@@ -31,6 +31,46 @@ def index():
         </html>'''
 
 
+@app.route ("/lab1")
+def lab1():
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Лабораторная работа 1</title>   
+            </head>
+ 
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+                    <hr>
+                </header>
+                
+                <div style="text-align: left; margin: 20px;">
+                    Flask &mdash; фреймворк для создания веб&mdash;приложений на языке
+                    программирования Python, использующий набор инструментов
+                    Werkzeug, а также шаблонизатор Jinja2. Относится к категории так
+                    называемых микрофреймворков &mdash; минималистичных каркасов
+                    веб-приложений, сознательно предоставляющих лишь самые базовые возможности.
+                </div>
+
+                <div style="text-align: left; margin: 20px;">
+                    Список роутов:
+                </div>
+
+                <div style="text-align: left; margin: 20px;">
+                    <a href="/">Главная страница</a>
+                </div>
+                
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>   
+            </body>
+        </html>'''
+
+
 @app.route("/lab1/web")
 def web():
     return """<!doctype html> 
@@ -42,7 +82,7 @@ def web():
                 <a href="/lab1/counter">lab1/counter</a>
             </body> 
         </html>""", 200, {
-            'X-Server': 'sample', 'Content-Type': 'text/plain; charset=utf-8'
+            'X-Server': 'sample', 'Content-Type': 'text/html; charset=utf-8'
             }
   
 @app.route("/lab1/author")
