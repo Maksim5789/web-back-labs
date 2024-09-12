@@ -162,6 +162,33 @@ def created():
 </html>
 ''', 201
 
+
+@app.errorhandler(400)
+def not_found(err):
+    return "«Некорректный запрос»", 400
+
+@app.errorhandler(401)
+def not_found(err):
+    return "«Не авторизован»", 401
+
+@app.errorhandler(402)
+def not_found(err):
+    return "Необходима оплата", 402
+
+@app.errorhandler(403)
+def not_found(err):
+    return "Запрещено (не уполномочен)", 403
+
 @app.errorhandler(404)
 def not_found(err):
     return "Нет такой страницы", 404
+
+@app.errorhandler(405)
+def not_found(err):
+    return "Метод не поддерживается", 405
+
+@app.errorhandler(418)
+def not_found(err):
+    return "Я - чайник", 418    
+
+
