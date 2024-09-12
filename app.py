@@ -3,6 +3,7 @@ app = Flask (__name__)
 
 
 @app.route ("/")
+@app.route ("index")
 def index():
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     return '''<!DOCTYPE html>
