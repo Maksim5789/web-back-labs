@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect, Response
+from flask import Flask, url_for, redirect, Response, render_template
 app = Flask (__name__)
 
 
@@ -74,7 +74,9 @@ def lab1():
                     <li><a href="/418">Ошибка 418</a></li>
                     <li><a href="/500">Ошибка 500</a></li>          
                     <li><a href="/lab1/about">Цифровизация в оценке бизнеса</a></li>
-                    <li><a href="/lab1/created ">Создание ресурса</a></li>  
+                    <li><a href="/lab1/resource">Состояние ресурса</a></li>
+                    <li><a href="/lab1/created">Создание ресурса</a></li>
+                    <li><a href="/lab1/delete">Удаление ресурса</a></li>                  
                     </ul>
                 </div>
                 
@@ -93,7 +95,7 @@ def web():
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
-                <title>Лабораторная работа 1</title>
+                <title>Web-сервер на flask</title>
                 <style>
                 div{
                     margin: 20px;
@@ -133,7 +135,7 @@ def author():
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
-                <title>Лабораторная работа 1</title>
+                <title>Автор</title>
                 <style>
                 div{
                     margin: 20px;
@@ -170,6 +172,7 @@ def oak():
     return '''<!doctype html>
         <html>
             <head>
+                <title>Дуб</title>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
                 <style>
                 div {
@@ -207,7 +210,6 @@ def oak():
         </html>
         '''
 
-
 count = 0
 
 @app.route ('/lab1/counter')
@@ -218,6 +220,7 @@ def counter():
     return '''<!doctype html>
         <html>
             <head>
+                <title>СчётчикM/title>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
                 <style>
                     div {
@@ -255,6 +258,7 @@ def reset_counter():
     return '''<!doctype html>
         <html>
             <head>
+                <title>Сброс счётчика</title>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
                 <style>
                     div {
@@ -288,39 +292,31 @@ def reset_counter():
 def info():
     return redirect("/lab1/author")
 
-@app.route ("/lab1/created")
+
+resource_created = False
+
+@app.route('/lab1/created')
 def created():
-    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
-    return '''<!doctype html>
-        <html>
-            <head>
-                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
-                <style>
-                    div {
-                        margin: 20px;
-                    }
-
-                    h1 {
-                        margin: 20px;
-                    }
-                </style>
-            </head>
-            <body>
-                <header>
-                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
-                    <hr>
-                </header>
-
-                <h1>Создано успешно</h1>
-                <div><i>что-то создано...</i><div>
-
-                <footer>
-                    <hr>
-                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
-                </footer>
-            </body>
-        </html>
-        ''', 201
+    global resource_created
+    if not resource_created:
+        resource_created = True
+        return render_template('create.html'), 201
+    else:
+        return render_template('err_cr.html'), 400
+    
+@app.route('/lab1/delete')
+def delete():
+    global resource_created
+    if resource_created:
+        resource_created = False
+        return render_template('delete.html'), 200
+    else:
+        return render_template('err_del.html'), 400
+    
+@app.route('/lab1/resource')
+def resource():
+    status = 'Ресурс создан' if resource_created else 'Ресурс ещё не создан'
+    return render_template('resource.html', status=status)
 
 @app.errorhandler(404)
 def not_found(error):
@@ -546,7 +542,6 @@ def error_418():
             </body>
         </html>''', 418
 
-
 @app.errorhandler(Exception)
 def internal_server_error(error):
     path = url_for("static", filename="500.png")
@@ -555,7 +550,7 @@ def internal_server_error(error):
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
-                <title>Ошибка 404</title>
+                <title>Ошибка 500</title>
                 <style>
                     img {
                         width: 700px;
