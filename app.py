@@ -162,33 +162,41 @@ def created():
 </html>
 ''', 201
 
-
-@app.errorhandler(400)
-def not_found(err):
-    return "«Некорректный запрос»", 400
-
-@app.errorhandler(401)
-def not_found(err):
-    return "«Не авторизован»", 401
-
-@app.errorhandler(402)
-def not_found(err):
-    return "Необходима оплата", 402
-
-@app.errorhandler(403)
-def not_found(err):
-    return "Запрещено (не уполномочен)", 403
-
 @app.errorhandler(404)
-def not_found(err):
-    return "Нет такой страницы", 404
+def not_found(error):
+    path = url_for("static", filename="404.jpg")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 404</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 404</h1>
 
-@app.errorhandler(405)
-def not_found(err):
-    return "Метод не поддерживается", 405
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    К сожалению, страница, которую вы ищете, не существует или перемещена. Пожалуйста, проверьте правильность написания адреса и попробуйте снова.
+                </div>
 
-@app.errorhandler(418)
-def not_found(err):
-    return "Я - чайник", 418    
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 404
+
+
+
+
+
 
 
