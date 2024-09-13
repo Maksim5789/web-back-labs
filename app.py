@@ -20,6 +20,7 @@ def main():
                 </header>
                 
                 <div style="text-align: center; margin: 20px;">
+                <h1>Список работ</h1>
                 <a href="/lab1">Первая лабораторная работа</a>
                 </div>
                 
@@ -43,7 +44,7 @@ def lab1():
  
             <body>
                 <header>
-                    НГТУ, ФБ, WEB-программирование, часть 2. Список лабораторных
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
                     <hr>
                 </header>
                 
@@ -56,11 +57,25 @@ def lab1():
                 </div>
 
                 <div style="text-align: left; margin: 20px;">
-                    Список роутов:
-                </div>
-
-                <div style="text-align: left; margin: 20px;">
-                    <a href="/">Главная страница</a>
+                    <h2>Список роутов:</h2>
+                    <ul>
+                    <li><a href="/">Главная страница</a></li>                    
+                    <li><a href="/lab1/web">Web-сервер на flask</a></li>                   
+                    <li><a href="/lab1/author">Автор</a></li>                 
+                    <li><a href="/lab1/oak">Дуб</a></li>                
+                    <li><a href="/lab1/counter">Счётчик</a></li>               
+                    <li><a href="/lab1/info">Информация об авторе</a></li>        
+                    <li><a href="/400">Ошибка 400</a></li>        
+                    <li><a href="/401">Ошибка 401</a></li>        
+                    <li><a href="/402">Ошибка 402</a></li>         
+                    <li><a href="/403">Ошибка 403</a></li>        
+                    <li><a href="/404">Ошибка 404</a></li>             
+                    <li><a href="/405">Ошибка 405</a></li>                
+                    <li><a href="/418">Ошибка 418</a></li>
+                    <li><a href="/500">Ошибка 500</a></li>          
+                    <li><a href="/lab1/about">Цифровизация в оценке бизнеса</a></li>
+                    <li><a href="/lab1/created ">Создание ресурса</a></li>  
+                    </ul>
                 </div>
                 
                 <footer>
@@ -73,49 +88,121 @@ def lab1():
 
 @app.route("/lab1/web")
 def web():
-    return """<!doctype html> 
-        <html> 
-            <body> 
-                <h1>web-сервер на flask</h1>
-                <a href="/author">author</a>
-                <a href="/lab1/oak">lab1/oak</a>
-                <a href="/lab1/counter">lab1/counter</a>
-            </body> 
-        </html>""", 200, {
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Лабораторная работа 1</title>
+                <style>
+                div{
+                    margin: 20px;
+                }
+                </style>   
+            </head>
+
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
+                    <hr>
+                </header>
+
+                <div>
+                    <h1>web-сервер на flask</h1>
+                    <a href="/lab1">Меню лабораторной работы №1</a>
+                </div>
+
+    
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>
+            </body>
+        </html>''', 200, {
             'X-Server': 'sample', 'Content-Type': 'text/html; charset=utf-8'
             }
   
 @app.route("/lab1/author")
 def author():
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     name = "Акишин Максим Валерьевич"
     group = "ФБИ-22"
     faculty = "ФБ"
 
-    return """<!doctype html>
+    return '''<!doctype html>
         <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Лабораторная работа 1</title>
+                <style>
+                div{
+                    margin: 20px;
+                }
+                </style>    
+            </head>
+
             <body>
-                <p>Студент: """ + name + """</p>
-                <p>Группа: """ + group + """</p>
-                <p>Факультет: """ + faculty + """</p>
-                <a href="/web">web</a>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
+                    <hr>
+                </header>
+
+                <div style: margin:20px;">
+
+                <p>Студент: ''' + name + '''</p>
+                <p>Группа: ''' + group + '''</p>
+                <p>Факультет: ''' + faculty + '''</p>
+                <a href="/lab1">Меню лабораторной работы №1</a>
+
+                </div>
+
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>
             </body>
-        </html>"""
+        </html>'''
 
 @app.route ('/lab1/oak')
 def oak():
     path = url_for("static", filename="oak.jpg")
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
-    return '''
-        <!doctype html>
+    return '''<!doctype html>
         <html>
             <head>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <style>
+                div {
+                    margin: 20px;
+                }
+
+                a {
+                    margin:20px;
+                    padding-bottom: 150px;
+                }
+
+                img {
+                    border: 5px solid black;
+                }
+                </style> 
             </head>
             <body>
-                <h1>Дуб</h1>
-                <img src="''' + path + '''">
-                <p> </p>
-                <a href="/web">web</a>    
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
+                    <hr>
+                </header>
+
+                <div>
+                    <h1>Дуб</h1>
+                    <img src="''' + path + '''">
+                <div>
+
+                <a href="/lab1">Меню лабораторной работы №1</a>
+            
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>
             </body>
         </html>
         '''
@@ -127,40 +214,113 @@ count = 0
 def counter():
     global count
     count += 1
-    return '''
-<!doctype html>
-<html>
-    <body>
-        Сколько раз заходили: ''' + str(count) + '''
-        <p> </p>
-        <a href="/web">web</a>  
-        <a href="/lab1/reset">lab1/reset</a> 
-    </body>
-</html>
-'''
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!doctype html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <style>
+                    div {
+                        margin: 20px;
+                    }
+                </style>
+            </head>
+
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
+                    <hr>
+                </header>
+                
+                <div>
+                    Сколько раз заходили: ''' + str(count) + '''
+                    <p> </p>
+                    <a href="/lab1">Меню лабораторной работы №1</a>  
+                    <a href="/lab1/reset">Сбросить счётчик</a>
+                </div>
+
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>
+            </body>
+        </html>
+        '''
 
 @app.route ('/lab1/reset')
 def reset_counter():
     global count
     count = 0
-    return "Счётчик успешно сброшен"
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!doctype html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <style>
+                    div {
+                        margin: 20px;
+                    }
+                </style>
+            </head>
+            
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
+                    <hr>
+                </header>
+                
+                <div>
+                    <p>Счётчик успешно сброшен</p>
+                    <a href="/lab1">Меню лабораторной работы №1</a>  
+                    <a href="/lab1/counter">Счётчик</a>
+                </div>
+
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>
+            </body>
+        </html>
+        '''
 
 
 @app.route ("/lab1/info")
 def info():
-    return redirect("/author")
+    return redirect("/lab1/author")
 
 @app.route ("/lab1/created")
 def created():
-    return '''
-<!doctype html>
-<html>
-    <body>
-        <h1>Создано успешно</h1>
-        <div><i>что-то создано...</i><div>
-    </body>
-</html>
-''', 201
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!doctype html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <style>
+                    div {
+                        margin: 20px;
+                    }
+
+                    h1 {
+                        margin: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <header>
+                    НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №1
+                    <hr>
+                </header>
+
+                <h1>Создано успешно</h1>
+                <div><i>что-то создано...</i><div>
+
+                <footer>
+                    <hr>
+                    &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
+                </footer>
+            </body>
+        </html>
+        ''', 201
 
 @app.errorhandler(404)
 def not_found(error):
@@ -301,7 +461,7 @@ def error_403():
                 <title>Ошибка 403</title>
                 <style>
                     img {
-                        width: 700px;
+                        width: 600px;
                         height: 400px;
                         margin: 20px;
                         border: 5px solid black;
@@ -388,7 +548,7 @@ def error_418():
 
 
 @app.errorhandler(Exception)
-def internal_server_error(err):
+def internal_server_error(error):
     path = url_for("static", filename="500.png")
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     return '''<!DOCTYPE html>
@@ -424,7 +584,7 @@ def index500():
 # Генерируем ошибку деления на ноль
     1 / 0
 
-@app.route('/about')
+@app.route('/lab1/about')
 def about():
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     path = url_for("static", filename="dig.jpg")
@@ -485,10 +645,14 @@ def about():
                     the financial development of businesses, while digital finance can play a key role in providing access to finance and creating new economic opportunities.
                 </div>
 
-                <div style="text-align: center; padding-bottom: 100px">
+                <div style="text-align: center; margin-bottom: 30px">
                     <img src="''' + path + '''">
                 </div>
-                
+
+                <div style="text-align: left; margin-bottom: 100px">
+                    <a href="/lab1">Меню лабораторной работы №1</a>
+                </div>
+
                 <footer>
                     <hr>
                     &copy; Акишин Максим, ФБИ-22, 3 курс, 2024
