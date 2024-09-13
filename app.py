@@ -194,6 +194,198 @@ def not_found(error):
             </body>
         </html>''', 404
 
+@app.route('/400')
+def error_400():
+    path = url_for("static", filename="400.png")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 400</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 400</h1>
+
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    Запрос к серверу содержит синтаксическую ошибку.
+                </div>
+
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 400
+
+@app.route('/401')
+def error_401():
+    path = url_for("static", filename="401.jpg")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 401</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 401</h1>
+
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    Не авторизован.
+                </div>
+
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 401
+
+@app.route('/402')
+def error_402():
+    path = url_for("static", filename="402.jpg")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 402</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 402</h1>
+
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    Необходима оплата.
+                </div>
+
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 402
+
+@app.route('/403')
+def error_403():
+    path = url_for("static", filename="403.jpg")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 403</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 403</h1>
+
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    Запрещено (отказано в доступе).
+                </div>
+
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 403
+
+@app.route('/405')
+def error_405():
+    path = url_for("static", filename="405.jpg")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 405</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 405</h1>
+
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    Метод не поддерживается.
+                </div>
+
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 405
+
+@app.route('/418')
+def error_418():
+    path = url_for("static", filename="418.jpg")
+    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+    return '''<!DOCTYPE html>
+        <html>
+            <head>
+                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+                <title>Ошибка 418</title>
+                <style>
+                    img {
+                        width: 700px;
+                        height: 400px;
+                        margin: 20px;
+                        border: 5px solid black;
+                    }
+                </style>   
+            </head>
+ 
+            <body>
+                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 418</h1>
+
+                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+                    Я чайник.
+                </div>
+
+                <div style="text-align: center;">
+                    <img src="''' + path + '''">
+                </div>
+            </body>
+        </html>''', 418
+
 
 @app.errorhandler(Exception)
 def internal_server_error(err):
