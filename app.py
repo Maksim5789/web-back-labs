@@ -220,7 +220,7 @@ def counter():
     return '''<!doctype html>
         <html>
             <head>
-                <title>СчётчикM/title>
+                <title>Счётчик</title>
                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
                 <style>
                     div {
