@@ -662,11 +662,11 @@ def about():
    
 @app.route('/lab2/a/')
 def a():
-    return 'ok'            
+    return 'Со слэшем'            
    
 @app.route('/lab2/a')
 def a2():
-    return 'ok'        
+    return 'Без слэша'        
 
 
 
