@@ -660,11 +660,13 @@ def about():
     resp.headers['X-Custom-Header-Two'] = 'Header Value Two'
     return resp
    
-
+@app.route('/lab2/a/')
+def a():
+    return 'ok'            
    
-            
-   
-
+@app.route('/lab2/a')
+def a2():
+    return 'ok'        
 
 
 
