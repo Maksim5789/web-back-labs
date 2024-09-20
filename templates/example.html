@@ -4,12 +4,28 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Акишин Максим. Лабораторная работа №2</title>
+    <title>
+        {% if name %}
+            {{name}}.
+        {% else %}
+            Анонимус,
+        {% endif %} 
+        {% if lab_num %} 
+            Лабораторная работа №{{lab_num}}
+        {% else %}
+            Лабораторная работа №?
+        {% endif %}
+    </title>
     <link rel="stylesheet" href="{{ url_for('static', filename='lab1.css') }}">
 </head>
 <body>
     <header>
-        НГТУ, ФБ, WEB-программирование, часть 2. Лабораторная работа №2
+        WEB-программирование, часть 2. 
+        {% if lab_num %} 
+            Лабораторная работа №{{lab_num}}
+        {% else %}
+            Лабораторная работа №?
+        {% endif %}
         <hr>
     </header>
 
@@ -24,7 +40,24 @@
 
     <footer>
         <hr>
-        &copy; {{name}}, ФБИ-{{group}}, {{course}} курс, 2024
+        &copy;
+        {% if name %}
+            {{name}},
+        {% else %}
+            Анонимус,
+        {% endif %}
+
+        {% if name %}
+            ФБИ-{{group}},
+        {% else %}
+            ФБИ-?,
+        {% endif %}
+
+        {% if name %}
+            {{course}} курс, 2024
+        {% else %}
+            ? курс, 2024
+        {% endif %}
     </footer> 
 </body>
 </html>
