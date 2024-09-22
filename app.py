@@ -670,10 +670,13 @@ def a2():
 
 flower_list = ['роза','тюльпан','незабудка','ромашка']
 
+@app.route('/lab2/flowers/', defaults={'flower_id': None})
 @app.route('/lab2/flowers/<int:flower_id>')
 def flowers(flower_id):
-    if flower_id >= len(flower_list):
-        return render_template('flower_id.html', message='Такого цветка нет'), 404
+    if flower_id is None:
+        return render_template('flower_id.html', message='Введите id цветка в строку URL')
+    elif flower_id < 0 or flower_id >= len(flower_list):
+        return render_template('flower_id.html', message='Такого цветка нет. Введите правильный id в строку URL'), 404
     else:
         return render_template('flower_id.html', name=flower_list[flower_id]), 200
 
@@ -693,14 +696,14 @@ def add_flower(name):
                            flower_list=flower_list), 200
 
 
-@app.route('/lab2/flower_amount')
+@app.route('/lab2/flower_amount/')
 def flower_amount():
     flower_list_str = ', '.join(flower_list)
     return render_template('flower_amount.html', 
                            total=len(flower_list),
                            flower_list=flower_list_str), 200
 
-@app.route('/lab2/reset_flowers')
+@app.route('/lab2/reset_flowers/')
 def reset_flowers():
     global flower_list
     flower_list = []
@@ -726,7 +729,7 @@ def lab2():
     return render_template('lab2.html')
 
 
-@app.route('/lab2/filters')
+@app.route('/lab2/filters/')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
     return render_template('filter.html', phrase=phrase)
@@ -823,7 +826,7 @@ books = [
     }
 ]
 
-@app.route('/lab2/books')
+@app.route('/lab2/books/')
 def show_books():
     return render_template('books.html', books=books)
 
@@ -855,7 +858,7 @@ objects = [
     }
 ]
 
-@app.route('/lab2/objects')
+@app.route('/lab2/objects/')
 def show_objects():
     return render_template('objects.html', objects=objects)
 
