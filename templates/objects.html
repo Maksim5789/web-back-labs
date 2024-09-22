@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа №2{% endblock %}
+
+{# основной контент #}
+{% block main %}
+<h1>Коллекция кораблей военно-морского флота Российской Империи</h1>
+<div>
+    {% for obj in objects %}
+    <div>
+        <img src="{{ url_for('static', filename=obj.image) }}" alt="{{ obj.name }}">
+        <h3>{{ obj.name }}</h3>
+        <p>{{ obj.description }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
