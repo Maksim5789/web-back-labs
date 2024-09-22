@@ -731,6 +731,27 @@ def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
     return render_template('filter.html', phrase=phrase)
 
+@app.route('/lab2/calc/', defaults={'a': 1, 'b': 1})
+@app.route('/lab2/calc/<int:a>/', defaults={'b': 1})
+@app.route('/lab2/calc/<int:a>/<int:b>')
+def calculator(a, b):
+    result = {
+        'Сумма': a + b,
+        'Вычитание': a - b,
+        'Умножение': a * b,
+        'Деление': a / b,
+        'Возведение в степень': a ** b
+    }
+    return render_template('calculator.html', a=a, b=b, result=result)
+
+@app.route('/lab2/calc/')
+def redirect_to_default():
+    return redirect(url_for('calculator', a=1, b=1))
+
+@app.route('/lab2/calc/<int:a>/')
+def redirect_to_default_b(a):
+    return redirect(url_for('calculator', a=a, b=1))
+
 
 
 
