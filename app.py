@@ -673,24 +673,39 @@ flower_list = ['роза','тюльпан','незабудка','ромашка'
 @app.route('/lab2/flowers/<int:flower_id>')
 def flowers(flower_id):
     if flower_id >= len(flower_list):
-        return 'Такого цветка нет', 404
+        return render_template('flower_id.html', message='Такого цветка нет'), 404
     else:
-        return "цветок: " + flower_list[flower_id] 
+        return render_template('flower_id.html', name=flower_list[flower_id]), 200
 
+
+@app.route('/lab2/add_flower/', defaults={'name': None})
 @app.route('/lab2/add_flower/<name>')
 def add_flower(name):
+    if name is None:
+        return render_template('flower(None).html'), 400
+    if name in flower_list:
+        return render_template('flower.html', message=f'Цветок "{name}" уже существует'), 400
+    
     flower_list.append(name)
-    return f'''
-<!doctype html>
-<html>
-    <body>
-    <h1>Добавлен новый цветок</h1>
-    <p>Название нового цветка: {name} </p>
-    <p>Всего цветов: {len(flower_list)}</p>
-    <p>Полный список: {flower_list}</p>
-    </body>
-</html>
-'''
+    return render_template('flower.html', 
+                           name=name,
+                           total=len(flower_list),
+                           flower_list=flower_list), 200
+
+
+@app.route('/lab2/flower_amount')
+def flower_amount():
+    flower_list_str = ', '.join(flower_list)
+    return render_template('flower_amount.html', 
+                           total=len(flower_list),
+                           flower_list=flower_list_str), 200
+
+@app.route('/lab2/reset_flowers')
+def reset_flowers():
+    global flower_list
+    flower_list = []
+    return render_template('reset_flowers.html', message='Список цветов сброшен')
+
 
 @app.route('/lab2/example')
 def example():

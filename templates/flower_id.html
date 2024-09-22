@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа №2{% endblock %}
+
+{# основной контент #}
+{% block main %}
+    {% if message %}
+    <h1>{{ message }}</h1>
+    {% else %}
+    <h1>Цветок: {{ name }}</h1>
+    <a href="{{ url_for('flower_amount') }}">Cписок цветов</a>
+    {% endif %}
+{% endblock %}
