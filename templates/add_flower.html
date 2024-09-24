@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа №2{% endblock %}
+
+{% block main %}
+    <h1>Добавить цветок</h1>
+    {% if message %}
+        <p style="color: red;">{{ message }}</p>
+    {% endif %}
+    <form method="post">
+        Название: <input type="text" name="name" required>
+        Цена: <input type="number" step="0.01" name="price" required>
+        <button type="submit">Добавить</button>
+    </form>
+    <h2>Список цветов</h2>
+    <ul>
+        {% for flower in flower_list_with_prices %}
+            <li>{{ flower.name }} ({{ flower.price }} руб.)</li>
+        {% endfor %}
+        <li><a href="{{ url_for('lab2') }}">Вернуться на главную страницу</a></li>
+        <li><a href="{{ url_for('flower_amount') }}">Вернуться обратно в список цветов</a></li>
+    </ul>
+{% endblock %}

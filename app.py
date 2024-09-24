@@ -1,4 +1,4 @@
-from flask import Flask, url_for, redirect, Response, render_template
+from flask import Flask, url_for, redirect, Response, render_template, request
 app = Flask (__name__)
 
 
@@ -22,6 +22,8 @@ def main():
                 <div style="text-align: center; margin: 20px;">
                 <h1>Список работ</h1>
                 <a href="/lab1">Первая лабораторная работа</a>
+                <p> </p>
+                <a href="/lab2/">Вторая лабораторная работа</a>
                 </div>
                 
                 <footer>
@@ -32,7 +34,7 @@ def main():
         </html>'''
 
 
-@app.route ("/lab1")
+@app.route ("/lab1/")
 def lab1():
     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
     return '''<!DOCTYPE html>
@@ -662,51 +664,66 @@ def about():
    
 @app.route('/lab2/a/')
 def a():
-    return 'Со слэшем'            
+    return render_template('slash.html', message = 'Со слэшем')          
    
 @app.route('/lab2/a')
 def a2():
-    return 'Без слэша'
+    return render_template('slash.html', message = 'Без слэша') 
 
-flower_list = ['роза','тюльпан','незабудка','ромашка']
+flower_list_with_prices = [
+        {'name': 'роза', 'price': 10.99},
+        {'name': 'тюльпан', 'price': 5.99},
+        {'name': 'незабудка', 'price': 3.99},
+        {'name': 'ромашка', 'price': 2.99}
+    ]
 
 @app.route('/lab2/flowers/', defaults={'flower_id': None})
 @app.route('/lab2/flowers/<int:flower_id>')
 def flowers(flower_id):
     if flower_id is None:
         return render_template('flower_id.html', message='Введите id цветка в строку URL')
-    elif flower_id < 0 or flower_id >= len(flower_list):
+    elif flower_id < 0 or flower_id >= len(flower_list_with_prices):
         return render_template('flower_id.html', message='Такого цветка нет. Введите правильный id в строку URL'), 404
     else:
-        return render_template('flower_id.html', name=flower_list[flower_id]), 200
+        return render_template('flower_id.html', name=flower_list_with_prices[flower_id]['name']), 200
 
 
-@app.route('/lab2/add_flower/', defaults={'name': None})
-@app.route('/lab2/add_flower/<name>')
-def add_flower(name):
-    if name is None:
-        return render_template('flower(None).html'), 400
-    if name in flower_list:
-        return render_template('flower.html', message=f'Цветок "{name}" уже существует'), 400
+@app.route('/lab2/add_flower/', methods=['GET', 'POST'])
+def add_flower():
+    if request.method == 'POST':
+        name = request.form['name']
+        price = float(request.form['price'])
+        if any(f['name'].lower() == name.lower() for f in flower_list_with_prices):
+            return render_template('add_flower.html', message=f'Цветок "{name}" уже существует', flower_list_with_prices=flower_list_with_prices)
+        flower_list_with_prices.append({'name': name, 'price': price})
+        return redirect(url_for('flower_amount'))
+    return render_template('add_flower.html', flower_list_with_prices=flower_list_with_prices)
+
+@app.route('/lab2/delete_flower/<int:flower_id>', methods=['GET'])
+def delete_flower(flower_id):
+    if flower_id >= len(flower_list_with_prices) or flower_id < 0:
+        return 'Цветок с таким номером не найден', 404
     
-    flower_list.append(name)
-    return render_template('flower.html', 
-                           name=name,
-                           total=len(flower_list),
-                           flower_list=flower_list), 200
+    del flower_list_with_prices[flower_id]
+    return redirect(url_for('flower_amount'))
+
+@app.route('/lab2/delete_all_flowers/')
+def delete_all_flowers():
+    flower_list_with_prices.clear()
+    return redirect(url_for('flower_amount'))
+
 
 
 @app.route('/lab2/flower_amount/')
 def flower_amount():
-    flower_list_str = ', '.join(flower_list)
     return render_template('flower_amount.html', 
-                           total=len(flower_list),
-                           flower_list=flower_list_str), 200
+                           total=len(flower_list_with_prices),
+                           flower_list_with_prices=flower_list_with_prices)
 
 @app.route('/lab2/reset_flowers/')
 def reset_flowers():
-    global flower_list
-    flower_list = []
+    global flower_list_with_prices
+    flower_list_with_prices = []
     return render_template('reset_flowers.html', message='Список цветов сброшен')
 
 

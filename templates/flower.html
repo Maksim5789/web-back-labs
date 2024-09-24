@@ -13,4 +13,8 @@
     <p>Всего цветов: {{ total }}</p>
     <p>Полный список: {{ flower_list }}</p>
     {% endif %}
+    <ul>
+        <li><a href="{{ url_for('lab2') }}">Вернуться на главную страницу</a></li>
+        <li><a href="{{ url_for('flower_amount') }}">Вернуться обратно в список цветов</a></li>
+    </ul>
 {% endblock %}

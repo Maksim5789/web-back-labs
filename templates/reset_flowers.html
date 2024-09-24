@@ -7,6 +7,9 @@
 {% block main %}
 <div>
     <h1>{{ message }}</h1>
-    <a href="{{ url_for('flower_amount') }}">Вернуться на страницу со списком цветов</a>
+    <ul>
+        <li><a href="{{ url_for('flower_amount') }}">Вернуться на страницу со списком цветов</a></li>
+        <li><a href="{{ url_for('lab2') }}">Вернуться на главную страницу</a></li>
+    </ul>
 </div>
 {% endblock %}

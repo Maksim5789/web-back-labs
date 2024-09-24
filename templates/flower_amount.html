@@ -3,9 +3,17 @@
 {# номер лабораторной работы: #}
 {% block lab %}Лабораторная работа №2{% endblock %}
 
-{# основной контент #}
 {% block main %}
     <h1>Список и количество цветов</h1>
     <p>Всего цветов: {{ total }}</p>
-    <p>Полный список: {{ flower_list }}</p>
+    <ul>
+        {% for flower in flower_list_with_prices %}
+            <li>{{ flower.name }} ({{ flower.price }} руб.) <a href="{{ url_for('delete_flower', flower_id=loop.index0) }}">Удалить</a></li>
+        {% endfor %}
+    </ul>
+    <ul>
+        <li><a href="{{ url_for('delete_all_flowers') }}">Удалить все цветы</a></li>
+        <li><a href="{{ url_for('add_flower') }}">Добавить цветок</a></li>
+        <li><a href="{{ url_for('lab2') }}">Вернуться на главную страницу</a></li>
+    </ul>
 {% endblock %}

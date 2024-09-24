@@ -9,6 +9,9 @@
     <h1>{{ message }}</h1>
     {% else %}
     <h1>Цветок: {{ name }}</h1>
-    <a href="{{ url_for('flower_amount') }}">Cписок цветов</a>
     {% endif %}
+    <ul>
+        <li><a href="{{ url_for('flower_amount') }}">Cписок цветов</a></li>
+        <li><a href="{{ url_for('lab2') }}">Вернуться на главную страницу</a></li>
+    </ul>
 {% endblock %}
