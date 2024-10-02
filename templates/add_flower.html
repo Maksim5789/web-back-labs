@@ -18,7 +18,7 @@
         {% for flower in flower_list_with_prices %}
             <li>{{ flower.name }} ({{ flower.price }} руб.)</li>
         {% endfor %}
-        <li><a href="{{ url_for('lab2') }}">Вернуться на главную страницу</a></li>
-        <li><a href="{{ url_for('flower_amount') }}">Вернуться обратно в список цветов</a></li>
+        <li><a href="{{ url_for('lab2.lab') }}">Вернуться на главную страницу</a></li>
+        <li><a href="{{ url_for('lab2.flower_amount') }}">Вернуться обратно в список цветов</a></li>
     </ul>
 {% endblock %}
