@@ -74,10 +74,10 @@ def settings():
     font_style = request.args.get('font_style')
 
     resp = make_response(render_template('lab3/settings.html', 
-                                         color=request.cookies.get('color'), 
-                                         color_back=request.cookies.get('color_back'),
-                                         font_size=request.cookies.get('font_size'),
-                                         font_style=request.cookies.get('font_style')))
+                                         color=request.cookies.get('color', 'black'), 
+                                         color_back=request.cookies.get('color_back', '#659DBD'),
+                                         font_size=request.cookies.get('font_size', '20px'),
+                                         font_style=request.cookies.get('font_style', 'Arial')))
     
     # Устанавливаем куки, если параметры переданы
     if color:
@@ -88,7 +88,18 @@ def settings():
         resp.set_cookie('font_size', font_size)
     if font_style:
         resp.set_cookie('font_style', font_style)
+        
     return resp
 
+
+@lab3.route('/lab3/clear_cookies')
+def clear_cookies():
+    resp = make_response(redirect('/lab3/settings'))  # Переход на главную страницу настроек
     
-  
+    # Очищаем куки
+    resp.set_cookie('color', 'black', expires=0)
+    resp.set_cookie('color_back', '#659DBD', expires=0)
+    resp.set_cookie('font_size', '20px', expires=0)
+    resp.set_cookie('font_style', 'Arial', expires=0)
+    
+    return resp
