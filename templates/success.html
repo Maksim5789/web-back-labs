@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа №3{% endblock %}
+
+{# основной контент #}
+{% block main %}
+    <form action="{{ url_for('lab3.success', price=price) }}">
+    <h1>Спасибо, ваш заказ оплачен на сумму {{price}} рублей, ожидайте доставку</h1>
+    <div><a href="/lab3/order">Вернуться к заказу</a></div>
+{% endblock %}
