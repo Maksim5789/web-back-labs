@@ -265,37 +265,37 @@ def error_418():
             </body>
         </html>''', 418
 
-@app.errorhandler(Exception)
-def internal_server_error(error):
-    path = url_for("static", filename="500.png")
-    css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
-    return '''<!DOCTYPE html>
-        <html>
-            <head>
-                <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
-                <title>Ошибка 500</title>
-                <style>
-                    img {
-                        width: 700px;
-                        height: 400px;
-                        margin: 20px;
-                        border: 5px solid black;
-                    }
-                </style>   
-            </head>
+# @app.errorhandler(Exception)
+# def internal_server_error(error):
+#     path = url_for("static", filename="500.png")
+#     css_path = url_for("static", filename="lab1.css")  # путь к файлу lab1.css
+#     return '''<!DOCTYPE html>
+#         <html>
+#             <head>
+#                 <link rel="stylesheet" type="text/css" href="''' + css_path + '''">  <!-- подключение CSS файла -->
+#                 <title>Ошибка 500</title>
+#                 <style>
+#                     img {
+#                         width: 700px;
+#                         height: 400px;
+#                         margin: 20px;
+#                         border: 5px solid black;
+#                     }
+#                 </style>   
+#             </head>
  
-            <body>
-                <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 500</h1>
+#             <body>
+#                 <h1 style="text-size: 20px; margin: 20px; font-family: 'Tahoma', Arial, sans-serif;">Ошибка 500</h1>
 
-                <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
-                    Извините, произошла непредвиденная ошибка. Повторите попытку позже.
-                </div>
+#                 <div style="text-align: left; margin: 20px; font-family: 'Times new Roman', Arial, sans-serif;">
+#                     Извините, произошла непредвиденная ошибка. Повторите попытку позже.
+#                 </div>
 
-                <div style="text-align: center;">
-                    <img src="''' + path + '''">
-                </div>
-            </body>
-        </html>''', 500
+#                 <div style="text-align: center;">
+#                     <img src="''' + path + '''">
+#                 </div>
+#             </body>
+#         </html>''', 500
 
 @app.route('/500')
 def index500():
