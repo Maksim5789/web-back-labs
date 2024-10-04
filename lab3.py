@@ -103,3 +103,5 @@ def clear_cookies():
     resp.set_cookie('font_style', 'Arial', expires=0)
     
     return resp
+
+# Два раза нажимаем на ОК, чтобы потом код брал данные из куки, а потом можно очистить (вернуть к настройкам по умолчанию)
