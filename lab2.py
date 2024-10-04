@@ -3,15 +3,15 @@ lab2 = Blueprint('lab2',__name__)
 
 @lab2.route('/lab2/')
 def lab():
-    return render_template('lab2.html')
+    return render_template('lab2/lab2.html')
 
 @lab2.route('/lab2/a/')
 def a():
-    return render_template('slash.html', message = 'Со слэшем')          
+    return render_template('lab2/slash.html', message = 'Со слэшем')          
    
 @lab2.route('/lab2/a')
 def a2():
-    return render_template('slash.html', message = 'Без слэша') 
+    return render_template('lab2/slash.html', message = 'Без слэша') 
 
 flower_list_with_prices = [
         {'name': 'роза', 'price': 10.99},
@@ -24,11 +24,11 @@ flower_list_with_prices = [
 @lab2.route('/lab2/flowers/<int:flower_id>')
 def flowers(flower_id):
     if flower_id is None:
-        return render_template('flower_id.html', message='Введите id цветка в строку URL')
+        return render_template('lab2/flower_id.html', message='Введите id цветка в строку URL')
     elif flower_id < 0 or flower_id >= len(flower_list_with_prices):
-        return render_template('flower_id.html', message='Такого цветка нет. Введите правильный id в строку URL'), 404
+        return render_template('lab2/flower_id.html', message='Такого цветка нет. Введите правильный id в строку URL'), 404
     else:
-        return render_template('flower_id.html', name=flower_list_with_prices[flower_id]['name']), 200
+        return render_template('lab2/flower_id.html', name=flower_list_with_prices[flower_id]['name']), 200
 
 
 @lab2.route('/lab2/add_flower/', methods=['GET', 'POST'])
@@ -40,7 +40,7 @@ def add_flower():
             return render_template('add_flower.html', message=f'Цветок "{name}" уже существует', flower_list_with_prices=flower_list_with_prices)
         flower_list_with_prices.append({'name': name, 'price': price})
         return redirect(url_for('lab2.flower_amount'))
-    return render_template('add_flower.html', flower_list_with_prices=flower_list_with_prices)
+    return render_template('lab2/add_flower.html', flower_list_with_prices=flower_list_with_prices)
 
 @lab2.route('/lab2/delete_flower/<int:flower_id>', methods=['GET'])
 def delete_flower(flower_id):
@@ -57,7 +57,7 @@ def delete_all_flowers():
 
 @lab2.route('/lab2/flower_amount/')
 def flower_amount():
-    return render_template('flower_amount.html', 
+    return render_template('lab2/flower_amount.html', 
                            total=len(flower_list_with_prices),
                            flower_list_with_prices=flower_list_with_prices)
 
@@ -65,7 +65,7 @@ def flower_amount():
 def reset_flowers():
     global flower_list_with_prices
     flower_list_with_prices = []
-    return render_template('reset_flowers.html', message='Список цветов сброшен')
+    return render_template('lab2/reset_flowers.html', message='Список цветов сброшен')
 
 @lab2.route('/lab2/example')
 def example():
@@ -77,13 +77,13 @@ def example():
         {'name': 'мандарины', 'price': 95},
         {'name': 'манго', 'price': 321}
         ]
-    return render_template('example.html', 
+    return render_template('lab2/example.html', 
                            name=name, lab_num=lab_num, group=group, course=course, fruits=fruits)
 
 @lab2.route('/lab2/filters/')
 def filters():
     phrase = "О <b>сколько</b> <u>нам</u> <i>открытий</i> чудных..."
-    return render_template('filter.html', phrase=phrase)
+    return render_template('lab2/filter.html', phrase=phrase)
 
 @lab2.route('/lab2/calc/', defaults={'a': 1, 'b': 1})
 @lab2.route('/lab2/calc/<int:a>/', defaults={'b': 1})
@@ -96,7 +96,7 @@ def calculator(a, b):
         'Деление': a / b,
         'Возведение в степень': a ** b
     }
-    return render_template('calculator.html', a=a, b=b, result=result)
+    return render_template('lab2/calculator.html', a=a, b=b, result=result)
 
 @lab2.route('/lab2/calc/')
 def redirect_to_default():
@@ -178,7 +178,7 @@ books = [
 
 @lab2.route('/lab2/books/')
 def show_books():
-    return render_template('books.html', books=books)
+    return render_template('lab2/books.html', books=books)
 
 objects = [
     {
@@ -210,6 +210,6 @@ objects = [
 
 @lab2.route('/lab2/objects/')
 def show_objects():
-    return render_template('objects.html', objects=objects)
+    return render_template('lab2/objects.html', objects=objects)
 
 

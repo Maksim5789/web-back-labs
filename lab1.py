@@ -269,23 +269,23 @@ def created():
     global resource_created
     if not resource_created:
         resource_created = True
-        return render_template('create.html'), 201
+        return render_template('lab1/create.html'), 201
     else:
-        return render_template('err_cr.html'), 400
+        return render_template('lab1/err_cr.html'), 400
     
 @lab1.route('/lab1/delete')
 def delete():
     global resource_created
     if resource_created:
         resource_created = False
-        return render_template('delete.html'), 200
+        return render_template('lab1/delete.html'), 200
     else:
-        return render_template('err_del.html'), 400
+        return render_template('lab1/err_del.html'), 400
     
 @lab1.route('/lab1/resource')
 def resource():
     status = 'Ресурс создан' if resource_created else 'Ресурс ещё не создан'
-    return render_template('resource.html', status=status)
+    return render_template('lab1/resource.html', status=status)
 
 @lab1.route('/lab1/about')
 def about():
