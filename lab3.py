@@ -59,7 +59,30 @@ def pay():
     
     return render_template('pay.html', price=price)
 
-@lab3.route('/lab3/success')
-def success():
-    price = request.args.get('price')
-    return render_template('success.html', price=price)
+@lab3.route('/lab3/settings')
+def settings():
+    # Получаем параметры из запроса
+    color = request.args.get('color')
+    color_back = request.args.get('color_back')
+    font_size = request.args.get('font_size')
+    font_style = request.args.get('font_style')
+
+    resp = make_response(render_template('settings.html', 
+                                         color=request.cookies.get('color'), 
+                                         color_back=request.cookies.get('color_back'),
+                                         font_size=request.cookies.get('font_size'),
+                                         font_style=request.cookies.get('font_style')))
+    
+    # Устанавливаем куки, если параметры переданы
+    if color:
+        resp.set_cookie('color', color)
+    if color_back:
+        resp.set_cookie('color_back', color_back)
+    if font_size:
+        resp.set_cookie('font_size', font_size)
+    if font_style:
+        resp.set_cookie('font_style', font_style)
+    return resp
+
+    
+  

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{# номер лабораторной работы: #}
+{% block lab %}Лабораторная работа №3{% endblock %}
+
+{# основной контент #}
+{% block main %}
+    <h1>Cookies</h1>
+    <form action="/lab3/settings" method="get">
+        <div>
+            <label class="label" for="color">Выберите цвет шрифта:</label>
+            <input type="color" id="color" name="color" value="{{ color or '' }}">
+        </div>
+        <div>
+            <label class="label" for="color_back">Выберите цвет фона:</label>
+            <input type="color" id="color_back" name="color_back" value="{{ color_back or '' }}">
+        </div>
+        <div>
+            <label class="label" for="font_size">Выберите размер шрифта:</label>
+            <input type="number" id="font_size" name="font_size" value="{{ font_size or '' }}" min="1">
+        </div>
+        <div>
+            <label for="font_style">Выберите стиль текста:</label>
+            <select name="font_style" id="font_style">
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Courier New, monospace">Courier New</option>
+                <option value="Georgia, serif">Georgia</option>
+                <option value="Times New Roman, serif">Times New Roman</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+            </select>
+        </div>   
+        <div>
+            <button type="submit">OK</button>
+        </div>
+    </form>
+{% endblock %}
