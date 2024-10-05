@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа №3{% endblock %}
+
+{% block main %}
+    <h1>Результаты поиска</h1>
+    <a href="/lab3/search">Назад</a>
+    <ul>
+        {% for book in books %}
+            <li>{{ book.title }} - {{ book.price }} руб. ({{ book.author }} - {{ book.genre }})</li>
+        {% else %}
+            <li>Товаров не найдено.</li>
+        {% endfor %}
+    </ul>
+{% endblock %}
