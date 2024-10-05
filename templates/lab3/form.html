@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block lab %}Лабораторная работа №3{% endblock %}
+
+{% block main %} 
+    <h1>Заказ железнодорожного билета</h1>
+    <form action="{{ url_for('lab3.ticket') }}" method="post">
+        <label>ФИО пассажира: <input type="text" name="fio" required></label><br>
+        <label>Полка: 
+            <select name="shelf" required>
+                <option value="lower">Нижняя</option>
+                <option value="upper">Верхняя</option>
+                <option value="upper_side">Верхняя боковая</option>
+                <option value="lower_side">Нижняя боковая</option>
+            </select>
+        </label><br>
+        <label>С бельём: <input type="checkbox" name="linen"></label><br>
+        <label>С багажом: <input type="checkbox" name="baggage"></label><br>
+        <label>Возраст: <input type="number" name="age" min="1" max="120" required></label><br>
+        <label>Пункт выезда: <input type="text" name="departure" required></label><br>
+        <label>Пункт назначения: <input type="text" name="destination" required></label><br>
+        <label>Дата поездки: <input type="date" name="date" required></label><br>
+        <label>Нужна ли страховка: <input type="checkbox" name="insurance"></label><br>
+        <button type="submit">Записаться</button>
+    </form>
+{% endblock %}
