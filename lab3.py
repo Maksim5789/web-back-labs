@@ -65,47 +65,58 @@ def success():
     price = request.args.get('price')  # Получаем цену из параметров URL
     return render_template('lab3/success.html', price=price)
 
-@lab3.route('/lab3/settings')
+@lab3.route('/lab3/settings', methods=['GET'])
 def settings():
     # Получаем параметры из запроса
     color = request.args.get('color')
     color_back = request.args.get('color_back')
     font_size = request.args.get('font_size')
     font_style = request.args.get('font_style')
-
-    resp = make_response(render_template('lab3/settings.html', 
-                                         color=request.cookies.get('color', 'black'), 
-                                         color_back=request.cookies.get('color_back', '#659DBD'),
-                                         font_size=request.cookies.get('font_size', '20px'),
-                                         font_style=request.cookies.get('font_style', 'Arial')))
     
-    # Устанавливаем куки, если параметры переданы
+    # Обрабатываем разные кнопки
+    resp = make_response(render_template('lab3/settings.html', 
+                                        color=request.cookies.get('color', 'black'), 
+                                        color_back=request.cookies.get('color_back', '#659DBD'),
+                                        font_size=request.cookies.get('font_size', '20px'),
+                                        font_style=request.cookies.get('font_style', 'Arial')))
+    
     if color:
         resp.set_cookie('color', color)
+        
     if color_back:
         resp.set_cookie('color_back', color_back)
+        
     if font_size:
         resp.set_cookie('font_size', font_size)
+        
     if font_style:
         resp.set_cookie('font_style', font_style)
         
+    # Применение стиля из куки
+    if request.args.get('apply'):
+        pass  # Здесь можно добавить логику на Ваше усмотрение (если нужно)
+
+    # Установка стиля по умолчанию
+    if request.args.get('default'):
+        resp.set_cookie('color', 'black', expires=0)
+        resp.set_cookie('color_back', '#659DBD', expires=0)
+        resp.set_cookie('font_size', '20px', expires=0)
+        resp.set_cookie('font_style', 'Arial', expires=0)
+
     return resp
 
-@lab3.route('/lab3/clear_cookies')
-def clear_cookies():
-    resp = make_response(redirect('/lab3/settings'))  # Переход на главную страницу настроек
-    
-    # Очищаем куки
-    resp.set_cookie('color', 'black', expires=0)
-    resp.set_cookie('color_back', '#659DBD', expires=0)
-    resp.set_cookie('font_size', '20px', expires=0)
-    resp.set_cookie('font_style', 'Arial', expires=0)
+@lab3.route('/lab3/clear_cookies/', methods=['GET'])
+def clear_settings():
+    resp = make_response(render_template('lab3/settings.html'))
+    resp.set_cookie('color', '', expires=0)
+    resp.set_cookie('color_back', '', expires=0)
+    resp.set_cookie('font_size', '', expires=0)
+    resp.set_cookie('font_style', '', expires=0)
     
     return resp
 
-# Два раза нажимаем на ОК, чтобы потом код брал данные из куки, а потом можно очистить (вернуть к настройкам по умолчанию)
 
-
+#Два раза нажать на ОК, чтобы установить, а затем применить куки. Два раза нажать для очищения куки и применения настроек по умолчанию
 @lab3.route('/lab3/ticket', methods=['GET', 'POST'])
 def ticket():
     if request.method == 'POST':

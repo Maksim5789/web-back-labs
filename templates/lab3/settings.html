@@ -28,15 +28,20 @@
                 <option value="Times New Roman, serif">Times New Roman</option>
                 <option value="Verdana, sans-serif">Verdana</option>
             </select>
-        </div>   
-        <div>
-            <button type="submit">OK</button>
-        </div>
-        <div>
-            <form action="/lab3/clear_cookies" method="get">
-                <button type="submit">Очистить настройки</button>
-            </form>
         </div>
         
+        <button type="submit">ОК</button>
+        <button type="submit" name="apply" value="1">Применить стиль</button>
+        <button type="submit" formaction="/lab3/clear_cookies/">Очистить куки</button>
+        <button type="submit" name="default" value="1">По умолчанию</button>
     </form>
-{% endblock %}
+    
+    
+{% endblock %} 
+
+
+
+
+
+
+
