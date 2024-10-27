@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for, render_template, request, make_response, session
+from flask import Blueprint, redirect, url_for, render_template, request, make_response, session, flash
 lab4 = Blueprint('lab4',__name__)
 
 @lab4.route('/lab4/')
@@ -197,3 +197,65 @@ def fridge():
                 message = "Ошибка: температура должна быть числом"
 
     return render_template('/lab4/fridge.html', message=message, temperature=temperature)
+
+
+# Определим цены на зерно
+prices = {
+    'ячмень': 12345,
+    'овёс': 8522,
+    'пшеница': 8722,
+    'рожь': 14111
+}
+
+@lab4.route('/lab4/order', methods=['GET', 'POST'])
+def order():
+    if request.method == 'POST':
+        grain_type = request.form.get('grain_type')
+        weight = request.form.get('weight')
+
+        # Проверка на пустое значение веса
+        if not weight:
+            flash('Ошибка: вес не был указан.', 'error')
+            return render_template('/lab4/order.html')
+
+        try:
+            weight = float(weight)
+        except ValueError:
+            flash('Ошибка: введите корректное значение веса.', 'error')
+            return render_template('/lab4/order.html')
+
+        # Проверка на отрицательные значения
+        if weight <= 0:
+            flash('Ошибка: вес должен быть больше 0.', 'error')
+            return render_template('/lab4/order.html')
+
+        # Проверка на наличие зерна
+        if weight > 500:
+            flash('Ошибка: такого объёма сейчас нет в наличии.', 'error')
+            return render_template('/lab4/order.html')
+
+        # Рассчитываем сумму заказа
+        price_per_ton = prices.get(grain_type)
+
+        if price_per_ton is None:
+            flash('Ошибка: некорректный тип зерна.', 'error')
+            return render_template('/lab4/order.html')
+
+        total_amount = price_per_ton * weight
+
+        # Применение скидки при большом объёме
+        discount = 0
+        if weight > 50:
+            discount = total_amount * 0.1
+            total_amount -= discount
+
+        # Формируем сообщение
+        message = f'Заказ успешно сформирован. Вы заказали {grain_type}. Вес: {weight} т. Сумма к оплате: {total_amount:.2f} руб.'
+        
+        if discount > 0:
+            message += f' Применена скидка за большой объём: {discount:.2f} руб.'
+
+        flash(message, 'success')
+        return render_template('/lab4/order.html')
+
+    return render_template('/lab4/order.html')

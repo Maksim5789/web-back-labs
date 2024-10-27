@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block lab %}Заказ зерна{% endblock %}
+
+{% block main %}
+    <h2>Заказ зерна</h2>
+    <form method="post">
+        <label for="grain_type">Тип зерна:</label>
+        <select name="grain_type" id="grain_type" required>
+            <option value="ячмень">Ячмень</option>
+            <option value="овёс">Овёс</option>
+            <option value="пшеница">Пшеница</option>
+            <option value="рожь">Рожь</option>
+        </select><br><br>
+
+        <label for="weight">Вес (т):</label>
+        <input type="number" name="weight" id="weight" required><br><br>
+
+        <input type="submit" value="Сформировать заказ">
+    </form>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="message {{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
