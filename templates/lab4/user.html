@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block lab %}Список пользователей{% endblock %}
+
+{% block main %}
+    <h1>Пользователи</h1>
+    <ul>
+        {% for user in users %}
+            <li>{{ user.name }} ({{ user.login }})</li>
+        {% endfor %}
+    </ul>
+    <form action="/lab4/delete" method="post">
+        <button>Удалить меня из списка</button>
+    </form>
+    <a href="/lab4/edit">Редактировать мои данные</a>
+    <p> </p>
+    <a href="/lab4/">Меню лабораторной</a>
+{% endblock %}

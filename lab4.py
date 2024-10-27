@@ -259,3 +259,92 @@ def order():
         return render_template('/lab4/order.html')
 
     return render_template('/lab4/order.html')
+
+@lab4.route('/lab4/register', methods=['GET', 'POST'])
+def register():
+    if 'login' in session:  # Проверка на авторизацию
+        return redirect('/lab4/login')  # Перенаправление на страницу входа
+
+    if request.method == 'POST':
+        login = request.form.get('login')
+        password = request.form.get('password')
+        name = request.form.get('name')
+        error = None
+        
+        # Проверка на занятый логин
+        if any(user['login'] == login for user in users):
+            error = 'Этот логин уже занят'
+        
+        # Проверка на пустые поля
+        if not login:
+            error = 'Не введён логин'
+        elif not password:
+            error = 'Не введён пароль'
+        elif not name:
+            error = 'Не введено имя'
+        
+        if error is None:
+            users.append({'login': login, 'password': password, 'name': name, 'gender': 'male'})  # gender можно убрать или изменить
+            return redirect('/lab4/login')
+
+        return render_template('/lab4/register.html', error=error, login=login, name=name)  # Сохраняем введенные значения
+    
+    return render_template('/lab4/register.html')
+
+@lab4.route('/lab4/user')
+def users_list():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+    
+    return render_template('/lab4/user.html', users=users)
+
+@lab4.route('/lab4/delete', methods=['POST'])
+def delete_user():
+    if 'login' not in session:
+        return redirect('/lab4/login')
+
+    login = session['login']
+    global users
+    users = [user for user in users if user['login'] != login]
+
+    session.pop('login', None)
+    session.pop('name', None)
+    return redirect('/lab4/login')
+
+@lab4.route('/lab4/edit', methods=['GET', 'POST'])
+def edit():
+    if 'login' not in session:  # Проверка на авторизацию
+        return redirect('/lab4/login')  # Перенаправление на страницу входа
+
+    current_user = next((user for user in users if user['login'] == session['login']), None)
+    
+    if request.method == 'POST':
+        new_login = request.form.get('login')
+        new_password = request.form.get('password')
+        new_name = request.form.get('name')
+        error = None
+        
+        # Проверка на пустые поля
+        if not new_login:
+            error = 'Не введён логин'
+        elif not new_password:
+            error = 'Не введён пароль'
+        elif not new_name:
+            error = 'Не введено имя'
+        
+        if error:
+            return render_template('lab4/edit.html', error=error, login=current_user['login'], name=current_user['name'])
+
+        # Проверка на изменения данных
+        if (new_login != current_user['login'] or 
+            new_password != current_user['password'] or 
+            new_name != current_user['name']):
+            # Изменяем данные только если они отличаются
+            current_user['login'] = new_login
+            current_user['password'] = new_password
+            current_user['name'] = new_name
+
+            return redirect('/lab4/user')  # Перенаправление после успешного редактирования
+
+    return render_template('/lab4/edit.html', login=current_user['login'], name=current_user['name'])
+

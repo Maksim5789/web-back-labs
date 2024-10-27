@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block lab %}Регистрация{% endblock %}
+
+{% block main %}
+    <h1>Регистрация</h1>
+    {% if error %}
+        <div style="color: red; font-weight: bold;">{{ error }}</div>
+    {% endif %}
+    <form method="post">
+        <div>
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="login" value="{{ login }}">  <!-- Сохраняем логин -->
+        </div>
+        <div>
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password">  <!-- Пароль не сохраняется по соображениям безопасности, но можно сохранить, записав value, а в lab4 password=password -->
+        </div>
+        <div>
+            <label for="name">Имя:</label>
+            <input type="text" id="name" name="name" value="{{ name }}">  <!-- Сохраняем имя -->
+        </div>
+        <div>
+            <button type="submit">Зарегистрироваться</button>
+            <button type="reset">Отмена</button>
+        </div>
+        <p> </p>
+        <a href="/lab4/">Меню лабораторной</a>
+    </form>
+{% endblock %}
