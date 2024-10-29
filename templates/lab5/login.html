@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %}Логин{% endblock %}
+
+{% block content %}
+    <h1>Логин</h1>
+    <form method="post">
+        <input type="text" name="username" placeholder="Username" required>
+        <button type="submit">Логин</button>
+    </form>
+{% endblock %}
