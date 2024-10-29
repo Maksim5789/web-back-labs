@@ -49,7 +49,7 @@
     <main>
         {% block content %}{% endblock %}
         <nav>
-            <div class="username">{{ username if username else 'anonymous' }}</div>
+            <div class="username">{{ login if login else 'anonymous' }}</div>
             <div>
                 <button><a href="{{ url_for('lab5.login') }}">Login</a></button>
                 <button><a href="{{ url_for('lab5.register') }}">Register</a></button>
