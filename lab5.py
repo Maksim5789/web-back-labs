@@ -1,5 +1,6 @@
 from flask import Blueprint, redirect, url_for, render_template, request, session
 import sqlite3
+from werkzeug.security import check_password_hash, generate_password_hash
 
 lab5 = Blueprint('lab5', __name__)
 
@@ -19,7 +20,6 @@ def db_close(conn,cur):
     cur.close()
     conn.close()
 
-
 @lab5.route('/lab5/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
@@ -38,10 +38,14 @@ def login():
     cur.execute("SELECT * FROM users WHERE login=?", (login,))
     user = cur.fetchone()  # Получаем одну строку
 
-    if not user or user['password'] != password:  # Проверка пользователя и пароля
+    if not user:  
         db_close(conn,cur)
         return render_template('lab5/login.html', error='Логин и/или пароль неверны')
-
+    
+    if not check_password_hash(user['password'] != password):  
+        db_close(conn,cur)
+        return render_template('lab5/login.html', error='Логин и/или пароль неверны')
+    
     session['login'] = login
     db_close(conn,cur)
     return render_template('lab5/success_login.html', login=login)   
@@ -65,8 +69,9 @@ def register():
     if cur.fetchone():
         db_close(conn,cur)
         return render_template('lab5/register.html', error='Такой пользователь уже существует')
-
-    cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password}');")
+    
+    password_hash = generate_password_hash(password)
+    cur.execute(f"INSERT INTO users (login, password) VALUES ('{login}', '{password_hash}');")
     db_close(conn,cur)
     return render_template('lab5/success.html', login=login)
 
