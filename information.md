@@ -2,12 +2,7 @@
 
 # Вход в venv: venv\Scripts\activate.bat
 
+# Примерный порядок команд для git pull на python anywhrere: cd /home/Maksim589/web-back-labs  # Переход в директорию проекта --> git pull origin main    
 
-<!-- 
-Примерный порядок команд для git pull на python anywhrere:
-cd /home/Maksim589/web-back-labs  # Переход в директорию проекта
-git pull origin main    
-
-Потом делаешь reload в Web и перезагрушаешь страницу
--->
+# Потом делаешь reload в Web и перезагрушаешь страницу
 
