@@ -35,20 +35,21 @@ def login():
     conn, cur = db_connect()
 
     # Выполнение SQL-запроса с параметризованным запросом
-    cur.execute("SELECT * FROM users WHERE login=?", (login,))
+    cur.execute("SELECT * FROM users WHERE login=?;", (login,))
     user = cur.fetchone()  # Получаем одну строку
 
     if not user:  
-        db_close(conn,cur)
+        db_close(conn, cur)
         return render_template('lab5/login.html', error='Логин и/или пароль неверны')
     
-    if not check_password_hash(user['password'] != password):  
-        db_close(conn,cur)
+    # Проверка пароля
+    if not check_password_hash(user['password'], password):  
+        db_close(conn, cur)
         return render_template('lab5/login.html', error='Логин и/или пароль неверны')
     
     session['login'] = login
-    db_close(conn,cur)
-    return render_template('lab5/success_login.html', login=login)   
+    db_close(conn, cur)
+    return render_template('lab5/success_login.html', login=login) 
 
 @lab5.route('/lab5/register', methods=['GET', 'POST'])
 def register():
@@ -75,19 +76,27 @@ def register():
     db_close(conn,cur)
     return render_template('lab5/success.html', login=login)
 
-
-
-
-@lab5.route('/lab5/list')
-def list_articles():
-    username = request.args.get('username', 'anonymous')
-    return render_template('lab5/list.html', articles=articles, username=username)
-
 @lab5.route('/lab5/create', methods=['GET', 'POST'])
-def create_article():
-    if request.method == 'POST':
-        title = request.form['title']
-        content = request.form['content']
-        articles.append({'title': title, 'content': content})
-        return redirect(url_for('lab5.list_articles'))
-    return render_template('lab5/create.html')
+def create():
+    login=session.get('login')
+    if not login:
+        return redirect('/lab5/login')
+    
+    if request.method == 'GET':
+        return render_template('lab5/create_article.html')
+    
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
+
+    conn, cur = db_connect()
+
+    cur.execute("SELECT * FROM users WHERE login=?;", (login,))
+    user_id = cur.fetchone()["id"]
+
+    cur.execute(
+        f"INSERT INTO articles (user_id, title, article) VALUES ({user_id}, '{title}', '{article_text}')"
+    )
+    cur.fetchone()
+
+    db_close(conn,cur)
+    return redirect('/lab5')

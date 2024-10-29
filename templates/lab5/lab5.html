@@ -1,12 +1,50 @@
-{% extends "base_for_5.html" %}
+{% extends "base.html" %}
 
-{# номер лабораторной работы: #}
 {% block lab %}Лабораторная работа №5{% endblock %}
 
-{# основной контент #}
-{% block content %}
+{% block main %}
+    <style>
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-left: 10px; /* Отступ между кнопками */
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .nav-button a {
+            text-decoration: none; /* Убираем подчеркивание */
+            color: inherit; /* Унаследуем цвет */
+        }
+        
+        .nav-button:hover {
+            background-color: deepskyblue; /* Цвет кнопки при наведении */
+        }
+    </style>
     <h1>Flask и БД</h1>
     <div>
         Тема лабораторной - Flask и БД.
     </div>
+    <p> </p>
+    <div style="background-color: #f8f9fa; padding: 10px; margin: 0; border: 5px solid #ccc;  width: 100%;  box-sizing: border-box;">
+        <nav style="display: flex; align-items: center;">
+            <div class="username" style="margin-right: 20px; font-weight: bold;">
+                {{ login if login else 'Анонимус' }}
+            </div>
+            <div>
+                <button class="nav-button"><a href="{{ url_for('lab5.login') }}">Войти</a></button>
+                <button class="nav-button"><a href="{{ url_for('lab5.register') }}">Регистрация</a></button>
+                <button class="nav-button"><a href="{{ url_for('lab5.create') }}">Создать статью</a></button>
+            </div>
+        </nav>
+    </div>
 {% endblock %}
+
