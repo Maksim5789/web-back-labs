@@ -125,7 +125,7 @@ def create():
     
     cur.execute("SELECT * FROM users WHERE login=?;", (login,))
     
-    user_id = cur.fetchone()["id"]
+    login_id = cur.fetchone()["id"]
 
     # if current_app.config['DB_TYPE'] == 'postgres':
     #     cur.execute(
@@ -135,7 +135,7 @@ def create():
     #         "INSERT INTO articles (user_id, title, article) VALUES (?, ?, ?);", (user_id, title, article_text))
         
     cur.execute(
-            "INSERT INTO articles (user_id, title, article) VALUES (?, ?, ?);", (user_id, title, article_text))
+            "INSERT INTO articles (login_id, title, article) VALUES (?, ?, ?);", (login_id, title, article_text))
 
     cur.fetchone()
 
