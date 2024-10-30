@@ -135,7 +135,7 @@ def create():
     #         "INSERT INTO articles (user_id, title, article) VALUES (?, ?, ?);", (user_id, title, article_text))
         
     cur.execute(
-            "INSERT INTO articles (login_id, title, article) VALUES (?, ?, ?);", (login_id, title, article_text))
+            "INSERT INTO articles (login_id, title, article_text) VALUES (?, ?, ?);", (login_id, title, article_text))
 
     cur.fetchone()
 
