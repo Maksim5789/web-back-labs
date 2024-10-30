@@ -3,11 +3,23 @@
 {% block lab %}Лабораторная работа №5{% endblock %}
 
 {% block main %}
-    <h1>Статьи</h1>
-    {% for article in articles %}
-        <h2>{{ article['title'] }}</article></h2>
-        <blockquote>{{ article['article'] }}</blockquote>
-    {% endfor %}
+    <h1>Личные статьи</h1>
+    {% if articles %}
+        {% for article in articles %}
+            <h2>{{ article['title'] }}</h2>
+            <blockquote>{{ article['article'] }}</blockquote>
+            <form method="POST" action="{{ url_for('lab5.toggle_favorite', id=article['id']) }}">
+                <button type="submit">{{ "Убрать из любимых" if article['is_favorite'] else "Добавить в любимые" }}</button>
+            </form>
+            <form method="POST" action="{{ url_for('lab5.toggle_public', id=article['id']) }}">
+                <button type="submit">{{ "Сделать приватной" if article['public'] else "Сделать публичной" }}</button>
+            </form>
+            <hr>
+        {% endfor %}
+    {% else %}
+        <p>У Вас нет личных статей.</p>
+    {% endif %}
+    <a href="{{ url_for('lab5.public_list') }}">Перейти к публичным статьям</a>
     <p> </p>
     <a href="/lab5/">Меню лабораторной</a>
 {% endblock %}
