@@ -40,6 +40,7 @@
                 {{ login if login else 'Анонимус' }}
             </div>
             <div>
+                <button class="nav-button"><a href="/">Главное меню</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab5.login') }}">Войти</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab5.register') }}">Регистрация</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab5.create') }}">Создать статью</a></button>
