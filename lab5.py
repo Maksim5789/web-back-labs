@@ -1,6 +1,7 @@
-from flask import Blueprint, redirect, url_for, render_template, request, session
+from flask import Blueprint, redirect, url_for, render_template, request, session, current_app
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
+from os import path
 
 lab5 = Blueprint('lab5', __name__)
 
@@ -9,10 +10,17 @@ def lab():
     return render_template('lab5/lab5.html', login = session.get('login'))
 
 def db_connect():
-    # Подключение к базе данных
-    conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\database_web') 
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
+    if current_app.config['DB_TYPE'] == 'postgres':
+        # Подключение к базе данных
+        conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\database_web') 
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    else:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor
     return conn, cur
 
 def db_close(conn,cur):
