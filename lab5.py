@@ -210,7 +210,7 @@ def users():
 @lab5.route('/lab5/public_list')
 def public_list():
     conn, cur = db_connect()
-    cur.execute("SELECT * FROM articles WHERE public=1;")
+    cur.execute("SELECT * FROM articles WHERE is_public=1;")
     articles = cur.fetchall()
     db_close(conn, cur)
     return render_template('lab5/public_articles.html', articles=articles)
