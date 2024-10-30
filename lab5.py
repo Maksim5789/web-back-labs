@@ -231,11 +231,11 @@ def toggle_favorite(id):
 @lab5.route('/lab5/toggle_public/<int:id>', methods=['POST'])
 def toggle_public(id):
     conn, cur = db_connect()
-    cur.execute("SELECT public FROM articles WHERE id=?;", (id,))
-    is_public = cur.fetchone()["public"]
+    cur.execute("SELECT is_public FROM articles WHERE id=?;", (id,))
+    is_public = cur.fetchone()["is_public"]
 
     new_public_status = 0 if is_public else 1  # 0 - приватная, 1 - публичная
-    cur.execute("UPDATE articles SET public=? WHERE id=?;", (new_public_status, id))
+    cur.execute("UPDATE articles SET is_public=? WHERE id=?;", (new_public_status, id))
     
     db_close(conn, cur)
     return redirect('/lab5/list')
