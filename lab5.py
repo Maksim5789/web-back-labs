@@ -151,9 +151,9 @@ def list_articles():
     conn, cur = db_connect()
     
     cur.execute("SELECT * FROM users WHERE login=?;", (login,))
-    user_id = cur.fetchone()["id"]
+    login_id = cur.fetchone()["id"]
 
-    cur.execute("SELECT * FROM articles WHERE user_id=? ORDER BY is_favorite DESC;", (user_id,))
+    cur.execute("SELECT * FROM articles WHERE login_id=? ORDER BY is_favorite DESC;", (login_id,))
     articles = cur.fetchall()
 
     db_close(conn, cur)
