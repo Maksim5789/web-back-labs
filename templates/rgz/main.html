@@ -4,10 +4,43 @@
 
 {% block main %}
     <style>
-     
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-left: 10px; /* Отступ между кнопками */
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .nav-button a {
+            text-decoration: none; /* Убираем подчеркивание */
+            color: inherit; /* Унаследуем цвет */
+        }
+        
+        .nav-button:hover {
+            background-color: deepskyblue; /* Цвет кнопки при наведении */
+        }
     </style>
-    <div>
-        <button class="nav-button"><a href="/">Главное меню</a></button>
+    <div style="background-color: #f8f9fa; padding: 10px; margin: 0; border: 5px solid #ccc; width: 100%; box-sizing: border-box;">
+        <nav style="display: flex; align-items: center;">
+            <div class="username" style="margin-right: 20px; font-weight: bold;">
+                {{ login if login else 'Анонимус' }}
+            </div>
+            <div style="margin-left: auto;"> 
+                <button class="nav-button"><a href="/">Главное меню</a></button>
+                <button class="nav-button"><a href="/rgz/books">Список книг</a></button>
+                <button class="nav-button"><a href="/rgz/register">Регистрация</a></button>
+                <button class="nav-button"><a href="/rgz/login">Авторизация</a></button> 
+            </div>                  
+        </nav>
     </div>
 {% endblock %}
 
