@@ -66,6 +66,11 @@ def login():
     db_close(conn, cur)
     return render_template('rgz/success_login.html', login=login)
 
+@rgz.route('/rgz/logout')
+def logout():
+    session.pop('login', None)  # Удаляем логин из сессии
+    return redirect('/rgz/login')
+
 @rgz.route('/rgz/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
@@ -102,6 +107,7 @@ def register():
     db_close(conn, cur)
     return render_template('rgz/success.html', login=login)
 
+
 @rgz.route('/rgz/books', methods=['GET'])
 def list_books():
     page = int(request.args.get('page', 1))
@@ -122,10 +128,10 @@ def list_books():
         query += " AND author LIKE ?"
         params.append(f"%{filter_author}%")
     if filter_pages_from is not None:
-        query += " AND pages >= ?"
+        query += " AND amount_of_pages >= ?"  # Изменено с pages на amount_of_pages
         params.append(filter_pages_from)
     if filter_pages_to is not None:
-        query += " AND pages <= ?"
+        query += " AND amount_of_pages <= ?"  # Изменено с pages на amount_of_pages
         params.append(filter_pages_to)
     if filter_publisher:
         query += " AND publisher LIKE ?"
@@ -148,10 +154,10 @@ def list_books():
         count_query += " AND author LIKE ?"
         count_params.append(f"%{filter_author}%")
     if filter_pages_from is not None:
-        count_query += " AND pages >= ?"
+        count_query += " AND amount_of_pages >= ?" 
         count_params.append(filter_pages_from)
     if filter_pages_to is not None:
-        count_query += " AND pages <= ?"
+        count_query += " AND amount_of_pages <= ?"  
         count_params.append(filter_pages_to)
     if filter_publisher:
         count_query += " AND publisher LIKE ?"
@@ -163,4 +169,5 @@ def list_books():
     db_close(conn, cur)
     
     return render_template('rgz/books.html', books=books, page=page, total_count=total_count, request=request)
+
 

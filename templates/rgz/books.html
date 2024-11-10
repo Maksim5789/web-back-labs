@@ -3,12 +3,87 @@
 {% block Lab %}Расчётно-графическое задание{% endblock %}
 
 {% block main %}
-    <form method="get" action="/books">
-        <input type="text" name="title" placeholder="Название" value="{{ request.args.get('title', '') }}">
-        <input type="text" name="author" placeholder="Автор" value="{{ request.args.get('author', '') }}">
-        <input type="number" name="pages_from" placeholder="Страницы от" value="{{ request.args.get('pages_from', '') }}">
-        <input type="number" name="pages_to" placeholder="Страницы до" value="{{ request.args.get('pages_to', '') }}">
-        <input type="text" name="publisher" placeholder="Издательство" value="{{ request.args.get('publisher', '') }}">
-        <button type="submit">Фильтровать</button>
+    <style>
+        nav {
+            display: flex;
+            align-items: center;
+        }
+        
+        .nav-button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-left: 10px; /* Отступ между кнопками */
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .nav-button a {
+            text-decoration: none; /* Убираем подчеркивание */
+            color: inherit; /* Унаследуем цвет */
+        }
+        
+        .nav-button:hover {
+            background-color: deepskyblue; /* Цвет кнопки при наведении */
+        }
+
+        .nav-input {
+            padding: 10px; /* Добавляем отступ внутри полей */
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            width: 150px; /* Устанавливаем ширину по Вашему вкусу */
+            margin-right: 10px; /* Добавляем отступ между полями */
+            background-color: rgb(221, 218, 218);
+        }
+    </style>
+    <form method="get" action="/rgz/books">
+        <div style="background-color: #f8f9fa; padding: 10px; margin: 0; border: 5px solid #ccc; width: 100%; box-sizing: border-box;">
+            <nav style="display: flex; align-items: center;">
+                <button class="nav-button"><a href="/rgz/">Меню лабораторной</a></button>
+                <div style="margin-left: auto;"> 
+                    <input class="nav-input" type="text" name="title" placeholder="Название" value="{{ request.args.get('title', '') }}">
+                    <input class="nav-input" type="text" name="author" placeholder="Автор" value="{{ request.args.get('author', '') }}">
+                    <input class="nav-input" type="number" name="pages_from" placeholder="Страницы от" value="{{ request.args.get('pages_from', '') }}">
+                    <input class="nav-input" type="number" name="pages_to" placeholder="Страницы до" value="{{ request.args.get('pages_to', '') }}">
+                    <input class="nav-input" type="text" name="publisher" placeholder="Издательство" value="{{ request.args.get('publisher', '') }}">
+                    <button class="nav-button" type="submit">Фильтровать</button>
+                </div>                  
+            </nav>
+        </div>
     </form>
+
+    <div>
+        {% if books %}
+            {% for book in books %}
+                <div class="book">
+                    <img src="{{ book.book_cover }}" alt="{{ book.title }}" style="float:left; margin-right:20px; width:100px; height:auto;">
+                    <div>
+                        <h3>{{ book.title }}</h3>
+                        <p>Автор: {{ book.author }}</p>
+                        <p>Год публикации: {{ book.year_of_publication }}</p>
+                        <p>Издательство: {{ book.publisher }}</p>
+                        <p>Страниц: {{ book.amount_of_pages }}</p>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <p>Книги не найдены.</p>
+        {% endif %}
+    </div>
+
+    <div>
+        <nav>
+            {% if page > 1 %}
+                <a href="{{ url_for('rgz.list_books', page=page-1, title=request.args.get('title', ''), author=request.args.get('author', ''), pages_from=request.args.get('pages_from', ''), pages_to=request.args.get('pages_to', ''), publisher=request.args.get('publisher', '')) }}">« Назад</a>
+            {% endif %}
+            <span>Страница {{ page }} из {{ (total_count // 20) + 1 }}</span>
+            {% if total_count > page * 20 %}
+                <a href="{{ url_for('rgz.list_books', page=page+1, title=request.args.get('title', ''), author=request.args.get('author', ''), pages_from=request.args.get('pages_from', ''), pages_to=request.args.get('pages_to', ''), publisher=request.args.get('publisher', '')) }}">Вперёд »</a>
+            {% endif %}
+        </nav>
+    </div>
+
 {% endblock %}
+
