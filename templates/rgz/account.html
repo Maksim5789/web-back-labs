@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block Lab %}Расчётно-графическое задание{% endblock %}
+
+{% block main %}
+    <h1>Аккаунт пользователя {{ user['name'] }}</h1>
+
+    <p>Логин: {{ user['login'] }}</p>
+    <p>Имя: {{ user['name'] }}</p>
+
+    <a href="/rgz/edit_account">Редактировать данные админа</a>
+    <br>
+    <a href="/rgz/logout">Выйти</a>
+    <form method="POST" action="/rgz/delete_account">
+        <button type="submit">Удалить аккаунт</button>
+    </form>   
+{% endblock %}
+

@@ -171,3 +171,78 @@ def list_books():
     return render_template('rgz/books.html', books=books, page=page, total_count=total_count, request=request)
 
 
+
+@rgz.route('/rgz/account')
+def account():
+    if 'login' not in session:
+        return redirect('/rgz/login')
+
+    login = session['login']
+
+    # Подключение к базе данных
+    conn, cur = db_connect()
+
+    # Получение информации о пользователе
+    cur.execute("SELECT * FROM admin WHERE login=?;", (login,))
+    user = cur.fetchone()
+
+    # Закрываем соединение
+    db_close(conn, cur)
+
+    return render_template('rgz/account.html', user=user)
+
+@rgz.route('/rgz/edit_account', methods=['GET', 'POST'])
+def edit_account():
+    if 'login' not in session:
+        return redirect('/rgz/login')
+
+    login = session['login']
+
+    # Подключение к базе данных
+    conn, cur = db_connect()
+
+    # Получение информации о пользователе
+    cur.execute("SELECT * FROM admin WHERE login=?;", (login,))
+    user = cur.fetchone()
+
+    if request.method == 'POST':
+        new_login = request.form.get('login')
+        new_password = request.form.get('password')
+
+        # Обновление данных пользователя
+        if new_login and new_login != login:  # Проверяем, чтобы новый логин не был пустым и отличался от текущего
+            cur.execute("UPDATE admin SET login=? WHERE login=?;", (new_login, login))
+            session['login'] = new_login  # Обновляем сессию до нового логина
+            login = new_login  # Обновляем переменную login для последующих операций
+
+        if new_password:
+            hashed_password = generate_password_hash(new_password)  # Используйте функцию для хеширования
+            cur.execute("UPDATE admin SET password=? WHERE login=?;", (hashed_password, login))
+
+        conn.commit()  # Сохраняем изменения
+        db_close(conn, cur)
+        return redirect('/rgz/account')
+
+    db_close(conn, cur)
+    return render_template('rgz/edit_account.html', user=user)
+
+
+
+@rgz.route('/rgz/delete_account', methods=['POST'])
+def delete_account():
+    if 'login' not in session:
+        return redirect('/rgz/login')
+
+    login = session['login']
+
+    # Подключение к базе данных
+    conn, cur = db_connect()
+
+    # Удаление пользователя
+    cur.execute("DELETE FROM admin WHERE login=?;", (login,))
+    conn.commit()
+
+    db_close(conn, cur)
+
+    session.pop('login', None)  # Удаляем сессию
+    return redirect('/rgz/login')
