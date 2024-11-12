@@ -351,6 +351,40 @@ def add_book():
     db_close(conn, cur)
     return render_template('rgz/add_book.html', book=book, search_attempt=search_attempt, success_message=success_message, error_message=error_message)
 
+@rgz.route('/rgz/delete_book', methods=['GET', 'POST'])
+def delete_book():
+    if 'login' not in session:
+        return redirect('/rgz/login')
+
+    conn, cur = db_connect()
+    success_message = None
+    error_message = None
+
+    if request.method == 'POST':
+        book_id = request.form.get('id')
+
+        if not book_id:
+            error_message = "Ошибка: ID книги не может быть пустым."
+        else:
+            # Проверяем, существует ли книга с таким ID
+            cur.execute("SELECT * FROM Books WHERE id=?;", (book_id,))
+            existing_book = cur.fetchone()
+
+            if not existing_book:
+                error_message = "Ошибка: Книга с таким ID не найдена."
+            else:
+                # Удаляем книгу
+                try:
+                    cur.execute("DELETE FROM Books WHERE id=?;", (book_id,))
+                    conn.commit()
+                    success_message = "Книга успешно удалена!"
+                except Exception as e:
+                    error_message = f"Произошла ошибка: {str(e)}"
+
+    db_close(conn, cur)
+    return render_template('rgz/delete_book.html', success_message=success_message, error_message=error_message)
+
+
 
 
 

@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block lab %}Удаление книги{% endblock %}
+
+{% block main %}
+<style>
+    .button {
+        background-color: lightblue;
+        border: 3px solid black;
+        color: black;
+        padding: 10px 20px;
+        margin-top: 10px;
+        margin-left: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .button:hover {
+        background-color: deepskyblue;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        max-width: 400px;
+        height: 40px;
+        padding: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        box-sizing: border-box;
+        font-size: 18px;
+    }
+</style>
+
+<h1>Удаление книги</h1>
+
+{% if success_message %}
+    <p style="color: green;">{{ success_message }}</p>
+{% endif %}
+
+{% if error_message %}
+    <p style="color: red;">{{ error_message }}</p>
+{% endif %}
+
+<form method="POST">
+    <div class="form-group">
+        <label for="id">ID книги:</label>
+        <input type="text" name="id" required>
+    </div>
+
+    <div class="button-container">
+        <button class="button" type="submit">Удалить книгу</button>
+        <button class="button"><a href="/rgz/manage_books" style="color: black; text-decoration: none;">Назад к панели управления</a></button>
+    </div>
+</form>
+
+{% endblock %}
