@@ -3,13 +3,46 @@
 {% block lab %}Расчётно-графическое задание{% endblock %}
 
 {% block main %}
-  <h1>Вход в систему</h1>
-  {% if error %}
+<style>
+     .button {
+        background-color: lightblue;
+        border: 3px solid black; /* Задаем стиль и цвет рамки */
+        color: black;
+        padding: 10px 20px;
+        margin-top: 10px; /* Отступ сверху */
+        margin-left: 10px; /* Отступ между кнопками */
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none; /* Убираем подчеркивание для ссылок */
+        display: inline-block; /* Для корректного отображения кнопки */
+    }
+    
+    .button:hover {
+        background-color: deepskyblue; /* Цвет кнопки при наведении */
+    }
+
+    /* Стили для полей ввода */
+    input[type="text"], input[type="password"] {
+        width: 100%; /* Ширина 100% от родительского элемента */
+        max-width: 400px; /* Максимальная ширина поля */
+        height: 40px; /* Высота поля */
+        padding: 10px; /* Отступ внутри поля */
+        margin-top: 5px; /* Отступ сверху */
+        margin-bottom: 15px; /* Отступ снизу */
+        border: 2px solid #ccc; /* Рамка поля */
+        border-radius: 5px; /* Закругление углов */
+        box-sizing: border-box; /* Учитываем отступы и рамки в ширине */
+    }
+</style>
+
+<h1>Вход в систему</h1>
+{% if error %}
     <div style="color: red; margin-bottom: 10px;">
-      {{ error }}
+        {{ error }}
     </div>
-  {% endif %}
-  <form action="/rgz/login" method="post">
+{% endif %}
+<form action="/rgz/login" method="post">
     <div>
         <label>
             Логин: <input type="text" name="login">
@@ -22,8 +55,8 @@
         </label>  
     </div>
 
-    <button type="submit">Вход</button>
+    <button class="button" type="submit">Вход</button>
     <p> </p>
-    <a href="/rgz/">Меню лабораторной</a>
-  </form>
+    <button class="button" type="submit"><a href="/rgz/">Меню лабораторной</a></button>
+</form>
 {% endblock %}

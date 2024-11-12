@@ -3,6 +3,40 @@
 {% block Lab %}Расчётно-графическое задание{% endblock %}
 
 {% block main %}
+<style>
+    .button {
+        background-color: lightblue;
+        border: 3px solid black; /* Задаем стиль и цвет рамки */
+        color: black;
+        padding: 10px 20px;
+        margin-left: 10px; /* Отступ между кнопками */
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    
+    .button a {
+        text-decoration: none; /* Убираем подчеркивание */
+        color: inherit; /* Унаследуем цвет */
+    }
+    
+    .button:hover {
+        background-color: deepskyblue; /* Цвет кнопки при наведении */
+    }
+
+    /* Стили для полей ввода */
+    input[type="text"], input[type="password"] {
+        width: 100%; /* Ширина 100% от родительского элемента */
+        max-width: 400px; /* Максимальная ширина поля */
+        height: 40px; /* Высота поля */
+        padding: 10px; /* Отступ внутри поля */
+        margin-top: 5px; /* Отступ сверху */
+        margin-bottom: 15px; /* Отступ снизу */
+        border: 2px solid #ccc; /* Рамка поля */
+        border-radius: 5px; /* Закругление углов */
+        box-sizing: border-box; /* Учитываем отступы и рамки в ширине */
+    }
+</style>
     <h1>Редактировать данные админа</h1>
 
     <form method="POST">
@@ -12,10 +46,8 @@
         <label for="password">Новый пароль:</label>
         <input type="password" id="password" name="password">
         
-        <button type="submit">Сохранить</button>
+        <button class="button" type="submit">Сохранить</button>
     </form>
-    
-
-    <a href="/rgz/account">Назад к аккаунту</a>
+    <p> </p>
+    <button class="button" type="submit"><a href="/rgz/account">Назад к аккаунту</a></button>
 {% endblock %}
-

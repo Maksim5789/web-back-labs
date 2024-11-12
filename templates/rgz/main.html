@@ -35,12 +35,11 @@
                 {{ login if login else 'Анонимус' }}
             </div>
             <div style="margin-left: auto;"> 
-                <button class="nav-button"><a href="/">Главное меню</a></button>
-                <button class="nav-button"><a href="/rgz/books">Список книг</a></button>
-                <button class="nav-button"><a href="/rgz/register">Регистрация</a></button>
-                <button class="nav-button"><a href="/rgz/login">Авторизация</a></button>
-                <button class="nav-button"><a href="/rgz/account">Аккаунт</a></button>
-                <button class="nav-button"><a href="{{ url_for('rgz.logout') }}">Выйти</a></button>    
+                <button class="nav-button" type = "submit"><a href="/">Главное меню</a></button>
+                <button class="nav-button" type = "submit"><a href="/rgz/books">Список книг</a></button>
+                <button class="nav-button" type = "submit"><a href="/rgz/register">Регистрация</a></button>
+                <button class="nav-button" type = "submit"><a href="/rgz/login">Авторизация</a></button>
+                <button class="nav-button" type = "submit"><a href="/rgz/account">Аккаунт</a></button>   
             </div>                  
         </nav>
     </div>
