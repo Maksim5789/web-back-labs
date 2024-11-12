@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block lab %}Редактирование книги{% endblock %}
+
+{% block main %}
+<style>
+    .button {
+        background-color: lightblue;
+        border: 3px solid black; /* Задаем стиль и цвет рамки */
+        color: black;
+        padding: 10px 20px;
+        margin-top: 10px; /* Отступ сверху */
+        margin-left: 10px; /* Отступ между кнопками */
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none; /* Убираем подчеркивание для ссылок */
+        display: inline-block; /* Для корректного отображения кнопки */
+    }
+
+    .button:hover {
+        background-color: deepskyblue; /* Цвет кнопки при наведении */
+    }
+
+    /* Стили для полей ввода */
+    input[type="text"], input[type="number"] {
+        width: 100%; /* Ширина 100% от родительского элемента */
+        max-width: 400px; /* Максимальная ширина поля */
+        height: 40px; /* Высота поля */
+        padding: 10px; /* Отступ внутри поля */
+        margin-top: 5px; /* Отступ сверху */
+        margin-bottom: 15px; /* Отступ снизу */
+        border: 2px solid #ccc; /* Рамка поля */
+        border-radius: 5px; /* Закругление углов */
+        box-sizing: border-box; /* Учитываем отступы и рамки в ширине */
+        font-size: 18px; /* Увеличиваем размер шрифта */
+    }
+
+    .form-group {
+        margin-bottom: 20px; /* Отступ между группами полей */
+    }
+
+    .form-group label {
+        display: block; /* Отображаем метку как блочный элемент */
+        margin-bottom: 5px; /* Отступ снизу для метки */
+    }
+
+    .button-container {
+        margin-top: 20px; /* Отступ сверху для кнопок */
+    }
+
+    .container {
+        display: flex; /* Используем Flexbox для горизонтального расположения */
+        gap: 20px; /* Отступ между полями ввода и блоком с книгой */
+    }
+
+    .book-preview {
+        border: 5px solid #ccc; /* Рамка вокруг блока */
+        padding: 15px; /* Отступ внутри блока */
+        border-radius: 5px; /* Закругление углов */
+        width: 1400px; /* Максимальная ширина блока */
+        flex-shrink: 0; /* Не сжимать блок при уменьшении ширины */
+        margin-top: -700px; /* Отступ сверху для блока с книгой */
+        margin-left: 750px;
+    }
+
+    .book-preview-content {
+        display: flex; /* Горизонтальное расположение обложки и текста */
+        gap: 15px; /* Отступ между обложкой и текстом */
+    }
+
+    .book-preview img {
+        width: 350px; /* Ограничиваем ширину обложки */
+        height: 500px; /* Автоматическая высота */
+        border-radius: 5px; /* Закругление углов обложки */
+    }
+
+    .book-details {
+        display: flex;
+        flex-direction: column; /* Вертикальное расположение текстовых данных */
+    }
+</style>
+
+<h1>Редактирование книги</h1>
+
+<form method="GET" action="{{ url_for('rgz.edit_book') }}">
+    <input type="text" name="id" placeholder="Введите ID книги" required>
+    <button class="button" type="submit">Найти книгу</button>
+    <button class="button"><a href="/rgz/manage_books" style="color: black; text-decoration: none;">Назад к панели управления</a></button>
+</form>
+
+<div class="container">
+    <div class="form-section">
+        {% if book %}
+            <form method="POST">
+                <input type="hidden" name="id" value="{{ book['id'] }}">
+                
+                <div class="form-group">
+                    <label for="title">Название:</label>
+                    <input type="text" name="title" value="{{ book['title'] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="author">Автор:</label>
+                    <input type="text" name="author" value="{{ book['author'] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="publisher">Издатель:</label>
+                    <input type="text" name="publisher" value="{{ book['publisher'] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="year_of_publication">Год публикации:</label>
+                    <input type="number" name="year_of_publication" value="{{ book['year_of_publication'] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="amount_of_pages">Количество страниц:</label>
+                    <input type="number" name="amount_of_pages" value="{{ book['amount_of_pages'] }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="book_cover">Обложка (URL):</label>
+                    <input type="text" name="book_cover" value="{{ book['book_cover'] }}" required>
+                </div>
+
+                <div class="button-container">
+                    <button class="button" type="submit">Сохранить изменения</button>
+                </div>
+            </form>
+
+            <div class="book-preview">
+                <h2>Представление книги</h2>
+                <div class="book-preview-content">
+                    <img src="{{ book['book_cover'] }}" alt="Обложка книги">
+                    <div class="book-details">
+                        <p><strong>Название:</strong> {{ book['title'] }}</p>
+                        <p><strong>Автор:</strong> {{ book['author'] }}</p>
+                        <p><strong>Год публикации:</strong> {{ book['year_of_publication'] }}</p>
+                        <p><strong>Издатель:</strong> {{ book['publisher'] }}</p>
+                        <p><strong>Количество страниц:</strong> {{ book['amount_of_pages'] }}</p>
+                    </div>
+                </div>
+            </div>
+        {% elif search_attempt %}
+            <p>Книга не найдена.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

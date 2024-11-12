@@ -246,3 +246,112 @@ def delete_account():
 
     session.pop('login', None)  # Удаляем сессию
     return redirect('/rgz/login')
+
+
+@rgz.route('/rgz/manage_books', methods=['GET'])
+def manage_books():
+    # Проверяем, есть ли активная сессия и существует ли логин
+    if 'login' not in session:
+        return redirect('/rgz/login')  # Если нет, перенаправляем на страницу входа
+
+    # Отображение страницы управления книгами
+    return render_template('rgz/manage_books.html')
+
+@rgz.route('/rgz/edit_book', methods=['GET', 'POST'])
+def edit_book():
+    if 'login' not in session:
+        return redirect('/rgz/login')
+
+    conn, cur = db_connect()
+    book = None
+    search_attempt = False  # Инициализируем переменную
+
+    if request.method == 'POST':
+        # Обновление данных книги
+        book_id = request.form.get('id')
+        title = request.form.get('title')
+        author = request.form.get('author')
+        year_of_publication = request.form.get('year_of_publication')
+        publisher = request.form.get('publisher')
+        book_cover = request.form.get('book_cover')
+        amount_of_pages = request.form.get('amount_of_pages')
+
+        cur.execute(""" 
+            UPDATE books 
+            SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=? 
+            WHERE id=?;
+        """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages, book_id))
+
+        db_close(conn, cur)
+        return redirect('/rgz/manage_books')
+
+    # Поиск книги по ID
+    book_id = request.args.get('id')
+    if book_id:
+        cur.execute("SELECT * FROM books WHERE id=?;", (book_id,))
+        book = cur.fetchone()
+
+        if book is None:
+            search_attempt = True  # Устанавливаем флаг, если книга не найдена
+
+    db_close(conn, cur)
+    return render_template('rgz/edit_book.html', book=book, search_attempt=search_attempt)
+
+@rgz.route('/rgz/add_book', methods=['GET', 'POST'])
+def add_book():
+    if 'login' not in session:
+        return redirect('/rgz/login')
+
+    conn, cur = db_connect()
+    success_message = None
+    error_message = None
+    search_attempt = False
+    book = None
+
+    if request.method == 'POST':
+        # Получаем данные из формы
+        book_id = request.form.get('id')
+        title = request.form.get('title')
+        author = request.form.get('author')
+        year_of_publication = request.form.get('year_of_publication')
+        publisher = request.form.get('publisher')
+        book_cover = request.form.get('book_cover')
+        amount_of_pages = request.form.get('amount_of_pages')
+
+        # Проверка на пустые поля
+        if not all([book_id, title, author, year_of_publication, publisher, book_cover, amount_of_pages]):
+            error_message = "Ошибка: Все поля должны быть заполнены."
+        else:
+            # Проверяем, существует ли книга с таким ID
+            cur.execute("SELECT * FROM Books WHERE id=?;", (book_id,))
+            existing_book = cur.fetchone()
+
+            if existing_book:
+                error_message = "Ошибка: Книга с таким ID уже существует."
+            else:
+                # Вставляем данные в таблицу books
+                try:
+                    cur.execute("""
+                        INSERT INTO Books (id, title, author, year_of_publication, publisher, book_cover, amount_of_pages)
+                        VALUES (?, ?, ?, ?, ?, ?, ?);
+                    """, (book_id, title, author, year_of_publication, publisher, book_cover, amount_of_pages))
+                    conn.commit()
+                    success_message = "Книга успешно добавлена!"
+                except Exception as e:
+                    error_message = f"Произошла ошибка: {str(e)}"
+
+    # Поиск книги по ID
+    book_id = request.args.get('id')
+    if book_id:
+        cur.execute("SELECT * FROM Books WHERE id=?;", (book_id,))
+        book = cur.fetchone()
+        if book is None:
+            search_attempt = True
+
+    db_close(conn, cur)
+    return render_template('rgz/add_book.html', book=book, search_attempt=search_attempt, success_message=success_message, error_message=error_message)
+
+
+
+
+
