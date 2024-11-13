@@ -546,7 +546,7 @@ def manage_books():
 
 # Редактирование книг
 
-@rgz.route('/rgz/edit_book', methods=['POST']) 
+@rgz.route('/rgz/edit_book', methods=['GET']) 
 def edit_book(): 
     if 'login' not in session: 
         return jsonify({'jsonrpc': '2.0', 'error': {'code': -1, 'message': 'Unauthorized. Please log in.'}, 'id': None}), 401 
