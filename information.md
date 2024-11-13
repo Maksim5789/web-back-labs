@@ -12,3 +12,4 @@
 
 # Чтобы выйти из sqlite3, можно нажать комбинацию Ctrl+D, или .exit, или .quite
 
+# База данных располагается в web-back-labs (cd /home/Maksim589/web-back-labs)
