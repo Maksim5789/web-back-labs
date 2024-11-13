@@ -24,7 +24,7 @@ def db_connect():
         cur = conn.cursor()
     else:
         dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "database.db")
+        db_path = path.join(dir_path, "rgz.db")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -35,48 +35,6 @@ def db_close(conn,cur):
     cur.close()
     conn.close()
 
-
-
-
-# @rgz.route('/rgz/login', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'GET':
-#         return render_template('rgz/login.html')
-    
-#     login = request.form.get('login')
-#     password = request.form.get('password')
-
-#     if not (login and password):
-#         return render_template('rgz/login.html', error='Заполните поля')
-
-#     # Подключение к базе данных
-#     conn, cur = db_connect()
-
-#     # Выполнение SQL-запроса с параметризованным запросом
-#     # if current_app.config['DB_TYPE'] == 'postgres':
-#     #     cur.execute("SELECT * FROM admin WHERE login=%s;", (login,))
-#     # else:
-#     #     cur.execute("SELECT * FROM admin WHERE login=?;", (login,))
-#     cur.execute("SELECT * FROM admin WHERE login=?;", (login,))
-#     user = cur.fetchone()  # Получаем одну строку
-
-#     if not user:  
-#         db_close(conn, cur)
-#         return render_template('rgz/login.html', error='Логин и/или пароль неверны')
-    
-#     # Проверка пароля
-#     if not check_password_hash(user['password'], password):  
-#         db_close(conn, cur)
-#         return render_template('rgz/login.html', error='Логин и/или пароль неверны')
-    
-#     session['login'] = login
-#     db_close(conn, cur)
-#     return render_template('rgz/success_login.html', login=login)
-
-# @rgz.route('/rgz/logout')
-# def logout():
-#     session.pop('login', None)  # Удаляем логин из сессии
-#     return redirect('/rgz/login')
 
 
 # Авторизация
