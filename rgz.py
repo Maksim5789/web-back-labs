@@ -24,7 +24,7 @@ def db_connect():
         cur = conn.cursor()
     else:
         dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "rgz.db")
+        db_path = path.join(dir_path, "rgz.db") # Можно поменять, если проблемы с БД
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -546,62 +546,54 @@ def manage_books():
 
 # Редактирование книг
 
-@rgz.route('/rgz/edit_book', methods=['GET', 'POST'])
-def edit_book():
-    if 'login' not in session:
-        return redirect(url_for('rgz.login'))
+@rgz.route('/rgz/edit_book', methods=['POST']) 
+def edit_book(): 
+    if 'login' not in session: 
+        return jsonify({'jsonrpc': '2.0', 'error': {'code': -1, 'message': 'Unauthorized. Please log in.'}, 'id': None}), 401 
 
-    conn, cur = db_connect()
-    book = None
-    search_attempt = False
+    conn, cur = db_connect() 
 
-    if request.method == 'GET':
-        # Поиск книги по ID
-        book_id = request.args.get('id')
-        if book_id:
-            cur.execute("SELECT * FROM books WHERE id=?;", (book_id,))
-            book = cur.fetchone()
+    # Обработка POST запроса для JSON-RPC 
+    if request.headers.get('Content-Type') != 'application/json': 
+        return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Content-Type. Expected application/json'}, 'id': None}), 415 
 
-            if book is None:
-                search_attempt = True
+    try: 
+        data = request.json 
+    except json.JSONDecodeError: 
+        return jsonify({'jsonrpc': '2.0', 'error': {'code': -32700, 'message': 'Parse error'}, 'id': None}), 400 
 
-        db_close(conn, cur)
-        return render_template('rgz/edit_book.html', book=book, search_attempt=search_attempt)
+    # Проверка правильности JSON-RPC запроса 
+    if data.get('jsonrpc') != '2.0' or data.get('method') != 'edit_book': 
+        return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Request'}, 'id': data.get('id')}), 400 
 
-    elif request.method == 'POST':
-        # Обработка POST запроса для JSON-RPC
-        if request.headers.get('Content-Type') != 'application/json':
-            return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Content-Type. Expected application/json'}, 'id': None}), 415
+    params = data.get('params', {}) 
+    book_id = params.get('id') 
+    title = params.get('title') 
+    author = params.get('author') 
+    year_of_publication = params.get('year_of_publication') 
+    publisher = params.get('publisher') 
+    book_cover = params.get('book_cover') 
+    amount_of_pages = params.get('amount_of_pages') 
 
-        try:
-            data = request.json
-        except json.JSONDecodeError:
-            return jsonify({'jsonrpc': '2.0', 'error': {'code': -32700, 'message': 'Parse error'}, 'id': None}), 400
+    # Обновляем данные книги в базе данных
+    cur.execute("""  
+        UPDATE books  
+        SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=?  
+        WHERE id=?; 
+    """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages, book_id))
 
-        if data.get('jsonrpc') != '2.0' or data.get('method') != 'search_book':  # Замените 'edit_book' на 'search_book'
-            return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Request'}, 'id': data.get('id')}), 400
+    conn.commit() 
+    db_close(conn, cur) 
 
-        params = data.get('params', {})
-        book_id = params.get('id')
-# Поиск книги по ID
-        cur.execute("SELECT * FROM books WHERE id=?;", (book_id,))
-        book = cur.fetchone()
-
-        if book is None:
-            return jsonify({
-                'jsonrpc': '2.0',
-                'error': {'code': -32000, 'message': 'Book not found'},
-                'id': data.get('id')
-            }), 404
-
-        db_close(conn, cur)
-
-        # Возвращаем данные книги
-        return jsonify({
-            'jsonrpc': '2.0',
-            'result': book,
-            'id': data.get('id')
-        }), 200
+    # Возращаем результат обработки 
+    return jsonify({ 
+        'jsonrpc': '2.0', 
+        'result': { 
+            'message': 'Book updated successfully', 
+            'redirect': '/rgz/manage_books' 
+        }, 
+        'id': data.get('id') 
+    }), 200
 # Страница добавления книги
 
 @rgz.route('/rgz/add_book', methods=['GET', 'POST'])
