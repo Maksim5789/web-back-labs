@@ -580,7 +580,7 @@ def edit_book():
         UPDATE books  
         SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=?  
         WHERE id=?; 
-    """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages, book_id))
+    """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages))
 
     conn.commit() 
     db_close(conn, cur) 
