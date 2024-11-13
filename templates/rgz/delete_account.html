@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block lab %}Удаление книги{% endblock %}
+{% block Lab %}Удаление аккаунта{% endblock %}
 
 {% block main %}
 <style>
@@ -36,7 +36,7 @@
     }
 </style>
 
-<h1>Удаление книги</h1>
+<h1>Удаление аккаунта</h1>
 
 {% if success_message %}
     <p style="color: green;">{{ success_message }}</p>
@@ -46,34 +46,36 @@
     <p style="color: red;">{{ error_message }}</p>
 {% endif %}
 
-<form id="delete-book-form">
+<form id="delete-account-form">
     <div class="form-group">
-        <label for="id">ID книги:</label>
-        <input type="text" id="book-id" name="id" required>
+        <label for="confirm">Введите "удалить" для подтверждения:</label>
+        <input type="text" id="confirm" name="confirm" required>
     </div>
 
     <div class="button-container">
-        <button class="button" type="submit">Удалить книгу</button>
-        <button class="button"><a href="/rgz/manage_books" style="color: black; text-decoration: none;">Назад к панели управления</a></button>
+        <button class="button" type="submit">Удалить аккаунт</button>
+        <button class="button"><a href="/rgz/account" style="color: black; text-decoration: none;">Назад к аккаунту</a></button>
     </div>
 </form>
 
 <script>
-    document.getElementById('delete-book-form').addEventListener('submit', function(event) {
+    document.getElementById('delete-account-form').addEventListener('submit', function(event) {
         event.preventDefault();
 
-        const bookId = document.getElementById('book-id').value;
+        const confirmText = document.getElementById('confirm').value;
+
+        if (confirmText.toLowerCase() !== 'удалить') {
+            alert('Введите "удалить" для подтверждения удаления аккаунта.');
+            return;
+        }
 
         const data = {
             jsonrpc: '2.0',
-            method: 'delete_book',
-            params: {
-                id: bookId
-            },
+            method: 'delete_account',
             id: 1
         };
 
-        fetch('/rgz/delete_book', {
+        fetch('/rgz/delete_account', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -85,7 +87,7 @@
             if (data.error) {
                 alert('Ошибка: ' + data.error.message);
             } else {
-                alert('Книга успешно удалена');
+                alert('Аккаунт успешно удален');
                 window.location.href = data.result.redirect;
             }
         })

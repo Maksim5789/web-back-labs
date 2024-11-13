@@ -83,8 +83,8 @@
 
 <h1>Редактирование книги</h1>
 
-<form method="GET" action="{{ url_for('rgz.edit_book') }}">
-    <input type="text" name="id" placeholder="Введите ID книги" required>
+<form id="search-book-form">
+    <input type="text" id="book-id" name="id" placeholder="Введите ID книги" required>
     <button class="button" type="submit">Найти книгу</button>
     <button class="button"><a href="/rgz/manage_books" style="color: black; text-decoration: none;">Назад к панели управления</a></button>
 </form>
@@ -92,7 +92,7 @@
 <div class="container">
     <div class="form-section">
         {% if book %}
-            <form method="POST">
+            <form id="edit-book-form">
                 <input type="hidden" name="id" value="{{ book['id'] }}">
                 
                 <div class="form-group">
@@ -148,4 +148,83 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    document.getElementById('search-book-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const bookId = document.getElementById('book-id').value;
+
+        const data = {
+            jsonrpc: '2.0',
+            method: 'edit_book',
+            params: {
+                id: bookId
+            },
+            id: 1
+        };
+
+        fetch('/rgz/edit_book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Ошибка: ' + data.error.message);
+            } else {
+                alert('Книга найдена');
+                window.location.href = '/rgz/edit_book?id=' + bookId;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при отправке запроса');
+        });
+    });
+
+    document.getElementById('edit-book-form').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const formData = new FormData(event.target);
+        const data = {
+            jsonrpc: '2.0',
+            method: 'edit_book',
+            params: {
+                id: formData.get('id'),
+                title: formData.get('title'),
+                author: formData.get('author'),
+                year_of_publication: formData.get('year_of_publication'),
+                publisher: formData.get('publisher'),
+                book_cover: formData.get('book_cover'),
+                amount_of_pages: formData.get('amount_of_pages')
+            },
+            id: 1
+        };
+
+        fetch('/rgz/edit_book', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                alert('Ошибка: ' + data.error.message);
+            } else {
+                alert('Книга успешно обновлена');
+                window.location.href = data.result.redirect;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Произошла ошибка при отправке запроса');
+        });
+    });
+</script>
 {% endblock %}
