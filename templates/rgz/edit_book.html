@@ -1,84 +1,41 @@
-<form id="edit-book-form">
-    <div class="form-group"> 
-        <label for="title">Название:</label> 
-        <input type="text" id="title" name="title" value="{{ book['title'] }}" required> 
-    </div> 
+{% extends 'base.html' %}
 
-    <div class="form-group"> 
-        <label for="author">Автор:</label> 
-        <input type="text" id="author" name="author" value="{{ book['author'] }}" required> 
-    </div> 
+{% block title %}Редактировать книгу{% endblock %}
 
-    <div class="form-group"> 
-        <label for="year_of_publication">Год публикации:</label> 
-        <input type="number" id="year_of_publication" name="year_of_publication" value="{{ book['year_of_publication'] }}" required> 
-    </div> 
+{% block head %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/edit_book.css') }}">
+{% endblock %}
 
-    <div class="form-group"> 
-        <label for="publisher">Издатель:</label> 
-        <input type="text" id="publisher" name="publisher" value="{{ book['publisher'] }}" required> 
-    </div> 
-
-    <div class="form-group"> 
-        <label for="book_cover">Обложка (URL):</label> 
-        <input type="text" id="book_cover" name="book_cover" value="{{ book['book_cover'] }}" required> 
-    </div> 
-
-    <div class="form-group"> 
-        <label for="amount_of_pages">Количество страниц:</label> 
-        <input type="number" id="amount_of_pages" name="amount_of_pages" value="{{ book['amount_of_pages'] }}" required> 
-    </div> 
-
-    <div class="button-container"> 
-        <button type="submit" class="button">Сохранить изменения</button> 
-    </div> 
-</form> 
-
-<script>
-    document.getElementById('edit-book-form').addEventListener('submit', function(event) { 
-        event.preventDefault();
-const bookId = '{{ book["id"] }}'; // Получение ID книги из контекста
-        const title = document.getElementById('title').value;
-        const author = document.getElementById('author').value;
-        const yearOfPublication = document.getElementById('year_of_publication').value;
-        const publisher = document.getElementById('publisher').value;
-        const bookCover = document.getElementById('book_cover').value;
-        const amountOfPages = document.getElementById('amount_of_pages').value;
-
-        const data = {
-            jsonrpc: '2.0',
-            method: 'edit_book',
-            params: {
-                id: bookId,
-                title: title,
-                author: author,
-                year_of_publication: yearOfPublication,
-                publisher: publisher,
-                book_cover: bookCover,
-                amount_of_pages: amountOfPages
-            },
-            id: 1
-        };
-
-        fetch('/rgz/edit_book', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert('Ошибка: ' + data.error.message);
-            } else {
-                alert(data.result.message);
-                window.location.href = data.result.redirect; // Перенаправление
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Произошла ошибка при отправке запроса');
-        });
-    });
-</script>
+{% block content %}
+<div class="edit-book-container">
+    <h1>Редактировать книгу</h1>
+    <form id="editBookForm" method="GET" action="{{ url_for('rgz.edit_book') }}">
+        <input type="hidden" name="id" value="{{ book.id }}">
+        <div class="form-group">
+            <label for="title">Название:</label>
+            <input type="text" name="title" id="title" value="{{ book.title }}" required>
+        </div>
+        <div class="form-group">
+            <label for="author">Автор:</label>
+            <input type="text" name="author" id="author" value="{{ book.author }}" required>
+        </div>
+        <div class="form-group">
+            <label for="year_of_publication">Год публикации:</label>
+            <input type="number" name="year_of_publication" id="year_of_publication" value="{{ book.year_of_publication }}" required>
+        </div>
+        <div class="form-group">
+            <label for="publisher">Издатель:</label>
+            <input type="text" name="publisher" id="publisher" value="{{ book.publisher }}" required>
+        </div>
+        <div class="form-group">
+            <label for="book_cover">Обложка:</label>
+            <input type="text" name="book_cover" id="book_cover" value="{{ book.book_cover }}" required>
+        </div>
+        <div class="form-group">
+            <label for="amount_of_pages">Количество страниц:</label>
+            <input type="number" name="amount_of_pages" id="amount_of_pages" value="{{ book.amount_of_pages }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+</div>
+{% endblock %}
