@@ -4,7 +4,7 @@
 
 {% block main %}
 <style>
-     .button {
+    .button {
         background-color: lightblue;
         border: 3px solid black; /* Задаем стиль и цвет рамки */
         color: black;
@@ -42,21 +42,53 @@
         {{ error }}
     </div>
 {% endif %}
-<form action="/rgz/login" method="post">
+<form id="loginForm">
     <div>
         <label>
-            Логин: <input type="text" name="login">
+            Логин: <input type="text" id="login" name="login" required>
         </label>    
     </div>
 
     <div>
         <label>
-            Пароль: <input type="password" name="password">
+            Пароль: <input type="password" id="password" name="password" required>
         </label>  
     </div>
 
     <button class="button" type="submit">Вход</button>
     <p> </p>
-    <button class="button" type="submit"><a href="/rgz/">Меню лабораторной</a></button>
+    <a class="button" href="/rgz/">Меню лабораторной</a>
 </form>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const login = document.getElementById('login').value;
+        const password = document.getElementById('password').value;
+
+        fetch('/rgz/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                method: 'login',
+                params: {
+                    login: login,
+                    password: password
+                }
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.result && data.result.redirect) {
+                window.location.href = data.result.redirect;
+            } else {
+                alert(data.error);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
 {% endblock %}
