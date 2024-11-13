@@ -91,76 +91,94 @@
     <button class="button"><a href="/rgz/manage_books" style="color: black; text-decoration: none;">Назад к панели управления</a></button>
 </form>
 
-<div class="container">
-    <div class="form-section">
-        {% if book %}
-            <form id="edit-book-form">
-                <input type="hidden" name="id" value="{{ book['id'] }}">
-                
-                <div class="form-group">
-                    <label for="title">Название:</label>
-                    <input type="text" name="title" value="{{ book['title'] }}" required>
-                </div>
+<div class="form-group"> 
+    <label for="year_of_publication">Год публикации:</label> 
+    <input type="number" id="year_of_publication" name="year_of_publication" value="{{ book['year_of_publication'] }}" required> 
+</div> 
 
-                <div class="form-group">
-                    <label for="author">Автор:</label>
-                    <input type="text" name="author" value="{{ book['author'] }}" required>
-                </div>
+<div class="form-group"> 
+    <label for="amount_of_pages">Количество страниц:</label> 
+    <input type="number" id="amount_of_pages" name="amount_of_pages" value="{{ book['amount_of_pages'] }}" required> 
+</div> 
 
-                <div class="form-group">
-                    <label for="publisher">Издатель:</label>
-                    <input type="text" name="publisher" value="{{ book['publisher'] }}" required>
-                </div>
+<div class="form-group"> 
+    <label for="book_cover">Обложка (URL):</label> 
+    <input type="text" id="book_cover" name="book_cover" value="{{ book['book_cover'] }}" required> 
+</div> 
 
-                <div class="form-group">
-                    <label for="year_of_publication">Год публикации:</label>
-                    <input type="number" name="year_of_publication" value="{{ book['year_of_publication'] }}" required>
-                </div>
+<div class="button-container"> 
+    <button class="button" id="save-changes">Сохранить изменения</button> 
+</div> 
 
-                <div class="form-group">
-                    <label for="amount_of_pages">Количество страниц:</label>
-                    <input type="number" name="amount_of_pages" value="{{ book['amount_of_pages'] }}" required>
-                </div>
+<div class="book-preview"> 
+    {% if book %} 
+        <h2>Представление книги</h2> 
+        <div class="book-preview-content"> 
+            <img src="{{ book['book_cover'] }}" alt="Обложка книги" style="max-width: 200px;"> 
+            <div class="book-details"> 
+                <p><strong>Название:</strong> {{ book['title'] }}</p> 
+                <p><strong>Автор:</strong> {{ book['author'] }}</p> 
+                <p><strong>Год публикации:</strong> {{ book['year_of_publication'] }}</p> 
+                <p><strong>Издатель:</strong> {{ book['publisher'] }}</p> 
+                <p><strong>Количество страниц:</strong> {{ book['amount_of_pages'] }}</p> 
+            </div> 
+        </div> 
+    {% elif search_attempt %} 
+        <p>Книга не найдена.</p> 
+    {% endif %} 
+</div> 
 
-                <div class="form-group">
-                    <label for="book_cover">Обложка (URL):</label>
-                    <input type="text" name="book_cover" value="{{ book['book_cover'] }}" required>
-                </div>
+<script> 
+    document.getElementById('search-book-form').addEventListener('submit', function(event) { 
+        event.preventDefault(); 
 
-                <div class="button-container">
-                    <button class="button">Сохранить изменения</button>
-                </div>
-            </form>
+        const bookId = document.getElementById('book-id').value; 
 
-            <div class="book-preview">
-                {% if book %}
-                    <h2>Представление книги</h2>
-                    <div class="book-preview-content">
-                        <img src="{{ book['book_cover'] }}" alt="Обложка книги">
-                        <div class="book-details">
-                            <p><strong>Название:</strong> {{ book['title'] }}</p>
-                            <p><strong>Автор:</strong> {{ book['author'] }}</p>
-                            <p><strong>Год публикации:</strong> {{ book['year_of_publication'] }}</p>
-                            <p><strong>Издатель:</strong> {{ book['publisher'] }}</p>
-                            <p><strong>Количество страниц:</strong> {{ book['amount_of_pages'] }}</p>
-                        </div>
-                    </div>
-                {% elif search_attempt %}
-                    <p>Книга не найдена.</p>
-                {% endif %}
-            </div>
+        const data = { 
+            jsonrpc: '2.0', 
+            method: 'search_book',  
+            params: { 
+                id: bookId 
+            }, 
+            id: 1 
+        }; 
 
-<script>
-    document.getElementById('search-book-form').addEventListener('submit', function(event) {
-        event.preventDefault();
+        fetch('/rgz/edit_book', { 
+            method: 'POST', 
+            headers: { 
+                'Content-Type': 'application/json' 
+            }, 
+            body: JSON.stringify(data) 
+        }) 
+        .then(response => response.json()) 
+        .then(data => { 
+            if (data.error) { 
+                alert('Ошибка: ' + data.error.message); 
+            } else { 
+                alert('Книга найдена'); 
+                window.location.href = '/rgz/edit_book?id=' + bookId;  // Перенаправление на страницу редактирования книги 
+            } 
+        }) 
+        .catch(error => { 
+            console.error('Error:', error); 
+            alert('Произошла ошибка при отправке запроса'); 
+        }); 
+    }); 
 
-        const bookId = document.getElementById('book-id').value;
+    document.getElementById('save-changes').addEventListener('click', function() {
+        const bookId = '{{ book["id"] }}'; // Получаем ID книги из контекста
+        const yearOfPublication = document.getElementById('year_of_publication').value;
+        const amountOfPages = document.getElementById('amount_of_pages').value;
+        const bookCover = document.getElementById('book_cover').value;
 
         const data = {
             jsonrpc: '2.0',
-            method: 'search_book',  // Этот метод нужно определить на сервере, если он еще не определен
+            method: 'edit_book',
             params: {
-                id: bookId
+                id: bookId,
+                year_of_publication: yearOfPublication,
+                amount_of_pages: amountOfPages,
+                book_cover: bookCover
             },
             id: 1
         };
@@ -169,7 +187,7 @@
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            },
+},
             body: JSON.stringify(data)
         })
         .then(response => response.json())
@@ -177,8 +195,8 @@
             if (data.error) {
                 alert('Ошибка: ' + data.error.message);
             } else {
-                alert('Книга найдена');
-                window.location.href = '/rgz/edit_book?id=' + bookId;  // Перенаправление на страницу редактирования книги
+                alert('Книга успешно обновлена');
+                window.location.href = data.result.redirect; // Если нужно перенаправление
             }
         })
         .catch(error => {
