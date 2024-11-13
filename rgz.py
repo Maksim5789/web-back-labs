@@ -546,53 +546,51 @@ def manage_books():
 
 # Редактирование книг
 
-@rgz.route('/rgz/edit_book', methods=['GET']) 
-def edit_book(): 
-    if 'login' not in session: 
-        return jsonify({'jsonrpc': '2.0', 'error': {'code': -1, 'message': 'Unauthorized. Please log in.'}, 'id': None}), 401 
+@rgz.route('/rgz/edit_book', methods=['GET'])
+def edit_book():
+    if 'login' not in session:
+        return jsonify({
+            'jsonrpc': '2.0', 
+            'error': {'code': -1, 'message': 'Unauthorized. Please log in.'}, 
+            'id': None
+        }), 401
 
-    conn, cur = db_connect() 
+    # Получаем параметры из URL
+    book_id = request.args.get('id')
+    title = request.args.get('title')
+    author = request.args.get('author')
+    year_of_publication = request.args.get('year_of_publication')
+    publisher = request.args.get('publisher')
+    book_cover = request.args.get('book_cover')
+    amount_of_pages = request.args.get('amount_of_pages')
 
-    # Обработка POST запроса для JSON-RPC 
-    if request.headers.get('Content-Type') != 'application/json': 
-        return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Content-Type. Expected application/json'}, 'id': None}), 415 
+    if not all([book_id, title, author, year_of_publication, publisher, book_cover, amount_of_pages]):
+        return jsonify({
+            'jsonrpc': '2.0', 
+            'error': {'code': -32602, 'message': 'Invalid params'}, 
+            'id': None
+        }), 400
 
-    try: 
-        data = request.json 
-    except json.JSONDecodeError: 
-        return jsonify({'jsonrpc': '2.0', 'error': {'code': -32700, 'message': 'Parse error'}, 'id': None}), 400 
-
-    # Проверка правильности JSON-RPC запроса 
-    if data.get('jsonrpc') != '2.0' or data.get('method') != 'edit_book': 
-        return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Request'}, 'id': data.get('id')}), 400 
-
-    params = data.get('params', {}) 
-    book_id = params.get('id') 
-    title = params.get('title') 
-    author = params.get('author') 
-    year_of_publication = params.get('year_of_publication') 
-    publisher = params.get('publisher') 
-    book_cover = params.get('book_cover') 
-    amount_of_pages = params.get('amount_of_pages') 
+    conn, cur = db_connect()
 
     # Обновляем данные книги в базе данных
-    cur.execute("""  
-        UPDATE books  
-        SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=?  
-        WHERE id=?; 
-    """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages))
+    cur.execute("""
+        UPDATE books   
+        SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=?   
+        WHERE id=?;  
+    """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages, book_id))
 
-    conn.commit() 
-    db_close(conn, cur) 
+    conn.commit()
+    db_close(conn, cur)
 
-    # Возращаем результат обработки 
-    return jsonify({ 
-        'jsonrpc': '2.0', 
-        'result': { 
-            'message': 'Book updated successfully', 
-            'redirect': '/rgz/manage_books' 
-        }, 
-        'id': data.get('id') 
+    # Возвращаем результат обработки
+    return jsonify({
+        'jsonrpc': '2.0',
+        'result': {
+            'message': 'Book updated successfully',
+            'redirect': '/rgz/manage_books'
+        },
+        'id': None
     }), 200
 # Страница добавления книги
 
