@@ -24,7 +24,7 @@ def db_connect():
         cur = conn.cursor()
     else:
         dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "database.db")
+        db_path = path.join(dir_path, "rgz.db") # Можно поменять, если проблемы с БД
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -35,48 +35,6 @@ def db_close(conn,cur):
     cur.close()
     conn.close()
 
-
-
-
-# @rgz.route('/rgz/login', methods=['GET', 'POST'])
-# def login():
-#     if request.method == 'GET':
-#         return render_template('rgz/login.html')
-    
-#     login = request.form.get('login')
-#     password = request.form.get('password')
-
-#     if not (login and password):
-#         return render_template('rgz/login.html', error='Заполните поля')
-
-#     # Подключение к базе данных
-#     conn, cur = db_connect()
-
-#     # Выполнение SQL-запроса с параметризованным запросом
-#     # if current_app.config['DB_TYPE'] == 'postgres':
-#     #     cur.execute("SELECT * FROM admin WHERE login=%s;", (login,))
-#     # else:
-#     #     cur.execute("SELECT * FROM admin WHERE login=?;", (login,))
-#     cur.execute("SELECT * FROM admin WHERE login=?;", (login,))
-#     user = cur.fetchone()  # Получаем одну строку
-
-#     if not user:  
-#         db_close(conn, cur)
-#         return render_template('rgz/login.html', error='Логин и/или пароль неверны')
-    
-#     # Проверка пароля
-#     if not check_password_hash(user['password'], password):  
-#         db_close(conn, cur)
-#         return render_template('rgz/login.html', error='Логин и/или пароль неверны')
-    
-#     session['login'] = login
-#     db_close(conn, cur)
-#     return render_template('rgz/success_login.html', login=login)
-
-# @rgz.route('/rgz/logout')
-# def logout():
-#     session.pop('login', None)  # Удаляем логин из сессии
-#     return redirect('/rgz/login')
 
 
 # Авторизация
@@ -588,69 +546,52 @@ def manage_books():
 
 # Редактирование книг
 
-@rgz.route('/rgz/edit_book', methods=['GET', 'POST'])
+@rgz.route('/rgz/edit_book', methods=['GET'])
 def edit_book():
     if 'login' not in session:
-        return redirect(url_for('rgz.login'))
+        return jsonify({
+            'jsonrpc': '2.0', 
+            'error': {'code': -1, 'message': 'Unauthorized. Please log in.'}, 
+            'id': None
+        }), 401
+
+    # Получаем параметры из URL
+    book_id = request.args.get('id')
+    title = request.args.get('title')
+    author = request.args.get('author')
+    year_of_publication = request.args.get('year_of_publication')
+    publisher = request.args.get('publisher')
+    book_cover = request.args.get('book_cover')
+    amount_of_pages = request.args.get('amount_of_pages')
+
+    if not all([book_id, title, author, year_of_publication, publisher, book_cover, amount_of_pages]):
+        return jsonify({
+            'jsonrpc': '2.0', 
+            'error': {'code': -32602, 'message': 'Invalid params'}, 
+            'id': None
+        }), 400
 
     conn, cur = db_connect()
-    book = None
-    search_attempt = False  # Инициализируем переменную
 
-    if request.method == 'GET':
-        # Поиск книги по ID
-        book_id = request.args.get('id')
-        if book_id:
-            cur.execute("SELECT * FROM books WHERE id=?;", (book_id,))
-            book = cur.fetchone()
+    # Обновляем данные книги в базе данных
+    cur.execute("""
+        UPDATE books   
+        SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=?   
+        WHERE id=?;  
+    """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages, book_id))
 
-            if book is None:
-                search_attempt = True  # Устанавливаем флаг, если книга не найдена
+    conn.commit()
+    db_close(conn, cur)
 
-        db_close(conn, cur)
-        return render_template('rgz/edit_book.html', book=book, search_attempt=search_attempt)
-
-    elif request.method == 'POST':
-        # Обработка POST запроса для JSON-RPC
-        if request.headers.get('Content-Type') != 'application/json':
-            return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Content-Type. Expected application/json'}, 'id': None}), 415
-
-        try:
-            data = request.json
-        except json.JSONDecodeError:
-            return jsonify({'jsonrpc': '2.0', 'error': {'code': -32700, 'message': 'Parse error'}, 'id': None}), 400
-        
-        if data.get('jsonrpc') != '2.0' or data.get('method') != 'edit_book':
-            return jsonify({'jsonrpc': '2.0', 'error': {'code': -32600, 'message': 'Invalid Request'}, 'id': data.get('id')}), 400
-        
-        params = data.get('params', {})
-        book_id = params.get('id')
-        title = params.get('title')
-        author = params.get('author')
-        year_of_publication = params.get('year_of_publication')
-        publisher = params.get('publisher')
-        book_cover = params.get('book_cover')
-        amount_of_pages = params.get('amount_of_pages')
-
-        cur.execute(""" 
-            UPDATE books 
-            SET title=?, author=?, year_of_publication=?, publisher=?, book_cover=?, amount_of_pages=? 
-            WHERE id=?;
-        """, (title, author, year_of_publication, publisher, book_cover, amount_of_pages, book_id))
-
-        conn.commit()
-        db_close(conn, cur)
-
-        # Возвращаем данные в формате JSON-RPC
-        return jsonify({
-            'jsonrpc': '2.0',
-            'result': {
-                'message': 'Book updated successfully',
-                'redirect': '/rgz/manage_books'
-            },
-            'id': data.get('id')
-        }), 200
-
+    # Возвращаем результат обработки
+    return jsonify({
+        'jsonrpc': '2.0',
+        'result': {
+            'message': 'Book updated successfully',
+            'redirect': '/rgz/manage_books'
+        },
+        'id': None
+    }), 200
 # Страница добавления книги
 
 @rgz.route('/rgz/add_book', methods=['GET', 'POST'])

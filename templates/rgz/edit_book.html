@@ -1,230 +1,96 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block lab %}Редактирование книги{% endblock %}
+{% block title %}Редактировать книгу{% endblock %}
 
-{% block main %}
-<style>
-    .button {
-        background-color: lightblue;
-        border: 3px solid black; /* Задаем стиль и цвет рамки */
-        color: black;
-        padding: 10px 20px;
-        margin-top: 10px; /* Отступ сверху */
-        margin-left: 10px; /* Отступ между кнопками */
-        font-size: 16px;
-        border-radius: 5px;
-        cursor: pointer;
-        text-decoration: none; /* Убираем подчеркивание для ссылок */
-        display: inline-block; /* Для корректного отображения кнопки */
-    }
-
-    .button:hover {
-        background-color: deepskyblue; /* Цвет кнопки при наведении */
-    }
-
-    /* Стили для полей ввода */
-    input[type="text"], input[type="number"] {
-        width: 100%; /* Ширина 100% от родительского элемента */
-        max-width: 400px; /* Максимальная ширина поля */
-        height: 40px; /* Высота поля */
-        padding: 10px; /* Отступ внутри поля */
-        margin-top: 5px; /* Отступ сверху */
-        margin-bottom: 15px; /* Отступ снизу */
-        border: 2px solid #ccc; /* Рамка поля */
-        border-radius: 5px; /* Закругление углов */
-        box-sizing: border-box; /* Учитываем отступы и рамки в ширине */
-        font-size: 18px; /* Увеличиваем размер шрифта */
-    }
-
-    .form-group {
-        margin-bottom: 20px; /* Отступ между группами полей */
-    }
-
-    .form-group label {
-        display: block; /* Отображаем метку как блочный элемент */
-        margin-bottom: 5px; /* Отступ снизу для метки */
-    }
-
-    .button-container {
-        margin-top: 20px; /* Отступ сверху для кнопок */
-    }
-
-    .container {
-        display: flex; /* Используем Flexbox для горизонтального расположения */
-        gap: 20px; /* Отступ между полями ввода и блоком с книгой */
-    }
-
-    .book-preview {
-        border: 5px solid #ccc; /* Рамка вокруг блока */
-        padding: 15px; /* Отступ внутри блока */
-        border-radius: 5px; /* Закругление углов */
-        width: 1400px; /* Максимальная ширина блока */
-        flex-shrink: 0; /* Не сжимать блок при уменьшении ширины */
-        margin-top: -700px; /* Отступ сверху для блока с книгой */
-        margin-left: 750px;
-    }
-
-    .book-preview-content {
-        display: flex; /* Горизонтальное расположение обложки и текста */
-        gap: 15px; /* Отступ между обложкой и текстом */
-    }
-
-    .book-preview img {
-        width: 350px; /* Ограничиваем ширину обложки */
-        height: 500px; /* Автоматическая высота */
-        border-radius: 5px; /* Закругление углов обложки */
-    }
-
-    .book-details {
-        display: flex;
-        flex-direction: column; /* Вертикальное расположение текстовых данных */
-    }
-</style>
-
-<h1>Редактирование книги</h1>
-
-<form id="search-book-form">
-    <input type="text" id="book-id" name="id" placeholder="Введите ID книги" required>
-    <button class="button" type="submit">Найти книгу</button>
-    <button class="button"><a href="/rgz/manage_books" style="color: black; text-decoration: none;">Назад к панели управления</a></button>
-</form>
-
-<div class="container">
-    <div class="form-section">
-        {% if book %}
-            <form id="edit-book-form">
-                <input type="hidden" name="id" value="{{ book['id'] }}">
-                
-                <div class="form-group">
-                    <label for="title">Название:</label>
-                    <input type="text" name="title" value="{{ book['title'] }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="author">Автор:</label>
-                    <input type="text" name="author" value="{{ book['author'] }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="publisher">Издатель:</label>
-                    <input type="text" name="publisher" value="{{ book['publisher'] }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="year_of_publication">Год публикации:</label>
-                    <input type="number" name="year_of_publication" value="{{ book['year_of_publication'] }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="amount_of_pages">Количество страниц:</label>
-                    <input type="number" name="amount_of_pages" value="{{ book['amount_of_pages'] }}" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="book_cover">Обложка (URL):</label>
-                    <input type="text" name="book_cover" value="{{ book['book_cover'] }}" required>
-                </div>
-
-                <div class="button-container">
-                    <button class="button" type="submit">Сохранить изменения</button>
-                </div>
-            </form>
-
-            <div class="book-preview">
-                <h2>Представление книги</h2>
-                <div class="book-preview-content">
-                    <img src="{{ book['book_cover'] }}" alt="Обложка книги">
-                    <div class="book-details">
-                        <p><strong>Название:</strong> {{ book['title'] }}</p>
-                        <p><strong>Автор:</strong> {{ book['author'] }}</p>
-                        <p><strong>Год публикации:</strong> {{ book['year_of_publication'] }}</p>
-                        <p><strong>Издатель:</strong> {{ book['publisher'] }}</p>
-                        <p><strong>Количество страниц:</strong> {{ book['amount_of_pages'] }}</p>
-                    </div>
-                </div>
-            </div>
-        {% elif search_attempt %}
-            <p>Книга не найдена.</p>
-        {% endif %}
+{% block content %}
+<div class="edit-book-container">
+    <h1>Редактировать книгу</h1>
+    
+    <div>
+        <label for="book_id">ID Книги:</label>
+        <input type="text" id="book_id" placeholder="Введите ID книги">
     </div>
+    
+    <div>
+        <label for="title">Название:</label>
+        <input type="text" id="title" placeholder="Введите название книги">
+    </div>
+
+    <div>
+        <label for="author">Автор:</label>
+        <input type="text" id="author" placeholder="Введите автора книги">
+    </div>
+
+    <div>
+        <label for="year_of_publication">Год издания:</label>
+        <input type="number" id="year_of_publication" placeholder="Введите год издания книги">
+    </div>
+
+    <div>
+        <label for="publisher">Издатель:</label>
+        <input type="text" id="publisher" placeholder="Введите издателя">
+    </div>
+
+    <div>
+        <label for="book_cover">Обложка:</label>
+        <input type="text" id="book_cover" placeholder="Введите ссылку на обложку">
+    </div>
+
+    <div>
+        <label for="amount_of_pages">Количество страниц:</label>
+        <input type="number" id="amount_of_pages" placeholder="Введите количество страниц">
+    </div>
+
+    <button id="update-button">Обновить книгу</button>
+
+    <div id="result-message"></div>
 </div>
 
 <script>
-    document.getElementById('search-book-form').addEventListener('submit', function(event) {
-        event.preventDefault();
+    document.getElementById('update-button').addEventListener('click', async () => {
+        const bookId = document.getElementById('book_id').value;
+        const title = document.getElementById('title').value;
+        const author = document.getElementById('author').value;
+        const yearOfPublication = document.getElementById('year_of_publication').value;
+        const publisher = document.getElementById('publisher').value;
+        const bookCover = document.getElementById('book_cover').value;
+        const amountOfPages = document.getElementById('amount_of_pages').value;
 
-        const bookId = document.getElementById('book-id').value;
-
-        const data = {
+        const payload = {
             jsonrpc: '2.0',
             method: 'edit_book',
             params: {
-                id: bookId
-            },
-            id: 1
+                id: bookId,
+                title: title,
+                author: author,
+                year_of_publication: yearOfPublication,
+                publisher: publisher,
+                book_cover: bookCover,
+                amount_of_pages: amountOfPages
+            }
         };
 
-        fetch('/rgz/edit_book', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert('Ошибка: ' + data.error.message);
+        try {
+            const response = await fetch('/rgz/edit_book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                document.getElementById('result-message').innerHTML = `
+                    <p>${result.result.message}</p>
+                    <p><a href="${result.result.redirect}">Перейти к управлению книгами</a></p>`;
             } else {
-                alert('Книга найдена');
-                window.location.href = '/rgz/edit_book?id=' + bookId;
+                document.getElementById('result-message').innerText = result.error.message;
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Произошла ошибка при отправке запроса');
-        });
-    });
-
-    document.getElementById('edit-book-form').addEventListener('submit', function(event) {
-        event.preventDefault();
-
-        const formData = new FormData(event.target);
-        const data = {
-            jsonrpc: '2.0',
-            method: 'edit_book',
-            params: {
-                id: formData.get('id'),
-                title: formData.get('title'),
-                author: formData.get('author'),
-                year_of_publication: formData.get('year_of_publication'),
-                publisher: formData.get('publisher'),
-                book_cover: formData.get('book_cover'),
-                amount_of_pages: formData.get('amount_of_pages')
-            },
-            id: 1
-        };
-
-        fetch('/rgz/edit_book', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                alert('Ошибка: ' + data.error.message);
-            } else {
-                alert('Книга успешно обновлена');
-                window.location.href = data.result.redirect;
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Произошла ошибка при отправке запроса');
-        });
+        } catch (error) {
+            document.getElementById('result-message').innerText = 'Произошла ошибка при обновлении книги.';
+            console.error('Ошибка:', error);
+        }
     });
 </script>
 {% endblock %}
