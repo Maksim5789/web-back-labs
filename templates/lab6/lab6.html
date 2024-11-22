@@ -33,6 +33,11 @@
                 bookingButton.onclick = function() { booking(office.number) };
                 li.appendChild(bookingButton);
 
+                const unbookingButton = document.createElement('button');
+                unbookingButton.innerText = 'снять аренду';
+                unbookingButton.onclick = function() { unbooking(office.number) };
+                li.appendChild(unbookingButton);
+
                 ul.appendChild(li);
             }
         });
@@ -62,6 +67,42 @@
                         break;
                     case 2:
                         alert('Офис уже арендуется');
+                        break;
+                    case -32601:
+                        alert('Странная ошибка');
+                        break;
+                }
+            } else {
+                document.getElementById('office-list').innerHTML = '';
+                getOfficeList();
+            }
+        });
+    }
+
+    function unbooking(officeNumber) {
+        const url = '/lab6/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'unbooking',
+            'params': officeNumber,
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                switch(data.error.code) {
+                    case 1:
+                        alert('Вы не авторизованы, пожалуйста, авторизуйтесь');
+                        break;
+                    case 5:
+                        alert('Вы не являетесь арендатором этого офиса');
                         break;
                     case -32601:
                         alert('Странная ошибка');

@@ -10,7 +10,19 @@ for i in range (1,11):
 def lab():
     return render_template('lab6/lab6.html')
 
-@lab6.route('/lab6/json-rpc-api', methods = ['POST'])
+from flask import Blueprint, redirect, url_for, render_template, request, session, current_app
+
+lab6 = Blueprint('lab6', __name__)
+
+offices = []
+for i in range(1, 11):
+    offices.append({"number": i, "tenant": ""})
+
+@lab6.route('/lab6/')
+def lab():
+    return render_template('lab6/lab6.html')
+
+@lab6.route('/lab6/json-rpc-api', methods=['POST'])
 def api():
     data = request.json
     id = data['id']
@@ -52,6 +64,26 @@ def api():
                     'id': id
                 }
     
+    if data['method'] == 'unbooking':
+        office_number = data['params']
+        for office in offices:
+            if office['number'] == office_number:
+                if office['tenant'] != login:
+                    return {
+                        'jsonrpc': '2.0',
+                        'error': {
+                            'code': 5,
+                            'message': 'You are not the tenant of this office'
+                        },
+                        'id': id
+                    }
+                office['tenant'] = ''
+                return {
+                    'jsonrpc': '2.0',
+                    'result': 'success',
+                    'id': id
+                }
+    
     return {
         'jsonrpc': '2.0',
         'error': {
@@ -59,7 +91,4 @@ def api():
             'message': 'Method not found'
         },
         'id': id
-    
-    
     }
-
