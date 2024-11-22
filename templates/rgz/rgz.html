@@ -84,6 +84,7 @@
             font-size: 16px;
             width: 30%;
             background-color: #adadad;
+            border: 2px solid black;
         }
 
         #login-form button,
@@ -165,6 +166,8 @@
             border-radius: 5px;
             font-size: 16px;
             width: 300px;
+            background-color: #adadad;
+            border: 2px solid black;
         }
 
         .filter button {
@@ -192,19 +195,90 @@
             width: 100%;
             box-sizing: border-box;
         }
-    </style>
 
+        #add-book-form {
+            border: 5px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            background-color: #f8f9fa;
+        }
+
+        #add-book-form input,
+        #add-book-form select {
+            width: 85%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid black;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #adadad;
+        }
+
+        #add-book-form button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #add-book-form button:hover {
+            background-color: deepskyblue;
+        }
+
+        #delete-book-form {
+            border: 5px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            background-color: #f8f9fa;
+            
+        }
+
+        #delete-book-form input {
+            width: 85%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid black;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #adadad;
+        }
+
+        #delete-book-form button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #delete-book-form button:hover {
+            background-color: deepskyblue;
+        }
+    </style>
     <nav>
         <div class="username" id="username">{{ username }}</div>
         <div>
-            <button class="nav-button" onclick="showContent('main-content')">Главная страница</button>
+            <button class="nav-button"><a href="/">Главная страница</a></button>
+            <button class="nav-button" onclick="showContent('books-container')">Список книг</button>
+            <button class="nav-button" onclick="showContent('add-book-form')">Добавить книгу</button>
+            <button class="nav-button" onclick="showContent('delete-book-form')">Удалить книгу</button>
             <button class="nav-button" onclick="showContent('login-form')">Авторизация</button>
             <button class="nav-button" onclick="showContent('register-form')">Регистрация</button>
             <button class="nav-button" onclick="logout()">Выйти</button>
-            <button class="nav-button" onclick="showContent('books-container')">Список книг</button>
         </div>
-    </nav>   
-     
+    </nav>
+    
     <div id="notification"></div>
     
        
@@ -235,12 +309,30 @@
                         <button type="button" onclick="filterBooks()">Применить фильтр</button>
                     </form>
                 </div>
-            </nav>        
+            </nav>
             <div id="books-list"></div>
             <div class="pagination">
                 <button id="prev-page" onclick="prevPage()" disabled>Предыдущие</button>
                 <button id="next-page" onclick="nextPage()">Следующие</button>
             </div>
+        </div>
+
+        <div id="add-book-form" class="form-container" style="display: none;">
+            <h2>Добавить книгу</h2>
+            <input type="text" id="add-book-title" placeholder="Название" required>
+            <input type="text" id="add-book-author" placeholder="Автор" required>
+            <input type="number" id="add-book-year" placeholder="Год публикации" required>
+            <input type="number" id="add-book-pages" placeholder="Количество страниц" required>
+            <input type="text" id="add-book-publisher" placeholder="Издательство" required>
+            <input type="text" id="add-book-cover" placeholder="Обложка">
+            <button onclick="addBook()">Добавить книгу</button>
+        </div>
+
+        <div id="delete-book-form" class="form-container" style="display: none;">
+            <h2>Удалить книгу</h2>
+            <input type="number" id="delete-book-id" placeholder="ID книги" required>
+            <button onclick="searchBook()">Найти книгу</button>
+            <div id="delete-book-info"></div>
         </div>
     </div>
 {% endblock %}
@@ -465,6 +557,144 @@
     function filterBooks() {
         currentPage = 1;
         loadBooks();
+    }
+
+    function addBook() {
+        const title = document.getElementById('add-book-title').value;
+        const author = document.getElementById('add-book-author').value;
+        const year = document.getElementById('add-book-year').value;
+        const pages = document.getElementById('add-book-pages').value;
+        const publisher = document.getElementById('add-book-publisher').value;
+        const cover = document.getElementById('add-book-cover').value;
+
+        if (!title || !author || !year || !pages || !publisher) {
+            showNotification('Все поля, кроме обложки, обязательны к заполнению');
+            return;
+        }
+
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'add_book',
+            'params': {
+                'title': title,
+                'author': author,
+                'year_of_publication': year,
+                'amount_of_pages': pages,
+                'publisher': publisher,
+                'book_cover': cover
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Книга успешно добавлена');
+                clearAddBookForm();
+                loadBooks();
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при добавлении книги: ' + error.message);
+        });
+    }
+
+    function clearAddBookForm() {
+        document.getElementById('add-book-title').value = '';
+        document.getElementById('add-book-author').value = '';
+        document.getElementById('add-book-year').value = '';
+        document.getElementById('add-book-pages').value = '';
+        document.getElementById('add-book-publisher').value = '';
+        document.getElementById('add-book-cover').value = '';
+    }
+
+    function searchBook() {
+        const bookId = document.getElementById('delete-book-id').value;
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'get_book',
+            'params': {
+                'id': bookId
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                displayBookForDeletion(data.result.book);
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при поиске книги: ' + error.message);
+        });
+    }
+
+    function displayBookForDeletion(book) {
+        const bookInfo = document.getElementById('delete-book-info');
+        bookInfo.innerHTML = `
+            <div class="book">
+                <div class="book-info">
+                    <h2>${book.title}</h2>
+                    <p>Автор: ${book.author}</p>
+                    <p>Год публикации: ${book.year_of_publication}</p>
+                    <p>Количество страниц: ${book.amount_of_pages}</p>
+                    <p>Издательство: ${book.publisher}</p>
+                </div>
+                <img src="${book.book_cover}" alt="${book.title}">
+                <button onclick="deleteBook(${book.id})">Удалить книгу</button>
+            </div>
+        `;
+    }
+
+    function deleteBook(bookId) {
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'delete_book',
+            'params': {
+                'id': bookId
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Книга успешно удалена');
+                document.getElementById('delete-book-info').innerHTML = '';
+                loadBooks();
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при удалении книги: ' + error.message);
+        });
     }
 
     document.addEventListener('DOMContentLoaded', function() {

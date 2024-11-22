@@ -190,6 +190,114 @@ def api():
             'id': id
         })
     
+    if data['method'] == 'add_book':
+        login = session.get('login')
+        if not login:
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 1,
+                    'message': 'Unauthorized'
+                },
+                'id': id
+            })
+
+        title = data['params']['title']
+        author = data['params']['author']
+        year_of_publication = data['params']['year_of_publication']
+        amount_of_pages = data['params']['amount_of_pages']
+        publisher = data['params']['publisher']
+        book_cover = data['params'].get('book_cover', '')
+
+        conn, cur = db_connect()
+        try:
+            cur.execute("INSERT INTO books (title, author, year_of_publication, amount_of_pages, publisher, book_cover) VALUES (?, ?, ?, ?, ?, ?)",
+                        (title, author, year_of_publication, amount_of_pages, publisher, book_cover))
+            db_close(conn, cur)
+            return jsonify({
+                'jsonrpc': '2.0',
+                'result': 'success',
+                'id': id
+            })
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 5,
+                    'message': 'Database error'
+                },
+                'id': id
+            })
+    
+    if data['method'] == 'get_book':
+        book_id = data['params']['id']
+        conn, cur = db_connect()
+        try:
+            cur.execute("SELECT * FROM books WHERE id = ?", (book_id,))
+            book = cur.fetchone()
+            db_close(conn, cur)
+            if book:
+                return jsonify({
+                    'jsonrpc': '2.0',
+                    'result': {
+                        'book': dict(book)
+                    },
+                    'id': id
+                })
+            else:
+                return jsonify({
+                    'jsonrpc': '2.0',
+                    'error': {
+                        'code': 6,
+                        'message': 'Книга не найдена'
+                    },
+                    'id': id
+                })
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 5,
+                    'message': 'Database error'
+                },
+                'id': id
+            })
+    
+    if data['method'] == 'delete_book':
+        login = session.get('login')
+        if not login:
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 1,
+                    'message': 'Unauthorized'
+                },
+                'id': id
+            })
+
+        book_id = data['params']['id']
+        conn, cur = db_connect()
+        try:
+            cur.execute("DELETE FROM books WHERE id = ?", (book_id,))
+            db_close(conn, cur)
+            return jsonify({
+                'jsonrpc': '2.0',
+                'result': 'success',
+                'id': id
+            })
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 5,
+                    'message': 'Database error'
+                },
+                'id': id
+            })
+    
     login = session.get('login')
     if not login:
         return jsonify({
