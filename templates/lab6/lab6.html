@@ -23,10 +23,11 @@
             const office_list = data.result;
             const ul = document.getElementById('office-list');
             ul.innerHTML = ''; // Очищаем список перед добавлением новых элементов
+            let totalCost = 0;
             for(let i = 0; i < office_list.length; i++) {
                 const office = office_list[i];
                 const li = document.createElement('li');
-                li.innerText = `${office.number}: ${office.tenant || 'свободен'}`;
+                li.innerText = `${office.number}: ${office.tenant || 'свободен'}, стоимость: ${office.price} руб.`;
 
                 const bookingButton = document.createElement('button');
                 bookingButton.innerText = 'зарезервировать';
@@ -34,12 +35,17 @@
                 li.appendChild(bookingButton);
 
                 const unbookingButton = document.createElement('button');
-                unbookingButton.innerText = 'снять аренду';
+                unbookingButton.innerText = 'освободить';
                 unbookingButton.onclick = function() { unbooking(office.number) };
                 li.appendChild(unbookingButton);
 
                 ul.appendChild(li);
+
+                if (office.tenant) {
+                    totalCost += office.price;
+                }
             }
+            document.getElementById('total-cost').innerText = `Общая стоимость аренды: ${totalCost} руб.`;
         });
     }
 
@@ -133,4 +139,5 @@
 
     <h1>Список кабинетов</h1>
     <ul id="office-list"></ul>
+    <div id="total-cost">Общая стоимость аренды: 0 руб.</div>
 {% endblock %}

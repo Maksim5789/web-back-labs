@@ -3,20 +3,9 @@ from flask import Blueprint, redirect, url_for, render_template, request, sessio
 lab6 = Blueprint('lab6', __name__)
 
 offices = []
-for i in range (1,11):
-    offices.append({"number": i, "tenant": ""})
-
-@lab6.route('/lab6/')
-def lab():
-    return render_template('lab6/lab6.html')
-
-from flask import Blueprint, redirect, url_for, render_template, request, session, current_app
-
-lab6 = Blueprint('lab6', __name__)
-
-offices = []
 for i in range(1, 11):
-    offices.append({"number": i, "tenant": ""})
+    # Добавляем стоимость аренды, например, 1000 + i * 100
+    offices.append({"number": i, "tenant": "", "price": 1000 + i * 100})
 
 @lab6.route('/lab6/')
 def lab():
