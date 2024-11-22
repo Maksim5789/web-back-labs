@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+
+{% block lab %}РГЗ{% endblock %}
+
+{% block main %}
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 5px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .nav-button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-left: 10px; /* Отступ между кнопками */
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .nav-button a {
+            text-decoration: none; /* Убираем подчеркивание */
+            color: inherit; /* Унаследуем цвет */
+        }
+        
+        .nav-button:hover {
+            background-color: deepskyblue; /* Цвет кнопки при наведении */
+        }
+
+        .content {
+            margin-top: 20px;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+
+        #notification {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            display: none;
+            z-index: 1000;
+        }
+
+        #login-form,
+        #register-form {
+            border: 5px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            background-color: #f8f9fa;
+        }
+
+        #login-form input,
+        #register-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 30%;
+            background-color: #adadad;
+        }
+
+        #login-form button,
+        #register-form button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #login-form button:hover,
+        #register-form button:hover {
+            background-color: deepskyblue;
+        }
+    </style>
+
+    <h1>РГЗ</h1>
+    <div>
+        Список страниц:
+    </div>
+
+    <nav>
+        <div class="username" id="username">{{ username }}</div>
+        <div>
+            <button class="nav-button"><a href="/">Главная страница</a></button>
+            <button class="nav-button" onclick="showContent('login-form')">Авторизация</button>
+            <button class="nav-button" onclick="showContent('register-form')">Регистрация</button>
+            <button class="nav-button" onclick="logout()">Выйти</button>
+        </div>
+    </nav>
+
+    <div id="notification"></div>
+
+    <div class="content">
+        <div id="login-form" class="form-container">
+            <h2>Вход</h2>
+            <input type="text" id="login-login" placeholder="Логин">
+            <input type="password" id="login-password" placeholder="Пароль">
+            <button onclick="login()">Войти</button>
+        </div>
+
+        <div id="register-form" class="form-container">
+            <h2>Регистрация</h2>
+            <input type="text" id="register-login" placeholder="Логин">
+            <input type="password" id="register-password" placeholder="Пароль">
+            <button onclick="register()">Зарегистрироваться</button>
+        </div>
+
+        <!-- Здесь будет содержимое вашего РГЗ -->
+    </div>
+{% endblock %}
+
+{% block script %}
+<script>
+    function showNotification(message) {
+        const notification = document.getElementById('notification');
+        notification.innerText = message;
+        notification.style.display = 'block';
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 3000); // Скрыть уведомление через 3 секунды
+    }
+    
+    function logout() {
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'logout',
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Вы вышли из аккаунта');
+                document.getElementById('username').innerText = 'Анонимус';
+                showContent('login-form');
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при выходе: ' + error.message);
+        });
+    }
+    
+    function register() {
+        const login = document.getElementById('register-login').value;
+        const password = document.getElementById('register-password').value;
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'register',
+            'params': {
+                'login': login,
+                'password': password
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Регистрация прошла успешно');
+                clearInputs();
+                showContent('login-form');
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при регистрации: ' + error.message);
+        });
+    }
+    
+    function login() {
+        const login = document.getElementById('login-login').value;
+        const password = document.getElementById('login-password').value;
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'login',
+            'params': {
+                'login': login,
+                'password': password
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Вход выполнен успешно');
+                clearInputs();
+                document.getElementById('username').innerText = login;
+                showContent('login-form');
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при входе: ' + error.message);
+        });
+    }
+    
+    function clearInputs() {
+        document.getElementById('register-login').value = '';
+        document.getElementById('register-password').value = '';
+        document.getElementById('login-login').value = '';
+        document.getElementById('login-password').value = '';
+    }
+    
+    function showContent(contentId) {
+        const containers = document.querySelectorAll('.form-container');
+        containers.forEach(container => {
+            container.classList.remove('active');
+        });
+        document.getElementById(contentId).classList.add('active');
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        showContent('login-form');
+    });
+</script>
+{% endblock %}
