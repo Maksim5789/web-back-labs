@@ -94,6 +94,8 @@
 
 {% block script %}
 <script>
+    let currentUser = null;
+
     function getOfficeList() {
         const url = '/lab6/json-rpc-api';
         const json = {
@@ -131,7 +133,7 @@
 
                 ul.appendChild(li);
 
-                if (office.tenant) {
+                if (office.tenant === currentUser) {
                     totalCost += office.price;
                 }
             }
@@ -269,6 +271,7 @@
                 alert('Вход выполнен успешно');
                 clearInputs();
                 showContent('office-list');
+                currentUser = login;
                 document.getElementById('username').innerText = login;
                 getOfficeList();
             }
@@ -295,6 +298,7 @@
                 alert(data.error.message);
             } else {
                 alert('Вы вышли из аккаунта');
+                currentUser = null;
                 document.getElementById('username').innerText = 'Анонимус';
                 showContent('office-list');
                 getOfficeList();
