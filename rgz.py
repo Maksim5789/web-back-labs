@@ -101,6 +101,95 @@ def api():
             'id': id
         })
     
+    if data['method'] == 'get_books':
+        title = data['params'].get('title', '')
+        author = data['params'].get('author', '')
+        min_pages = data['params'].get('min_pages', '')
+        max_pages = data['params'].get('max_pages', '')
+        publisher = data['params'].get('publisher', '')
+        sort_by = data['params'].get('sort_by', 'title')
+        page = int(data['params'].get('page', 1))
+
+        conn, cur = db_connect()
+
+        # Формируем SQL-запрос для получения списка книг
+        query = "SELECT * FROM books WHERE 1=1"
+        params = []
+
+        if title:
+            query += " AND title LIKE ?"
+            params.append(f"%{title}%")
+        if author:
+            query += " AND author LIKE ?"
+            params.append(f"%{author}%")
+        if min_pages:
+            query += " AND amount_of_pages >= ?"
+            params.append(min_pages)
+        if max_pages:
+            query += " AND amount_of_pages <= ?"
+            params.append(max_pages)
+        if publisher:
+            query += " AND publisher LIKE ?"
+            params.append(f"%{publisher}%")
+
+        query += f" ORDER BY {sort_by}"
+        query += " LIMIT 20 OFFSET ?"
+        params.append((page - 1) * 20)
+
+        print(f"SQL Query: {query}")  # Отладочное сообщение
+        print(f"SQL Params: {params}")  # Отладочное сообщение
+
+        try:
+            cur.execute(query, params)
+            books = cur.fetchall()
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 5,
+                    'message': 'Database error'
+                },
+                'id': id
+            })
+
+        # Формируем SQL-запрос для подсчета общего количества книг
+        count_query = "SELECT COUNT(*) FROM books WHERE 1=1"
+        count_params = []
+
+        if title:
+            count_query += " AND title LIKE ?"
+            count_params.append(f"%{title}%")
+        if author:
+            count_query += " AND author LIKE ?"
+            count_params.append(f"%{author}%")
+        if min_pages:
+            count_query += " AND amount_of_pages >= ?"
+            count_params.append(min_pages)
+        if max_pages:
+            count_query += " AND amount_of_pages <= ?"
+            count_params.append(max_pages)
+        if publisher:
+            count_query += " AND publisher LIKE ?"
+            count_params.append(f"%{publisher}%")
+
+        cur.execute(count_query, count_params)
+        total_books = cur.fetchone()[0]
+        total_pages = (total_books + 19) // 20
+
+        db_close(conn, cur)
+
+        print(f"Books: {books}")  # Отладочное сообщение
+
+        return jsonify({
+            'jsonrpc': '2.0',
+            'result': {
+                'books': [dict(book) for book in books],
+                'total_pages': total_pages
+            },
+            'id': id
+        })
+    
     login = session.get('login')
     if not login:
         return jsonify({

@@ -102,46 +102,115 @@
         #register-form button:hover {
             background-color: deepskyblue;
         }
-    </style>
 
+        .book {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 5px solid #ccc;
+            padding-bottom: 10px;
+        }
+
+        .book img {
+            width: 100px;
+            height: 150px;
+            margin-right: 20px;
+        }
+
+        .book-info {
+            flex-grow: 1;
+        }
+
+        .book-info h2 {
+            margin: 0;
+        }
+
+        .book-info p {
+            margin: 5px 0;
+        }
+
+        .pagination {
+            margin-top: 20px;
+        }
+
+        .pagination button {
+            margin-right: 10px;
+            text-decoration: none;
+            color: blue;
+        }
+
+        .filter {
+            margin-bottom: 20px;
+        }
+
+        .filter input, .filter select {
+            margin-right: 10px;
+        }
+    </style>
     <h1>РГЗ</h1>
     <div>
         Список страниц:
     </div>
-
     <nav>
         <div class="username" id="username">{{ username }}</div>
         <div>
-            <button class="nav-button"><a href="/">Главная страница</a></button>
+            <button class="nav-button" onclick="showContent('main-content')">Главная страница</button>
             <button class="nav-button" onclick="showContent('login-form')">Авторизация</button>
             <button class="nav-button" onclick="showContent('register-form')">Регистрация</button>
             <button class="nav-button" onclick="logout()">Выйти</button>
+            <button class="nav-button" onclick="showContent('books-container')">Список книг</button>
         </div>
     </nav>
-
+    
     <div id="notification"></div>
-
-    <div class="content">
+    
+       
         <div id="login-form" class="form-container">
             <h2>Вход</h2>
             <input type="text" id="login-login" placeholder="Логин">
             <input type="password" id="login-password" placeholder="Пароль">
             <button onclick="login()">Войти</button>
         </div>
-
+    
         <div id="register-form" class="form-container">
             <h2>Регистрация</h2>
             <input type="text" id="register-login" placeholder="Логин">
             <input type="password" id="register-password" placeholder="Пароль">
             <button onclick="register()">Зарегистрироваться</button>
         </div>
-
-        <!-- Здесь будет содержимое вашего РГЗ -->
+    
+        <div id="books-container" class="form-container" style="display: none;">
+            <h2>Список книг</h2>
+            <div class="filter">
+                <form id="filter-form">
+                    <input type="text" id="filter-title" placeholder="Название">
+                    <input type="text" id="filter-author" placeholder="Автор">
+                    <input type="number" id="filter-min-pages" placeholder="Минимальное количество страниц">
+                    <input type="number" id="filter-max-pages" placeholder="Максимальное количество страниц">
+                    <input type="text" id="filter-publisher" placeholder="Издательство">
+                    <select id="sort-by">
+                        <option value="title">По названию</option>
+                        <option value="author">По автору</option>
+                        <option value="amount_of_pages">По количеству страниц</option>
+                        <option value="publisher">По издательству</option>
+                    </select>
+                    <button type="button" onclick="filterBooks()">Применить фильтр</button>
+                </form>
+            </div>
+            <div id="books-list"></div>
+            <div class="pagination">
+                <button id="prev-page" onclick="prevPage()" disabled>Предыдущие</button>
+                <button id="next-page" onclick="nextPage()">Следующие</button>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
 {% block script %}
 <script>
+    let currentPage = 1;
+    let totalPages = 1;
+
     function showNotification(message) {
         const notification = document.getElementById('notification');
         notification.innerText = message;
@@ -150,7 +219,7 @@
             notification.style.display = 'none';
         }, 3000); // Скрыть уведомление через 3 секунды
     }
-    
+
     function logout() {
         const url = '/rgz/json-rpc-api';
         const json = {
@@ -179,7 +248,7 @@
             showNotification('Ошибка при выходе: ' + error.message);
         });
     }
-    
+
     function register() {
         const login = document.getElementById('register-login').value;
         const password = document.getElementById('register-password').value;
@@ -214,7 +283,7 @@
             showNotification('Ошибка при регистрации: ' + error.message);
         });
     }
-    
+
     function login() {
         const login = document.getElementById('login-login').value;
         const password = document.getElementById('login-password').value;
@@ -250,24 +319,121 @@
             showNotification('Ошибка при входе: ' + error.message);
         });
     }
-    
+
     function clearInputs() {
         document.getElementById('register-login').value = '';
         document.getElementById('register-password').value = '';
         document.getElementById('login-login').value = '';
         document.getElementById('login-password').value = '';
     }
-    
+
     function showContent(contentId) {
         const containers = document.querySelectorAll('.form-container');
         containers.forEach(container => {
-            container.classList.remove('active');
+            container.style.display = 'none';
         });
-        document.getElementById(contentId).classList.add('active');
+        document.getElementById(contentId).style.display = 'block';
     }
-    
+
+    function loadBooks() {
+        const title = document.getElementById('filter-title').value;
+        const author = document.getElementById('filter-author').value;
+        const minPages = document.getElementById('filter-min-pages').value;
+        const maxPages = document.getElementById('filter-max-pages').value;
+        const publisher = document.getElementById('filter-publisher').value;
+        const sortBy = document.getElementById('sort-by').value;
+
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'get_books',
+            'params': {
+                'title': title,
+                'author': author,
+                'min_pages': minPages,
+                'max_pages': maxPages,
+                'publisher': publisher,
+                'sort_by': sortBy,
+                'page': currentPage
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                console.log(data.result.books);  // Отладочное сообщение
+                displayBooks(data.result.books);
+                totalPages = data.result.total_pages;
+                updatePagination();
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при загрузке книг: ' + error.message);
+        });
+    }
+
+    function displayBooks(books) {
+        console.log("Displaying books:", books);  // Отладочное сообщение
+        const booksList = document.getElementById('books-list');
+        booksList.innerHTML = '';
+        books.forEach(book => {
+            const bookDiv = document.createElement('div');
+            bookDiv.className = 'book';
+            bookDiv.innerHTML = `
+                <div class="book-info">
+                    <h2>${book.title}</h2>
+                    <p>Автор: ${book.author}</p>
+                    <p>Год публикации: ${book.year_of_publication}</p>
+                    <p>Количество страниц: ${book.amount_of_pages}</p>
+                    <p>Издательство: ${book.publisher}</p>
+                </div>
+                <img src="${book.book_cover}" alt="${book.title}">
+            `;
+            booksList.appendChild(bookDiv);
+            booksList.appendChild(document.createElement('hr'));
+        });
+    }
+
+    function updatePagination() {
+        const prevPageButton = document.getElementById('prev-page');
+        const nextPageButton = document.getElementById('next-page');
+        prevPageButton.disabled = currentPage === 1;
+        nextPageButton.disabled = currentPage === totalPages;
+    }
+
+    function prevPage() {
+        console.log("Previous page button clicked");  // Отладочное сообщение
+        if (currentPage > 1) {
+            currentPage--;
+            loadBooks();
+        }
+    }
+
+    function nextPage() {
+        console.log("Next page button clicked");  // Отладочное сообщение
+        if (currentPage < totalPages) {
+            currentPage++;
+            loadBooks();
+        }
+    }
+
+    function filterBooks() {
+        currentPage = 1;
+        loadBooks();
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
-        showContent('login-form');
+        showContent('books-container');  // Показываем список книг сразу
+        loadBooks();  // Загружаем книги при загрузке страницы
     });
 </script>
 {% endblock %}
