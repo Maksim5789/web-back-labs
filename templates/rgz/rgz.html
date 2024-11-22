@@ -107,13 +107,15 @@
             display: flex;
             align-items: center;
             margin-bottom: 20px;
-            border-bottom: 5px solid #ccc;
-            padding-bottom: 10px;
+            padding: 20px;
+            border: 5px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
         }
 
         .book img {
-            width: 100px;
-            height: 150px;
+            width: 200px;
+            height: 285px;
             margin-right: 20px;
         }
 
@@ -137,20 +139,61 @@
             margin-right: 10px;
             text-decoration: none;
             color: blue;
+            background-color: lightblue;
+            border: 3px solid black;
+            color: black;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .pagination button:hover {
+            background-color: deepskyblue;
         }
 
         .filter {
-            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
         }
 
         .filter input, .filter select {
             margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px;
+        }
+
+        .filter button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .filter button:hover {
+            background-color: deepskyblue;
+        }
+
+        .filter-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 5px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
         }
     </style>
-    <h1>РГЗ</h1>
-    <div>
-        Список страниц:
-    </div>
+
     <nav>
         <div class="username" id="username">{{ username }}</div>
         <div>
@@ -160,8 +203,8 @@
             <button class="nav-button" onclick="logout()">Выйти</button>
             <button class="nav-button" onclick="showContent('books-container')">Список книг</button>
         </div>
-    </nav>
-    
+    </nav>   
+     
     <div id="notification"></div>
     
        
@@ -181,22 +224,18 @@
     
         <div id="books-container" class="form-container" style="display: none;">
             <h2>Список книг</h2>
-            <div class="filter">
-                <form id="filter-form">
-                    <input type="text" id="filter-title" placeholder="Название">
-                    <input type="text" id="filter-author" placeholder="Автор">
-                    <input type="number" id="filter-min-pages" placeholder="Минимальное количество страниц">
-                    <input type="number" id="filter-max-pages" placeholder="Максимальное количество страниц">
-                    <input type="text" id="filter-publisher" placeholder="Издательство">
-                    <select id="sort-by">
-                        <option value="title">По названию</option>
-                        <option value="author">По автору</option>
-                        <option value="amount_of_pages">По количеству страниц</option>
-                        <option value="publisher">По издательству</option>
-                    </select>
-                    <button type="button" onclick="filterBooks()">Применить фильтр</button>
-                </form>
-            </div>
+            <nav class="filter-nav">
+                <div class="filter">
+                    <form id="filter-form">
+                        <input type="text" id="filter-title" placeholder="Название">
+                        <input type="text" id="filter-author" placeholder="Автор">
+                        <input type="number" id="filter-min-pages" placeholder="Минимальное количество страниц">
+                        <input type="number" id="filter-max-pages" placeholder="Максимальное количество страниц">
+                        <input type="text" id="filter-publisher" placeholder="Издательство">
+                        <button type="button" onclick="filterBooks()">Применить фильтр</button>
+                    </form>
+                </div>
+            </nav>        
             <div id="books-list"></div>
             <div class="pagination">
                 <button id="prev-page" onclick="prevPage()" disabled>Предыдущие</button>
@@ -341,7 +380,6 @@
         const minPages = document.getElementById('filter-min-pages').value;
         const maxPages = document.getElementById('filter-max-pages').value;
         const publisher = document.getElementById('filter-publisher').value;
-        const sortBy = document.getElementById('sort-by').value;
 
         const url = '/rgz/json-rpc-api';
         const json = {
@@ -353,7 +391,6 @@
                 'min_pages': minPages,
                 'max_pages': maxPages,
                 'publisher': publisher,
-                'sort_by': sortBy,
                 'page': currentPage
             },
             'id': Math.round(Math.random() * 1000)
@@ -399,7 +436,6 @@
                 <img src="${book.book_cover}" alt="${book.title}">
             `;
             booksList.appendChild(bookDiv);
-            booksList.appendChild(document.createElement('hr'));
         });
     }
 
