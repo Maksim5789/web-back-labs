@@ -405,6 +405,11 @@
     }
 
     function logout() {
+        if (!isLoggedIn()) {
+            showNotification('Вы не авторизованы');
+            return;
+        }
+    
         const url = '/rgz/json-rpc-api';
         const json = {
             'jsonrpc': '2.0',
