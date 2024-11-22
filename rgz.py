@@ -341,7 +341,58 @@ def api():
                 },
                 'id': id
             })
-    
+        
+    if data['method'] == 'delete_account':
+        login = session.get('login')
+        if not login:
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 1,
+                    'message': 'Unauthorized'
+                },
+                'id': id
+            })
+
+        password = data['params']['password']
+        hashed_password = hash_password(password)
+
+        conn, cur = db_connect()
+        cur.execute("SELECT * FROM admin WHERE login = ? AND password = ?", (login, hashed_password))
+        user = cur.fetchone()
+
+        if not user:
+            db_close(conn, cur)
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 4,
+                    'message': 'Неверный пароль'
+                },
+                'id': id
+            })
+
+        try:
+            cur.execute("DELETE FROM admin WHERE login = ?", (login,))
+            db_close(conn, cur)
+            session.pop('login', None)
+            return jsonify({
+                'jsonrpc': '2.0',
+                'result': 'success',
+                'id': id
+            })
+        except sqlite3.Error as e:
+            print(f"Database error: {e}")
+            return jsonify({
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 5,
+                    'message': 'Database error'
+                },
+                'id': id
+            })
+
+
     login = session.get('login')
     if not login:
         return jsonify({

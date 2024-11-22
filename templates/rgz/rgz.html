@@ -310,6 +310,40 @@
             margin-top: 20px;
             padding: 20px;
         }
+
+        #delete-account-form {
+            border: 5px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            background-color: #f8f9fa;
+        }
+        
+        #delete-account-form input {
+            width: 85%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid black;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #adadad;
+        }
+        
+        #delete-account-form button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #delete-account-form button:hover {
+            background-color: deepskyblue;
+        }
     </style>
     <nav>
         <div class="username" id="username">{{ username }}</div>
@@ -321,6 +355,7 @@
             <button class="nav-button" onclick="showContent('delete-book-form')">Удалить книгу</button>
             <button class="nav-button" onclick="showContent('login-form')">Авторизация</button>
             <button class="nav-button" onclick="showContent('register-form')">Регистрация</button>
+            <button id="delete-account-button" class="nav-button" onclick="showContent('delete-account-form')">Удалить аккаунт</button>
             <button class="nav-button" onclick="logout()">Выйти</button>
         </div>
     </nav>
@@ -330,15 +365,21 @@
     <div id="login-form" class="form-container">
         <h2>Вход</h2>
         <input type="text" id="login-login" placeholder="Логин">
-        <input type="password" id="login-password" placeholder="Пароль">
+        <input type="password" id="login-password" placeholder="Пароль" autocomplete="new-password">
         <button onclick="login()">Войти</button>
     </div>
     
     <div id="register-form" class="form-container">
         <h2>Регистрация</h2>
         <input type="text" id="register-login" placeholder="Логин">
-        <input type="password" id="register-password" placeholder="Пароль">
+        <input type="password" id="register-password" placeholder="Пароль" autocomplete="new-password">
         <button onclick="register()">Зарегистрироваться</button>
+    </div>
+    
+    <div id="delete-account-form" class="form-container" style="display: none;">
+        <h2>Удалить аккаунт</h2>
+        <input type="password" id="delete-account-password" placeholder="Пароль" required autocomplete="new-password">
+        <button onclick="deleteAccount()">Удалить аккаунт</button>
     </div>
     
     <div id="books-container" class="form-container" style="display: none;">
@@ -439,9 +480,26 @@
         });
     }
 
+    function validatePassword(password) {
+        // Проверка на пустоту
+        if (!password) {
+            return false;
+        }
+        // Проверка на содержание только латинских букв, цифр и знаков препинания
+        const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*$/;
+        return regex.test(password);
+    }
+    
     function register() {
         const login = document.getElementById('register-login').value;
         const password = document.getElementById('register-password').value;
+    
+        // Валидация пароля
+        if (!validatePassword(password)) {
+            showNotification('Пароль должен состоять только из латинских букв, цифр и знаков препинания');
+            return;
+        }
+    
         const url = '/rgz/json-rpc-api';
         const json = {
             'jsonrpc': '2.0',
@@ -473,10 +531,17 @@
             showNotification('Ошибка при регистрации: ' + error.message);
         });
     }
-
+    
     function login() {
         const login = document.getElementById('login-login').value;
         const password = document.getElementById('login-password').value;
+    
+        // Валидация пароля
+        if (!validatePassword(password)) {
+            showNotification('Пароль должен состоять только из латинских букв, цифр и знаков препинания');
+            return;
+        }
+    
         const url = '/rgz/json-rpc-api';
         const json = {
             'jsonrpc': '2.0',
@@ -531,12 +596,58 @@
         }
 
         // Проверка авторизации для определенных форм
-        if (contentId === 'add-book-form' || contentId === 'delete-book-form' || contentId === 'edit-book-form') {
+        if (contentId === 'add-book-form' || contentId === 'delete-book-form' || contentId === 'edit-book-form' || contentId === 'delete-account-form') {
             if (!isLoggedIn()) {
                 showNotification('Вы должны быть авторизованы для выполнения этого действия');
                 showContent('login-form');
             }
         }
+    }
+
+    function deleteAccount() {
+        if (!isLoggedIn()) {
+            showNotification('Вы не авторизованы');
+            return;
+        }
+    
+        const password = document.getElementById('delete-account-password').value;
+    
+        // Валидация пароля
+        if (!validatePassword(password)) {
+            showNotification('Пароль должен состоять только из латинских букв, цифр и знаков препинания');
+            return;
+        }
+    
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'delete_account',
+            'params': {
+                'password': password
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Аккаунт успешно удален');
+                document.getElementById('username').innerText = 'Анонимус';
+                showContent('login-form');
+                updateNavButtons();
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при удалении аккаунта: ' + error.message);
+        });
     }
 
     function loadBooks() {
@@ -918,21 +1029,78 @@
         });
     }
 
-    function isLoggedIn() {
-        return document.getElementById('username').innerText !== 'Анонимус';
-    }
-
     function updateNavButtons() {
         const navButtons = document.getElementById('nav-buttons').children;
         for (let i = 0; i < navButtons.length; i++) {
             const button = navButtons[i];
-            if (button.innerText === 'Добавить книгу' || button.innerText === 'Редактировать книгу' || button.innerText === 'Удалить книгу') {
+            if (button.innerText === 'Добавить книгу' || button.innerText === 'Редактировать книгу' || button.innerText === 'Удалить книгу' || button.innerText === 'Удалить аккаунт') {
                 button.style.display = isLoggedIn() ? 'inline-block' : 'none';
             }
         }
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
+    
+    function isLoggedIn() {
+        return document.getElementById('username').innerText !== 'Анонимус';
+    }
+    
+    function deleteAccount() {
+        if (!isLoggedIn()) {
+            showNotification('Вы не авторизованы');
+            return;
+        }
+    
+        const password = document.getElementById('delete-account-password').value;
+    
+        // Валидация пароля
+        if (!validatePassword(password)) {
+            showNotification('Пароль должен состоять только из латинских букв, цифр и знаков препинания');
+            return;
+        }
+    
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'delete_account',
+            'params': {
+                'password': password
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if (data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Аккаунт успешно удален');
+                document.getElementById('username').innerText = 'Анонимус';
+                showContent('login-form');
+                updateNavButtons();
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при удалении аккаунта: ' + error.message);
+        });
+    }
+    
+    function validatePassword(password) {
+        // Проверка на пустоту
+        if (!password) {
+            return false;
+        }
+        // Проверка на содержание только латинских букв, цифр и знаков препинания
+        const regex = /^[a-zA-Z0-9!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]*$/;
+        return regex.test(password);
+    }
+       
+    
+    document.addEventListener('DOMContentLoaded', function() {   
         showContent('books-container');  // Показываем список книг сразу
         loadBooks();  // Загружаем книги при загрузке страницы
         updateNavButtons();  // Обновляем видимость кнопок навигации
