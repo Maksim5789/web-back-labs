@@ -2,6 +2,96 @@
 
 {% block lab %}Лабораторная работа №6{% endblock %}
 
+{% block main %}
+    <style>
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            border: 5px solid #ccc;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .nav-button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-left: 10px; /* Отступ между кнопками */
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        .nav-button a {
+            text-decoration: none; /* Убираем подчеркивание */
+            color: inherit; /* Унаследуем цвет */
+        }
+        
+        .nav-button:hover {
+            background-color: deepskyblue; /* Цвет кнопки при наведении */
+        }
+
+        .content {
+            margin-top: 20px;
+        }
+
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .username {
+            font-weight: bold;
+        }
+    </style>
+
+    <h1>API JSON-RPC</h1>
+    <div>
+        Тема лабораторной - API JSON-RPC. Список страниц:
+    </div>
+
+    <nav>
+        <div class="username" id="username">Анонимус</div>
+        <div>
+            <button class="nav-button"><a href="/">Главная страница</a></button>
+            <button class="nav-button" onclick="showContent('office-list')">Список офисов</button>
+            <button class="nav-button" onclick="showContent('login-form')">Авторизация</button>
+            <button class="nav-button" onclick="showContent('register-form')">Регистрация</button>
+            <button class="nav-button" onclick="logout()">Выйти</button>
+        </div>
+    </nav>
+
+    <div class="content">
+        <div id="office-list" class="form-container active">
+            <h1>Список кабинетов</h1>
+            <ul id="office-list-ul"></ul>
+            <div id="total-cost">Общая стоимость аренды: 0 руб.</div>
+        </div>
+
+        <div id="login-form" class="form-container">
+            <h2>Вход</h2>
+            <input type="text" id="login-login" placeholder="Логин">
+            <input type="password" id="login-password" placeholder="Пароль">
+            <button onclick="login()">Войти</button>
+        </div>
+
+        <div id="register-form" class="form-container">
+            <h2>Регистрация</h2>
+            <input type="text" id="register-login" placeholder="Логин">
+            <input type="password" id="register-password" placeholder="Пароль">
+            <button onclick="register()">Зарегистрироваться</button>
+        </div>
+    </div>
+{% endblock %}
+
 {% block script %}
 <script>
     function getOfficeList() {
@@ -21,7 +111,7 @@
         })
         .then(function(data) {
             const office_list = data.result;
-            const ul = document.getElementById('office-list');
+            const ul = document.getElementById('office-list-ul');
             ul.innerHTML = ''; // Очищаем список перед добавлением новых элементов
             let totalCost = 0;
             for(let i = 0; i < office_list.length; i++) {
@@ -146,6 +236,7 @@
             } else {
                 alert('Регистрация прошла успешно');
                 clearInputs();
+                showContent('office-list');
             }
         });
     }
@@ -177,6 +268,8 @@
             } else {
                 alert('Вход выполнен успешно');
                 clearInputs();
+                showContent('office-list');
+                document.getElementById('username').innerText = login;
                 getOfficeList();
             }
         });
@@ -202,6 +295,8 @@
                 alert(data.error.message);
             } else {
                 alert('Вы вышли из аккаунта');
+                document.getElementById('username').innerText = 'Анонимус';
+                showContent('office-list');
                 getOfficeList();
             }
         });
@@ -214,36 +309,16 @@
         document.getElementById('login-password').value = '';
     }
 
+    function showContent(contentId) {
+        const containers = document.querySelectorAll('.form-container');
+        containers.forEach(container => {
+            container.classList.remove('active');
+        });
+        document.getElementById(contentId).classList.add('active');
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         getOfficeList();
     });
 </script>
-{% endblock %}
-
-{% block main %}
-    <h1>API JSON-RPC</h1>
-    <div>
-        Тема лабораторной - API JSON-RPC. Список страниц:
-    </div>
-
-    <ol>
-        <li><a href="/">Главное меню</a></li>
-    </ol>
-
-    <h1>Список кабинетов</h1>
-    <ul id="office-list"></ul>
-    <div id="total-cost">Общая стоимость аренды: 0 руб.</div>
-
-    <h2>Регистрация</h2>
-    <input type="text" id="register-login" placeholder="Логин">
-    <input type="password" id="register-password" placeholder="Пароль">
-    <button onclick="register()">Зарегистрироваться</button>
-
-    <h2>Вход</h2>
-    <input type="text" id="login-login" placeholder="Логин">
-    <input type="password" id="login-password" placeholder="Пароль">
-    <button onclick="login()">Войти</button>
-
-    <h2>Выход</h2>
-    <button onclick="logout()">Выйти</button>
 {% endblock %}
