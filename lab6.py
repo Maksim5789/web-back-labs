@@ -30,7 +30,8 @@ def db_close(conn,cur):
 
 @lab6.route('/lab6/')
 def lab():
-    return render_template('lab6/lab6.html')
+    username = session.get('login', 'Анонимус')  # Получаем имя пользователя из сессии или устанавливаем "Анонимус"
+    return render_template('lab6/lab6.html', username=username)
 
 @lab6.route('/lab6/json-rpc-api', methods=['POST'])
 def api():

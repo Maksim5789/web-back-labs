@@ -51,6 +51,80 @@
         .username {
             font-weight: bold;
         }
+
+        #office-list-ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        #office-list-ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            border: 5px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+
+        #office-list-ul li span {
+            flex-grow: 1;
+        }
+
+        #office-list-ul li button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px; /* Увеличиваем размер кнопок */
+            margin-left: 10px;
+            font-size: 16px; /* Увеличиваем размер шрифта */
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #office-list-ul li button:hover {
+            background-color: deepskyblue;
+        }
+
+        #login-form,
+        #register-form {
+            border: 5px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            background-color: #f8f9fa;
+        }
+
+        #login-form input,
+        #register-form input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 30%;
+            background-color: #adadad;
+        }
+
+        #login-form button,
+        #register-form button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #login-form button:hover,
+        #register-form button:hover {
+            background-color: deepskyblue;
+        }
     </style>
 
     <h1>API JSON-RPC</h1>
@@ -59,7 +133,7 @@
     </div>
 
     <nav>
-        <div class="username" id="username">Анонимус</div>
+        <div class="username" id="username">{{ username }}</div>
         <div>
             <button class="nav-button"><a href="/">Главная страница</a></button>
             <button class="nav-button" onclick="showContent('office-list')">Список офисов</button>
@@ -94,8 +168,6 @@
 
 {% block script %}
 <script>
-    let currentUser = null;
-
     function getOfficeList() {
         const url = '/lab6/json-rpc-api';
         const json = {
@@ -116,24 +188,29 @@
             const ul = document.getElementById('office-list-ul');
             ul.innerHTML = ''; // Очищаем список перед добавлением новых элементов
             let totalCost = 0;
+            const username = document.getElementById('username').innerText;
+
             for(let i = 0; i < office_list.length; i++) {
                 const office = office_list[i];
                 const li = document.createElement('li');
-                li.innerText = `${office.number}: ${office.tenant || 'свободен'}, стоимость: ${office.price} руб.`;
+                const span = document.createElement('span');
+                span.innerText = `${office.number}: ${office.tenant || 'свободен'}, стоимость: ${office.price} руб.`;
+                li.appendChild(span);
 
                 const bookingButton = document.createElement('button');
-                bookingButton.innerText = 'зарезервировать';
+                bookingButton.innerText = 'Зарезервировать';
                 bookingButton.onclick = function() { booking(office.number) };
                 li.appendChild(bookingButton);
 
                 const unbookingButton = document.createElement('button');
-                unbookingButton.innerText = 'освободить';
+                unbookingButton.innerText = 'Освободить';
                 unbookingButton.onclick = function() { unbooking(office.number) };
                 li.appendChild(unbookingButton);
 
                 ul.appendChild(li);
+            
 
-                if (office.tenant === currentUser) {
+                if (office.tenant === username) {
                     totalCost += office.price;
                 }
             }
@@ -271,7 +348,6 @@
                 alert('Вход выполнен успешно');
                 clearInputs();
                 showContent('office-list');
-                currentUser = login;
                 document.getElementById('username').innerText = login;
                 getOfficeList();
             }
@@ -298,7 +374,6 @@
                 alert(data.error.message);
             } else {
                 alert('Вы вышли из аккаунта');
-                currentUser = null;
                 document.getElementById('username').innerText = 'Анонимус';
                 showContent('office-list');
                 getOfficeList();
