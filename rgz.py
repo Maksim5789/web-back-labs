@@ -9,6 +9,8 @@ rgz = Blueprint('rgz', __name__)
 def hash_password(password):
     return hashlib.sha256(password.encode()).hexdigest()
 
+
+# Для ПК локального
 def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
         # Подключение к базе данных
@@ -18,6 +20,26 @@ def db_connect():
     else:
         dir_path = path.dirname(path.realpath(__file__))
         db_path = path.join(dir_path, "rgz_bd.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    return conn, cur
+
+def db_close(conn, cur):
+    conn.commit()
+    cur.close()
+    conn.close()
+
+# Для сервера
+def db_connect():
+    if current_app.config['DB_TYPE'] == 'postgres':
+        # Подключение к базе данных
+        conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\rgz') 
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    else:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "rgz.db")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
