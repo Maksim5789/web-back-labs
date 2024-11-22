@@ -308,7 +308,7 @@
     </style>
     <nav>
         <div class="username" id="username">{{ username }}</div>
-        <div>
+        <div id="nav-buttons">
             <button class="nav-button"><a href="/">Главная страница</a></button>
             <button class="nav-button" onclick="showContent('books-container')">Список книг</button>
             <button class="nav-button" onclick="showContent('add-book-form')">Добавить книгу</button>
@@ -419,6 +419,7 @@
                 showNotification('Вы вышли из аккаунта');
                 document.getElementById('username').innerText = 'Анонимус';
                 showContent('login-form');
+                updateNavButtons();
             }
         })
         .catch(function(error) {
@@ -490,6 +491,7 @@
                 clearInputs();
                 document.getElementById('username').innerText = login;
                 showContent('login-form');
+                updateNavButtons();
             }
         })
         .catch(function(error) {
@@ -514,6 +516,14 @@
         const content = document.getElementById(contentId);
         if (content) {
             content.style.display = 'block';
+        }
+
+        // Проверка авторизации для определенных форм
+        if (contentId === 'add-book-form' || contentId === 'delete-book-form' || contentId === 'edit-book-form') {
+            if (!isLoggedIn()) {
+                showNotification('Вы должны быть авторизованы для выполнения этого действия');
+                showContent('login-form');
+            }
         }
     }
 
@@ -611,6 +621,12 @@
     }
 
     function addBook() {
+        if (!isLoggedIn()) {
+            showNotification('Вы должны быть авторизованы для добавления книги');
+            showContent('login-form');
+            return;
+        }
+
         const title = document.getElementById('add-book-title').value;
         const author = document.getElementById('add-book-author').value;
         const year = document.getElementById('add-book-year').value;
@@ -669,6 +685,12 @@
     }
 
     function searchBook() {
+        if (!isLoggedIn()) {
+            showNotification('Вы должны быть авторизованы для удаления книги');
+            showContent('login-form');
+            return;
+        }
+
         const bookId = document.getElementById('delete-book-id').value;
         const url = '/rgz/json-rpc-api';
         const json = {
@@ -717,6 +739,12 @@
     }
 
     function deleteBook(bookId) {
+        if (!isLoggedIn()) {
+            showNotification('Вы должны быть авторизованы для удаления книги');
+            showContent('login-form');
+            return;
+        }
+
         const url = '/rgz/json-rpc-api';
         const json = {
             'jsonrpc': '2.0',
@@ -749,6 +777,12 @@
     }
 
     function searchBookForEdit() {
+        if (!isLoggedIn()) {
+            showNotification('Вы должны быть авторизованы для редактирования книги');
+            showContent('login-form');
+            return;
+        }
+
         const bookId = document.getElementById('edit-book-id').value;
         const url = '/rgz/json-rpc-api';
         const json = {
@@ -805,6 +839,12 @@
     }
     
     function updateBook(bookId) {
+        if (!isLoggedIn()) {
+            showNotification('Вы должны быть авторизованы для редактирования книги');
+            showContent('login-form');
+            return;
+        }
+
         const title = document.getElementById('edit-book-title').value;
         const author = document.getElementById('edit-book-author').value;
         const year = document.getElementById('edit-book-year').value;
@@ -854,9 +894,24 @@
         });
     }
 
+    function isLoggedIn() {
+        return document.getElementById('username').innerText !== 'Анонимус';
+    }
+
+    function updateNavButtons() {
+        const navButtons = document.getElementById('nav-buttons').children;
+        for (let i = 0; i < navButtons.length; i++) {
+            const button = navButtons[i];
+            if (button.innerText === 'Добавить книгу' || button.innerText === 'Редактировать книгу' || button.innerText === 'Удалить книгу') {
+                button.style.display = isLoggedIn() ? 'inline-block' : 'none';
+            }
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         showContent('books-container');  // Показываем список книг сразу
         loadBooks();  // Загружаем книги при загрузке страницы
+        updateNavButtons();  // Обновляем видимость кнопок навигации
     });
 </script>
 {% endblock %}
