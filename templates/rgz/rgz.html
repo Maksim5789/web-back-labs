@@ -262,6 +262,11 @@
             cursor: pointer;
         }
 
+        #delete-book-info {
+            margin-top: 20px;
+            padding: 20px;
+        }
+
         #delete-book-form button:hover {
             background-color: deepskyblue;
         }
@@ -347,6 +352,7 @@
                     <input type="number" id="filter-max-pages" placeholder="Максимальное количество страниц">
                     <input type="text" id="filter-publisher" placeholder="Издательство">
                     <button type="button" onclick="filterBooks()">Применить фильтр</button>
+                    <button type="button" onclick="resetFilter()">Сбросить фильтр</button>
                 </form>
             </div>
         </nav>
@@ -359,6 +365,7 @@
 
     <div id="add-book-form" class="form-container" style="display: none;">
         <h2>Добавить книгу</h2>
+        <input type="number" id="add-book-id" placeholder="ID книги" required>
         <input type="text" id="add-book-title" placeholder="Название" required>
         <input type="text" id="add-book-author" placeholder="Автор" required>
         <input type="number" id="add-book-year" placeholder="Год публикации" required>
@@ -620,6 +627,15 @@
         loadBooks();
     }
 
+    function resetFilter() {
+        document.getElementById('filter-title').value = '';
+        document.getElementById('filter-author').value = '';
+        document.getElementById('filter-min-pages').value = '';
+        document.getElementById('filter-max-pages').value = '';
+        document.getElementById('filter-publisher').value = '';
+        filterBooks();
+    }
+
     function addBook() {
         if (!isLoggedIn()) {
             showNotification('Вы должны быть авторизованы для добавления книги');
@@ -627,6 +643,7 @@
             return;
         }
 
+        const id = document.getElementById('add-book-id').value;
         const title = document.getElementById('add-book-title').value;
         const author = document.getElementById('add-book-author').value;
         const year = document.getElementById('add-book-year').value;
@@ -634,7 +651,7 @@
         const publisher = document.getElementById('add-book-publisher').value;
         const cover = document.getElementById('add-book-cover').value;
 
-        if (!title || !author || !year || !pages || !publisher) {
+        if (!id || !title || !author || !year || !pages || !publisher) {
             showNotification('Все поля, кроме обложки, обязательны к заполнению');
             return;
         }
@@ -644,6 +661,7 @@
             'jsonrpc': '2.0',
             'method': 'add_book',
             'params': {
+                'id': id,
                 'title': title,
                 'author': author,
                 'year_of_publication': year,
@@ -676,6 +694,7 @@
     }
 
     function clearAddBookForm() {
+        document.getElementById('add-book-id').value = '';
         document.getElementById('add-book-title').value = '';
         document.getElementById('add-book-author').value = '';
         document.getElementById('add-book-year').value = '';
@@ -733,8 +752,8 @@
                     <p>Издательство: ${book.publisher}</p>
                 </div>
                 <img src="${book.book_cover}" alt="${book.title}">
-                <button onclick="deleteBook(${book.id})">Удалить книгу</button>
             </div>
+            <button onclick="deleteBook(${book.id})">Удалить книгу</button>
         `;
     }
 
