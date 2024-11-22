@@ -1,8 +1,13 @@
-from flask import Blueprint, redirect, url_for, render_template, request, session, current_app, jsonify
+from flask import Blueprint, redirect, url_for, render_template, request, session, current_app, jsonify, flash
 import sqlite3
 from os import path
+import hashlib
 
 lab6 = Blueprint('lab6', __name__)
+
+# Функция для хеширования пароля
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
 def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
@@ -41,6 +46,69 @@ def api():
         return {
             'jsonrpc': '2.0',
             'result': [dict(office) for office in offices],
+            'id': id
+        }
+    
+    if data['method'] == 'register':
+        login = data['params']['login']
+        password = data['params']['password']
+        hashed_password = hash_password(password)
+
+        conn, cur = db_connect()
+        cur.execute("SELECT * FROM users WHERE login = ?", (login,))
+        user = cur.fetchone()
+
+        if user:
+            db_close(conn, cur)
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 3,
+                    'message': 'Пользователь с таким логином уже существует'
+                },
+                'id': id
+            }
+
+        cur.execute("INSERT INTO users (login, password) VALUES (?, ?)", (login, hashed_password))
+        db_close(conn, cur)
+        return {
+            'jsonrpc': '2.0',
+            'result': 'success',
+            'id': id
+        }
+    
+    if data['method'] == 'login':
+        login = data['params']['login']
+        password = data['params']['password']
+        hashed_password = hash_password(password)
+
+        conn, cur = db_connect()
+        cur.execute("SELECT * FROM users WHERE login = ? AND password = ?", (login, hashed_password))
+        user = cur.fetchone()
+        db_close(conn, cur)
+
+        if user:
+            session['login'] = login
+            return {
+                'jsonrpc': '2.0',
+                'result': 'success',
+                'id': id
+            }
+        else:
+            return {
+                'jsonrpc': '2.0',
+                'error': {
+                    'code': 4,
+                    'message': 'Неверный логин или пароль'
+                },
+                'id': id
+            }
+    
+    if data['method'] == 'logout':
+        session.pop('login', None)
+        return {
+            'jsonrpc': '2.0',
+            'result': 'success',
             'id': id
         }
     
