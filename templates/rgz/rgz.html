@@ -265,6 +265,46 @@
         #delete-book-form button:hover {
             background-color: deepskyblue;
         }
+
+        #edit-book-form {
+            border: 5px solid #ccc;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            width: 30%;
+            background-color: #f8f9fa;
+        }
+        
+        #edit-book-form input,
+        #edit-book-form select {
+            width: 85%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid black;
+            border-radius: 5px;
+            font-size: 16px;
+            background-color: #adadad;
+        }
+        
+        #edit-book-form button {
+            background-color: lightblue;
+            border: none;
+            color: black;
+            padding: 10px 20px;
+            margin-top: 10px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        #edit-book-form button:hover {
+            background-color: deepskyblue;
+        }
+        
+        #edit-book-info {
+            margin-top: 20px;
+            padding: 20px;
+        }
     </style>
     <nav>
         <div class="username" id="username">{{ username }}</div>
@@ -272,6 +312,7 @@
             <button class="nav-button"><a href="/">Главная страница</a></button>
             <button class="nav-button" onclick="showContent('books-container')">Список книг</button>
             <button class="nav-button" onclick="showContent('add-book-form')">Добавить книгу</button>
+            <button class="nav-button" onclick="showContent('edit-book-form')">Редактировать книгу</button>
             <button class="nav-button" onclick="showContent('delete-book-form')">Удалить книгу</button>
             <button class="nav-button" onclick="showContent('login-form')">Авторизация</button>
             <button class="nav-button" onclick="showContent('register-form')">Регистрация</button>
@@ -281,59 +322,64 @@
     
     <div id="notification"></div>
     
-       
-        <div id="login-form" class="form-container">
-            <h2>Вход</h2>
-            <input type="text" id="login-login" placeholder="Логин">
-            <input type="password" id="login-password" placeholder="Пароль">
-            <button onclick="login()">Войти</button>
-        </div>
+    <div id="login-form" class="form-container">
+        <h2>Вход</h2>
+        <input type="text" id="login-login" placeholder="Логин">
+        <input type="password" id="login-password" placeholder="Пароль">
+        <button onclick="login()">Войти</button>
+    </div>
     
-        <div id="register-form" class="form-container">
-            <h2>Регистрация</h2>
-            <input type="text" id="register-login" placeholder="Логин">
-            <input type="password" id="register-password" placeholder="Пароль">
-            <button onclick="register()">Зарегистрироваться</button>
-        </div>
+    <div id="register-form" class="form-container">
+        <h2>Регистрация</h2>
+        <input type="text" id="register-login" placeholder="Логин">
+        <input type="password" id="register-password" placeholder="Пароль">
+        <button onclick="register()">Зарегистрироваться</button>
+    </div>
     
-        <div id="books-container" class="form-container" style="display: none;">
-            <h2>Список книг</h2>
-            <nav class="filter-nav">
-                <div class="filter">
-                    <form id="filter-form">
-                        <input type="text" id="filter-title" placeholder="Название">
-                        <input type="text" id="filter-author" placeholder="Автор">
-                        <input type="number" id="filter-min-pages" placeholder="Минимальное количество страниц">
-                        <input type="number" id="filter-max-pages" placeholder="Максимальное количество страниц">
-                        <input type="text" id="filter-publisher" placeholder="Издательство">
-                        <button type="button" onclick="filterBooks()">Применить фильтр</button>
-                    </form>
-                </div>
-            </nav>
-            <div id="books-list"></div>
-            <div class="pagination">
-                <button id="prev-page" onclick="prevPage()" disabled>Предыдущие</button>
-                <button id="next-page" onclick="nextPage()">Следующие</button>
+    <div id="books-container" class="form-container" style="display: none;">
+        <h2>Список книг</h2>
+        <nav class="filter-nav">
+            <div class="filter">
+                <form id="filter-form">
+                    <input type="text" id="filter-title" placeholder="Название">
+                    <input type="text" id="filter-author" placeholder="Автор">
+                    <input type="number" id="filter-min-pages" placeholder="Минимальное количество страниц">
+                    <input type="number" id="filter-max-pages" placeholder="Максимальное количество страниц">
+                    <input type="text" id="filter-publisher" placeholder="Издательство">
+                    <button type="button" onclick="filterBooks()">Применить фильтр</button>
+                </form>
             </div>
+        </nav>
+        <div id="books-list"></div>
+        <div class="pagination">
+            <button id="prev-page" onclick="prevPage()" disabled>Предыдущие</button>
+            <button id="next-page" onclick="nextPage()">Следующие</button>
         </div>
+    </div>
 
-        <div id="add-book-form" class="form-container" style="display: none;">
-            <h2>Добавить книгу</h2>
-            <input type="text" id="add-book-title" placeholder="Название" required>
-            <input type="text" id="add-book-author" placeholder="Автор" required>
-            <input type="number" id="add-book-year" placeholder="Год публикации" required>
-            <input type="number" id="add-book-pages" placeholder="Количество страниц" required>
-            <input type="text" id="add-book-publisher" placeholder="Издательство" required>
-            <input type="text" id="add-book-cover" placeholder="Обложка">
-            <button onclick="addBook()">Добавить книгу</button>
-        </div>
+    <div id="add-book-form" class="form-container" style="display: none;">
+        <h2>Добавить книгу</h2>
+        <input type="text" id="add-book-title" placeholder="Название" required>
+        <input type="text" id="add-book-author" placeholder="Автор" required>
+        <input type="number" id="add-book-year" placeholder="Год публикации" required>
+        <input type="number" id="add-book-pages" placeholder="Количество страниц" required>
+        <input type="text" id="add-book-publisher" placeholder="Издательство" required>
+        <input type="text" id="add-book-cover" placeholder="Обложка">
+        <button onclick="addBook()">Добавить книгу</button>
+    </div>
 
-        <div id="delete-book-form" class="form-container" style="display: none;">
-            <h2>Удалить книгу</h2>
-            <input type="number" id="delete-book-id" placeholder="ID книги" required>
-            <button onclick="searchBook()">Найти книгу</button>
-            <div id="delete-book-info"></div>
-        </div>
+    <div id="delete-book-form" class="form-container" style="display: none;">
+        <h2>Удалить книгу</h2>
+        <input type="number" id="delete-book-id" placeholder="ID книги" required>
+        <button onclick="searchBook()">Найти книгу</button>
+        <div id="delete-book-info"></div>
+    </div>
+
+    <div id="edit-book-form" class="form-container" style="display: none;">
+        <h2>Редактировать книгу</h2>
+        <input type="number" id="edit-book-id" placeholder="ID книги" required>
+        <button onclick="searchBookForEdit()">Найти книгу</button>
+        <div id="edit-book-info"></div>
     </div>
 {% endblock %}
 
@@ -461,9 +507,14 @@
     function showContent(contentId) {
         const containers = document.querySelectorAll('.form-container');
         containers.forEach(container => {
-            container.style.display = 'none';
+            if (container) {
+                container.style.display = 'none';
+            }
         });
-        document.getElementById(contentId).style.display = 'block';
+        const content = document.getElementById(contentId);
+        if (content) {
+            content.style.display = 'block';
+        }
     }
 
     function loadBooks() {
@@ -694,6 +745,112 @@
         })
         .catch(function(error) {
             showNotification('Ошибка при удалении книги: ' + error.message);
+        });
+    }
+
+    function searchBookForEdit() {
+        const bookId = document.getElementById('edit-book-id').value;
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'get_book',
+            'params': {
+                'id': bookId
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                displayBookForEdit(data.result.book);
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при поиске книги: ' + error.message);
+        });
+    }
+
+    function displayBookForEdit(book) {
+        const bookInfo = document.getElementById('edit-book-info');
+        bookInfo.innerHTML = `
+            <div class="book">
+                <div class="book-info">
+                    <h2>${book.title}</h2>
+                    <p>Автор: ${book.author}</p>
+                    <p>Год публикации: ${book.year_of_publication}</p>
+                    <p>Количество страниц: ${book.amount_of_pages}</p>
+                    <p>Издательство: ${book.publisher}</p>
+                </div>
+                <img src="${book.book_cover}" alt="${book.title}">
+            </div>
+            <form id="edit-book-form-fields">
+                <input type="text" id="edit-book-title" placeholder="Название" value="${book.title}" required>
+                <input type="text" id="edit-book-author" placeholder="Автор" value="${book.author}" required>
+                <input type="number" id="edit-book-year" placeholder="Год публикации" value="${book.year_of_publication}" required>
+                <input type="number" id="edit-book-pages" placeholder="Количество страниц" value="${book.amount_of_pages}" required>
+                <input type="text" id="edit-book-publisher" placeholder="Издательство" value="${book.publisher}" required>
+                <input type="text" id="edit-book-cover" placeholder="Обложка" value="${book.book_cover}">
+                <button type="button" onclick="updateBook(${book.id})">Сохранить изменения</button>
+            </form>
+        `;
+    }
+    
+    function updateBook(bookId) {
+        const title = document.getElementById('edit-book-title').value;
+        const author = document.getElementById('edit-book-author').value;
+        const year = document.getElementById('edit-book-year').value;
+        const pages = document.getElementById('edit-book-pages').value;
+        const publisher = document.getElementById('edit-book-publisher').value;
+        const cover = document.getElementById('edit-book-cover').value;
+    
+        if (!title || !author || !year || !pages || !publisher) {
+            showNotification('Все поля, кроме обложки, обязательны к заполнению');
+            return;
+        }
+    
+        const url = '/rgz/json-rpc-api';
+        const json = {
+            'jsonrpc': '2.0',
+            'method': 'update_book',
+            'params': {
+                'id': bookId,
+                'title': title,
+                'author': author,
+                'year_of_publication': year,
+                'amount_of_pages': pages,
+                'publisher': publisher,
+                'book_cover': cover
+            },
+            'id': Math.round(Math.random() * 1000)
+        };
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(json)
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(data) {
+            if(data.error) {
+                showNotification(data.error.message);
+            } else {
+                showNotification('Данные книги успешно обновлены');
+                document.getElementById('edit-book-info').innerHTML = '';
+                loadBooks();
+            }
+        })
+        .catch(function(error) {
+            showNotification('Ошибка при обновлении данных книги: ' + error.message);
         });
     }
 
