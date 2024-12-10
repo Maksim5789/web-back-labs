@@ -56,12 +56,19 @@ def put_film(id):
         abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
     
     film = request.get_json()  # Получаем данные из запроса
+    if film['description'] == '':
+        return {'description': 'Заполните описание'}, 400
     films[id] = film  # Обновляем фильм в списке
     return films[id], 200  # Возвращаем обновленный фильм с кодом 200 OK
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
     film = request.get_json()  # Получаем данные из тела запроса
+    
+    # Проверка описания
+    if not film.get('description'):
+        return {'description': 'Заполните описание'}, 400
+    
     films.append(film)  # Добавляем новый фильм в конец списка
     new_index = len(films) - 1  # Получаем индекс нового элемента
     return {'id': new_index}, 201  # Возвращаем индекс нового элемента с кодом 201 Created

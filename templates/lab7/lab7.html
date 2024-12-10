@@ -17,6 +17,9 @@
     position: absolute;
     padding: 20px; 
 }
+.error-message {
+    color: red;
+}
 </style>
 {% endblock %}
 
@@ -42,6 +45,9 @@
 <div class="modal">
     <input type="hidden" id="id">
 
+    <!-- Общая ошибка -->
+    <div id="error-message" class="error-message"></div>
+
     <label>
         Название фильма на русском:
         <input type="text" id="title-ru">
@@ -61,6 +67,8 @@
     <label>
         Описание:
         <textarea id="description"></textarea>
+        <!-- Ошибка для описания -->
+        <div id="description-error" class="error-message"></div>
     </label><br>
 
     <button onclick="sendFilm()">OK</button>

@@ -61,6 +61,11 @@ function deleteFilm(id, title) {
 }
 
 function showModal() {
+    // Очищаем сообщения об ошибках
+    document.getElementById('error-message').innerText = '';
+    document.getElementById('description-error').innerText = '';
+
+    // Отображаем модальное окно
     document.querySelector('div.modal').style.display = 'block';
 }
 
@@ -115,9 +120,23 @@ function sendFilm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(film)
     })
-    .then(function() {
-        fillFilmList();
-        hideModal();
+    .then(function(resp) {
+        if(resp.ok) {
+            fillFilmList();
+            hideModal();
+            return {};
+        }
+        return resp.json();
+    })
+    .then(function(errors) {
+        let errorMessage = '';
+        if(errors.description) {
+            errorMessage += errors.description + '\n';
+            document.getElementById('description-error').innerText = errors.description;
+        }
+        if(errorMessage) {
+            document.getElementById('error-message').innerText = errorMessage;
+        }
     });
 }
 
