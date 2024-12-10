@@ -5,26 +5,26 @@ function fillFilmList() {
         })
         .then(function (films) {
             let tbody = document.getElementById('film-list');
-            tbody.innerHTML = '';
+            tbody.innerHTML = ''; // Очищаем таблицу
 
             for (let i = 0; i < films.length; i++) {
                 let tr = document.createElement('tr');
 
                 // Название на русском
                 let tdRussianTitle = document.createElement('td');
-                tdRussianTitle.innerText = films[i].title_ru;
+                tdRussianTitle.innerText = films[i].title_ru || '';
 
                 // Название на оригинальном языке (курсивом и в скобках)
                 let tdOriginalTitle = document.createElement('td');
-                if (films[i].title && films[i].title !== films[i].title_ru) {
+                if (films[i].title) {
                     tdOriginalTitle.innerHTML = `<i>(${films[i].title})</i>`;
                 } else {
-                    tdOriginalTitle.innerText = ''; // Если названия совпадают, оставляем пустое поле
+                    tdOriginalTitle.innerText = ''; // Если оригинальное название отсутствует, оставляем пустое поле
                 }
 
                 // Год выпуска
                 let tdYear = document.createElement('td');
-                tdYear.innerText = films[i].year;
+                tdYear.innerText = films[i].year || '';
 
                 // Действия (кнопки "Редактировать" и "Удалить")
                 let tdActions = document.createElement('td');
@@ -119,10 +119,10 @@ document.addEventListener('DOMContentLoaded', function() {
 function sendFilm() {
     const id = document.getElementById('id').value;
     const film = {
-        title: document.getElementById('title').value,
-        title_ru: document.getElementById('title-ru').value,
-        year: document.getElementById('year').value,
-        description: document.getElementById('description').value
+        title: document.getElementById('title').value.trim(), // Удаляем пробелы
+        title_ru: document.getElementById('title-ru').value.trim(), // Удаляем пробелы
+        year: parseInt(document.getElementById('year').value), // Преобразуем в число
+        description: document.getElementById('description').value.trim() // Удаляем пробелы
     };
 
     const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
@@ -135,21 +135,34 @@ function sendFilm() {
     })
     .then(function(resp) {
         if(resp.ok) {
-            fillFilmList();
+            fillFilmList(); // Обновляем таблицу
             hideModal();
             return {};
         }
-        return resp.json();
+        return resp.json(); // Если есть ошибки, парсим их
     })
     .then(function(errors) {
         let errorMessage = '';
+        if(errors.title_ru) {
+            errorMessage += errors.title_ru + '\n';
+        }
+        if(errors.title) {
+            errorMessage += errors.title + '\n';
+        }
+        if(errors.year) {
+            errorMessage += errors.year + '\n';
+        }
         if(errors.description) {
             errorMessage += errors.description + '\n';
             document.getElementById('description-error').innerText = errors.description;
         }
-        if(errorMessage) {
+        if (errorMessage) {
             document.getElementById('error-message').innerText = errorMessage;
         }
+    })
+    .catch(function(error) {
+        console.error('Ошибка при отправке данных:', error);
+        document.getElementById('error-message').innerText = 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.';
     });
 }
 

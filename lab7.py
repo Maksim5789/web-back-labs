@@ -2,6 +2,7 @@ from flask import Blueprint, redirect, url_for, render_template, request, sessio
 import sqlite3
 from os import path
 import hashlib
+from datetime import datetime
 
 lab7 = Blueprint('lab7', __name__)
 
@@ -57,13 +58,31 @@ def put_film(id):
     
     film = request.get_json()  # Получаем данные из запроса
     
-    # Проверка описания
-    if not film.get('description'):
-        return {'description': 'Заполните описание'}, 400
+    # Проверка названий
+    title = film.get('title', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
+    title_ru = film.get('title_ru', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
     
-    # Если title пустое, заполняем его значением из title_ru
-    if not film.get('title') and film.get('title_ru'):
-        film['title'] = film['title_ru']
+    # Если оба названия пустые
+    if not title and not title_ru:
+        return {'title': 'Заполните оригинальное название'}, 400
+    
+    # Если пустое только оригинальное название, заполняем его значением из русского названия
+    if not title and title_ru:
+        film['title'] = title_ru
+    
+    # Если пустое русское название, а оригинальное заполнено
+    if not title_ru and title:
+        return {'title_ru': 'Заполните русское название'}, 400
+    
+    # Проверка года
+    year = film.get('year')
+    if not year or not isinstance(year, int) or year < 1895 or year > datetime.now().year:
+        return {'year': f'Год должен быть от 1895 до {datetime.now().year}'}, 400
+    
+    # Проверка описания
+    description = film.get('description', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
+    if not description or len(description) > 2000:
+        return {'description': 'Описание должно быть непустым и не более 2000 символов'}, 400
     
     # Обновляем фильм в списке
     films[id] = film
@@ -75,13 +94,31 @@ def put_film(id):
 def add_film():
     film = request.get_json()  # Получаем данные из тела запроса
     
-    # Проверка описания
-    if not film.get('description'):
-        return {'description': 'Заполните описание'}, 400
+    # Проверка названий
+    title = film.get('title', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
+    title_ru = film.get('title_ru', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
     
-    # Если title пустое, заполняем его значением из title_ru
-    if not film.get('title') and film.get('title_ru'):
-        film['title'] = film['title_ru']
+    # Если оба названия пустые
+    if not title and not title_ru:
+        return {'title': 'Заполните оригинальное название'}, 400
+    
+    # Если пустое только оригинальное название, заполняем его значением из русского названия
+    if not title and title_ru:
+        film['title'] = title_ru
+    
+    # Если пустое русское название, а оригинальное заполнено
+    if not title_ru and title:
+        return {'title_ru': 'Заполните русское название'}, 400
+    
+    # Проверка года
+    year = film.get('year')
+    if not year or not isinstance(year, int) or year < 1895 or year > datetime.now().year:
+        return {'year': f'Год должен быть от 1895 до {datetime.now().year}'}, 400
+    
+    # Проверка описания
+    description = film.get('description', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
+    if not description or len(description) > 2000:
+        return {'description': 'Описание должно быть непустым и не более 2000 символов'}, 400
     
     # Добавляем новый фильм в конец списка
     films.append(film)
