@@ -5,21 +5,101 @@
 {% block script %}
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 <style>
-.modal {
-    display: none;
-    z-index: 100;
-    box-shadow: 3px 3px 5px black;
-    background: white;
-    width: 400px;
-    left: 50%;
-    top: 220px;
-    margin-left: -200px;
-    position: absolute;
-    padding: 20px; 
-}
-.error-message {
-    color: red;
-}
+    /* Основные стили для модального окна */
+    .modal {
+        display: none;
+        z-index: 100;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        background: white;
+        width: 600px; /* Увеличена ширина модального окна */
+        left: 50%;
+        top: 220px;
+        margin-left: -300px; /* Обновлено для центрирования */
+        position: absolute;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .error-message {
+        color: red;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    /* Стили для таблицы */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    th, td {
+        padding: 15px;
+        text-align: left;
+    }
+
+    th {
+        background-color: #007BFF;
+        color: white;
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+
+    tr:nth-child(odd) {
+        background-color: #e9ecef;
+    }
+
+    /* Стили для кнопок */
+    button {
+        background-color: #007BFF;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        margin: 10px 0;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+
+    button {
+        margin: 0 10px; 
+    }
+
+    /* Стили для модального окна */
+    .modal label {
+        display: block;
+        margin: 10px 0 5px;
+        font-weight: bold;
+    }
+
+    .modal input, .modal textarea {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+        box-sizing: border-box;
+    }
+
+    .modal textarea {
+        height: 150px; /* Увеличена высота текстового поля для описания */
+    }
+
+    .modal button {
+        margin-right: 10px;
+    }
 </style>
 {% endblock %}
 
@@ -29,7 +109,8 @@
     <thead>
         <tr>
             <th colspan="2">Название</th>
-            <th>Описание</th>
+            <th>Год</th> <!-- Изменено с "Описание" на "Год" -->
+            <th>Действие</th> <!-- Добавлена колонка "Действие" -->
         </tr>
     </thead>
     <tbody id="film-list"></tbody>
@@ -74,5 +155,4 @@
     <button onclick="sendFilm()">OK</button>
     <button onclick="cancel()">Отмена</button>
 </div>
-
 {% endblock %}
