@@ -6,7 +6,6 @@ import shortuuid
 
 lab7 = Blueprint('lab7', __name__)
 
-# Функция для подключения к базе данных
 def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
         # Подключение к базе данных
@@ -21,8 +20,7 @@ def db_connect():
         cur = conn.cursor()
     return conn, cur
 
-# Функция для закрытия соединения с базой данных
-def db_close(conn, cur):
+def db_close(conn,cur):
     conn.commit()
     cur.close()
     conn.close()
@@ -39,14 +37,19 @@ def get_films():
     db_close(conn, cur)
     return jsonify([dict(film) for film in films])
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
+@lab7.route('/lab7/rest-api/films/<string:id>', methods=['GET'])
 def get_film(id):
+    print(f"Fetching film with id: {id}")  # Отладочное сообщение
     conn, cur = db_connect()
     cur.execute("SELECT * FROM films WHERE id = ?", (id,))
     film = cur.fetchone()
     db_close(conn, cur)
+
     if film is None:
+        print(f"Film with id {id} not found")  # Отладочное сообщение
         abort(404)
+
+    print(f"Film found: {film}")  # Отладочное сообщение
     return jsonify(dict(film))
 
 @lab7.route('/lab7/rest-api/films/<string:id>', methods=['DELETE'])
@@ -94,6 +97,18 @@ def add_film():
     if existing_film:
         return {'id': 'Сгенерированный ID уже существует. Попробуйте снова.'}, 400
 
+    # Проверка на существующее русское название
+    cur.execute("SELECT * FROM films WHERE title_ru = ?", (title_ru,))
+    existing_film_ru = cur.fetchone()
+    if existing_film_ru:
+        return {'title_ru': 'Фильм с таким русским названием уже существует'}, 400
+
+    # Проверка на существующее оригинальное название
+    cur.execute("SELECT * FROM films WHERE title = ?", (title,))
+    existing_film_title = cur.fetchone()
+    if existing_film_title:
+        return {'title': 'Фильм с таким оригинальным названием уже существует'}, 400
+
     # Добавляем фильм в базу данных
     cur.execute("INSERT INTO films (id, title, title_ru, year, description) VALUES (?, ?, ?, ?, ?)",
                 (film_id, film['title'], film['title_ru'], film['year'], film['description']))
@@ -136,6 +151,18 @@ def put_film(id):
     if not description or len(description) > 2000:
         return {'description': 'Описание должно быть непустым и не более 2000 символов'}, 400
     
+    # Проверка на существующее русское название (исключая текущий фильм)
+    cur.execute("SELECT * FROM films WHERE title_ru = ? AND id != ?", (title_ru, id))
+    existing_film_ru = cur.fetchone()
+    if existing_film_ru:
+        return {'title_ru': 'Фильм с таким русским названием уже существует'}, 400
+
+    # Проверка на существующее оригинальное название (исключая текущий фильм)
+    cur.execute("SELECT * FROM films WHERE title = ? AND id != ?", (title, id))
+    existing_film_title = cur.fetchone()
+    if existing_film_title:
+        return {'title': 'Фильм с таким оригинальным названием уже существует'}, 400
+
     # Обновляем фильм в базе данных
     cur.execute("UPDATE films SET title = ?, title_ru = ?, year = ?, description = ? WHERE id = ?",
                 (film['title'], film['title_ru'], film['year'], film['description'], id))

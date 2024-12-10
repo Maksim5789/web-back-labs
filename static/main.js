@@ -91,39 +91,43 @@ function cancel() {
 }
 
 function addFilm() {
+    // Очищаем поля формы
+    document.getElementById('film-id').value = '';
+    document.getElementById('title').value = '';
+    document.getElementById('title-ru').value = '';
+    document.getElementById('year').value = '';
+    document.getElementById('description').value = '';
+
     showModal();
 }
 
 function editFilm(id) {
+    console.log(`Fetching film with id: ${id}`);  // Отладочное сообщение
     fetch(`/lab7/rest-api/films/${id}`)
     .then(function(response) {
+        if (!response.ok) {
+            throw new Error(`Failed to fetch film with id ${id}`);
+        }
         return response.json();
     })
     .then(function(film) {
+        console.log(`Film data received:`, film);  // Отладочное сообщение
         // Заполняем поля формы
-        document.getElementById('film-id').value = film.id; // Заполняем скрытое поле id
-        console.log('Заполненный id:', film.id); // Отладочный вывод
+        document.getElementById('film-id').value = film.id;
         document.getElementById('title').value = film.title;
         document.getElementById('title-ru').value = film.title_ru;
         document.getElementById('year').value = film.year;
         document.getElementById('description').value = film.description;
         showModal();
+    })
+    .catch(function(error) {
+        console.error('Ошибка при получении данных фильма:', error);
+        alert('Не удалось получить данные фильма. Пожалуйста, попробуйте позже.');
     });
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     fillFilmList();
-
-    function addFilm() {
-        // Очищаем поля формы
-        document.getElementById('title').value = '';
-        document.getElementById('title-ru').value = '';
-        document.getElementById('year').value = '';
-        document.getElementById('description').value = '';
-    
-        showModal();
-    }
-    
 
     document.getElementById('add-film-button').addEventListener('click', addFilm);
 });
@@ -138,7 +142,6 @@ function sendFilm() {
 
     // Проверяем, редактируем ли мы существующий фильм
     const id = document.getElementById('film-id').value; // Получаем id из скрытого поля
-    console.log('Отправляемый id:', id); // Отладочный вывод
     const url = id ? `/lab7/rest-api/films/${id}` : '/lab7/rest-api/films/';
     const method = id ? 'PUT' : 'POST';
 
@@ -169,6 +172,9 @@ function sendFilm() {
         if(errors.description) {
             errorMessage += errors.description + '\n';
             document.getElementById('description-error').innerText = errors.description;
+        }
+        if(errors.error) { // Ошибка, возвращаемая сервером
+            errorMessage += errors.error + '\n';
         }
         if (errorMessage) {
             document.getElementById('error-message').innerText = errorMessage;
