@@ -65,8 +65,11 @@ def put_film(id):
     if not film.get('title') and film.get('title_ru'):
         film['title'] = film['title_ru']
     
-    films[id] = film  # Обновляем фильм в списке
-    return films[id], 200  # Возвращаем обновленный фильм с кодом 200 OK
+    # Обновляем фильм в списке
+    films[id] = film
+    
+    # Возвращаем обновленный фильм с кодом 200 OK
+    return films[id], 200
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
@@ -80,6 +83,11 @@ def add_film():
     if not film.get('title') and film.get('title_ru'):
         film['title'] = film['title_ru']
     
-    films.append(film)  # Добавляем новый фильм в конец списка
-    new_index = len(films) - 1  # Получаем индекс нового элемента
-    return {'id': new_index}, 201  # Возвращаем индекс нового элемента с кодом 201 Created
+    # Добавляем новый фильм в конец списка
+    films.append(film)
+    
+    # Получаем индекс нового элемента
+    new_index = len(films) - 1
+    
+    # Возвращаем индекс нового элемента с кодом 201 Created
+    return {'id': new_index}, 201

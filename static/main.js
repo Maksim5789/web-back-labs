@@ -1,46 +1,59 @@
 function fillFilmList() {
     fetch('/lab7/rest-api/films/')
-    .then(function (response) {
-        return response.json();
-    })
-    .then(function (films) {
-        let tbody = document.getElementById('film-list');
-        tbody.innerHTML = '';
-    
-        for(let i = 0; i < films.length; i++) {
-            let tr = document.createElement('tr');
-            let tdTitle = document.createElement('td');
-            let tdTitleRus = document.createElement('td');
-            let tdYear = document.createElement('td');
-            let tdActions = document.createElement('td');
-        
-            tdTitle.innerText = films[i].title == films[i].title_ru ? '' : films[i].title;
-            tdTitleRus.innerText = films[i].title_ru;
-            tdYear.innerText = films[i].year;
-        
-            let editButton = document.createElement('button');
-            editButton.innerText = 'Редактировать';
-            editButton.onclick = function() {
-                editFilm(i);
-            };
-        
-            let delButton = document.createElement('button');
-            delButton.innerText = 'Удалить';
-            delButton.onclick = function() {
-                deleteFilm(i, films[i].title_ru); // Исправлено: передаем индекс i вместо films[i].id
-            };
-        
-            tdActions.append(editButton);
-            tdActions.append(delButton);
-        
-            tr.append(tdTitle);
-            tr.append(tdTitleRus);
-            tr.append(tdYear);
-            tr.append(tdActions);
-        
-            tbody.append(tr);
-        }
-    });
+        .then(function (response) {
+            return response.json();
+        })
+        .then(function (films) {
+            let tbody = document.getElementById('film-list');
+            tbody.innerHTML = '';
+
+            for (let i = 0; i < films.length; i++) {
+                let tr = document.createElement('tr');
+
+                // Название на русском
+                let tdRussianTitle = document.createElement('td');
+                tdRussianTitle.innerText = films[i].title_ru;
+
+                // Название на оригинальном языке (курсивом и в скобках)
+                let tdOriginalTitle = document.createElement('td');
+                if (films[i].title && films[i].title !== films[i].title_ru) {
+                    tdOriginalTitle.innerHTML = `<i>(${films[i].title})</i>`;
+                } else {
+                    tdOriginalTitle.innerText = ''; // Если названия совпадают, оставляем пустое поле
+                }
+
+                // Год выпуска
+                let tdYear = document.createElement('td');
+                tdYear.innerText = films[i].year;
+
+                // Действия (кнопки "Редактировать" и "Удалить")
+                let tdActions = document.createElement('td');
+
+                let editButton = document.createElement('button');
+                editButton.innerText = 'Редактировать';
+                editButton.onclick = function () {
+                    editFilm(i);
+                };
+
+                let delButton = document.createElement('button');
+                delButton.innerText = 'Удалить';
+                delButton.onclick = function () {
+                    deleteFilm(i, films[i].title_ru); // Передаем индекс i и название фильма
+                };
+
+                tdActions.append(editButton);
+                tdActions.append(delButton);
+
+                // Добавляем ячейки в строку
+                tr.append(tdRussianTitle); // Русское название первым
+                tr.append(tdOriginalTitle); // Оригинальное название вторым
+                tr.append(tdYear);
+                tr.append(tdActions);
+
+                // Добавляем строку в таблицу
+                tbody.append(tr);
+            }
+        });
 }
 
 function deleteFilm(id, title) {
