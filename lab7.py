@@ -48,3 +48,13 @@ def del_film(id):
         abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
     del films[id]
     return '', 204  # Возвращаем статус 204 No Content
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
+def put_film(id):
+    # Проверка на корректность id
+    if id < 0 or id >= len(films):
+        abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
+    
+    film = request.get_json()  # Получаем данные из запроса
+    films[id] = film  # Обновляем фильм в списке
+    return films[id], 200  # Возвращаем обновленный фильм с кодом 200 OK
