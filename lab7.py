@@ -1,112 +1,75 @@
 from flask import Blueprint, redirect, url_for, render_template, request, session, current_app, jsonify, flash, abort
 import sqlite3
 from os import path
-import hashlib
 from datetime import datetime
+import shortuuid
 
 lab7 = Blueprint('lab7', __name__)
+
+# Функция для подключения к базе данных
+def db_connect():
+    if current_app.config['DB_TYPE'] == 'postgres':
+        # Подключение к базе данных
+        conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\database_web') 
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    else:
+        dir_path = path.dirname(path.realpath(__file__))
+        db_path = path.join(dir_path, "database.db")
+        conn = sqlite3.connect(db_path)
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+    return conn, cur
+
+# Функция для закрытия соединения с базой данных
+def db_close(conn, cur):
+    conn.commit()
+    cur.close()
+    conn.close()
 
 @lab7.route('/lab7/')
 def main():
     return render_template('lab7/lab7.html')
 
-films = [
-    {
-        "title": "Inception",
-        "title_ru": "Начало",
-        "year": 2010,
-        "description": "A skilled thief is given a final chance to redeem himself by performing an impossible heist: infiltrating dreams to steal valuable secrets."
-    },
-    {
-        "title": "The Shawshank Redemption",
-        "title_ru": "Побег из Шоушенка",
-        "year": 1994,
-        "description": "Two imprisoned men bond over several years, finding solace and eventual redemption through acts of common decency."
-    },
-    {
-        "title": "The Dark Knight",
-        "title_ru": "Темный рыцарь",
-        "year": 2008,
-        "description": "Batman sets out to dismantle the remaining criminal organizations that plague Gotham, facing the formidable Joker who seeks to undermine Batman's influence."
-    },
-]
-
 @lab7.route('/lab7/rest-api/films/', methods=['GET'])
 def get_films():
-    return films
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films")
+    films = cur.fetchall()
+    db_close(conn, cur)
+    return jsonify([dict(film) for film in films])
 
 @lab7.route('/lab7/rest-api/films/<int:id>', methods=['GET'])
 def get_film(id):
-    # Проверка на корректность id
-    if id < 0 or id >= len(films):
-        abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
-    return films[id]
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films WHERE id = ?", (id,))
+    film = cur.fetchone()
+    db_close(conn, cur)
+    if film is None:
+        abort(404)
+    return jsonify(dict(film))
 
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+@lab7.route('/lab7/rest-api/films/<string:id>', methods=['DELETE'])
 def del_film(id):
-    # Проверка на корректность id
-    if id < 0 or id >= len(films):
-        abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
-    del films[id]
-    return '', 204  # Возвращаем статус 204 No Content
-
-@lab7.route('/lab7/rest-api/films/<int:id>', methods=['PUT'])
-def put_film(id):
-    # Проверка на корректность id
-    if id < 0 or id >= len(films):
-        abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
-    
-    film = request.get_json()  # Получаем данные из запроса
-    
-    # Проверка названий
-    title = film.get('title', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
-    title_ru = film.get('title_ru', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
-    
-    # Если оба названия пустые
-    if not title and not title_ru:
-        return {'title': 'Заполните оригинальное название'}, 400
-    
-    # Если пустое только оригинальное название, заполняем его значением из русского названия
-    if not title and title_ru:
-        film['title'] = title_ru
-    
-    # Если пустое русское название, а оригинальное заполнено
-    if not title_ru and title:
-        return {'title_ru': 'Заполните русское название'}, 400
-    
-    # Проверка года
-    year = film.get('year')
-    if not year or not isinstance(year, int) or year < 1895 or year > datetime.now().year:
-        return {'year': f'Год должен быть от 1895 до {datetime.now().year}'}, 400
-    
-    # Проверка описания
-    description = film.get('description', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
-    if not description or len(description) > 2000:
-        return {'description': 'Описание должно быть непустым и не более 2000 символов'}, 400
-    
-    # Обновляем фильм в списке
-    films[id] = film
-    
-    # Возвращаем обновленный фильм с кодом 200 OK
-    return films[id], 200
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM films WHERE id = ?", (id,))
+    db_close(conn, cur)
+    return '', 204
 
 @lab7.route('/lab7/rest-api/films/', methods=['POST'])
 def add_film():
-    film = request.get_json()  # Получаем данные из тела запроса
+    film = request.get_json()
     
     # Проверка названий
-    title = film.get('title', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
-    title_ru = film.get('title_ru', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
+    title = film.get('title', '').strip()
+    title_ru = film.get('title_ru', '').strip()
     
-    # Если оба названия пустые
     if not title and not title_ru:
         return {'title': 'Заполните оригинальное название'}, 400
     
-    # Если пустое только оригинальное название, заполняем его значением из русского названия
     if not title and title_ru:
         film['title'] = title_ru
     
-    # Если пустое русское название, а оригинальное заполнено
     if not title_ru and title:
         return {'title_ru': 'Заполните русское название'}, 400
     
@@ -116,15 +79,66 @@ def add_film():
         return {'year': f'Год должен быть от 1895 до {datetime.now().year}'}, 400
     
     # Проверка описания
-    description = film.get('description', '').strip()  # Убираем лишние пробелы, если поле отсутствует, используем пустую строку
+    description = film.get('description', '').strip()
     if not description or len(description) > 2000:
         return {'description': 'Описание должно быть непустым и не более 2000 символов'}, 400
     
-    # Добавляем новый фильм в конец списка
-    films.append(film)
+    # Генерация уникального ID
+    film_id = shortuuid.uuid()[:8]  # Генерируем короткий UUID
+
+    # Проверка на уникальность ID
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films WHERE id = ?", (film_id,))
+    existing_film = cur.fetchone()
     
-    # Получаем индекс нового элемента
-    new_index = len(films) - 1
+    if existing_film:
+        return {'id': 'Сгенерированный ID уже существует. Попробуйте снова.'}, 400
+
+    # Добавляем фильм в базу данных
+    cur.execute("INSERT INTO films (id, title, title_ru, year, description) VALUES (?, ?, ?, ?, ?)",
+                (film_id, film['title'], film['title_ru'], film['year'], film['description']))
+    db_close(conn, cur)
     
-    # Возвращаем индекс нового элемента с кодом 201 Created
-    return {'id': new_index}, 201
+    return {'id': film_id}, 201
+
+@lab7.route('/lab7/rest-api/films/<string:id>', methods=['PUT'])
+def put_film(id):
+    film = request.get_json()
+    
+    # Проверка существования фильма с таким ID
+    conn, cur = db_connect()
+    cur.execute("SELECT * FROM films WHERE id = ?", (id,))
+    existing_film = cur.fetchone()
+    
+    if not existing_film:
+        return {'id': 'Фильм с таким ID не существует'}, 404
+
+    # Проверка названий
+    title = film.get('title', '').strip()
+    title_ru = film.get('title_ru', '').strip()
+    
+    if not title and not title_ru:
+        return {'title': 'Заполните оригинальное название'}, 400
+    
+    if not title and title_ru:
+        film['title'] = title_ru
+    
+    if not title_ru and title:
+        return {'title_ru': 'Заполните русское название'}, 400
+    
+    # Проверка года
+    year = film.get('year')
+    if not year or not isinstance(year, int) or year < 1895 or year > datetime.now().year:
+        return {'year': f'Год должен быть от 1895 до {datetime.now().year}'}, 400
+    
+    # Проверка описания
+    description = film.get('description', '').strip()
+    if not description or len(description) > 2000:
+        return {'description': 'Описание должно быть непустым и не более 2000 символов'}, 400
+    
+    # Обновляем фильм в базе данных
+    cur.execute("UPDATE films SET title = ?, title_ru = ?, year = ?, description = ? WHERE id = ?",
+                (film['title'], film['title_ru'], film['year'], film['description'], id))
+    db_close(conn, cur)
+    
+    return jsonify(film), 200

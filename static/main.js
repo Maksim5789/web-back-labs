@@ -32,23 +32,23 @@ function fillFilmList() {
                 let editButton = document.createElement('button');
                 editButton.innerText = 'Редактировать';
                 editButton.onclick = function () {
-                    editFilm(i);
+                    editFilm(films[i].id); // Передаем id фильма
                 };
 
                 let delButton = document.createElement('button');
                 delButton.innerText = 'Удалить';
                 delButton.onclick = function () {
-                    deleteFilm(i, films[i].title_ru); // Передаем индекс i и название фильма
+                    deleteFilm(films[i].id, films[i].title_ru); // Передаем id и название фильма
                 };
 
                 tdActions.append(editButton);
                 tdActions.append(delButton);
 
                 // Добавляем ячейки в строку
-                tr.append(tdRussianTitle); // Русское название первым
-                tr.append(tdOriginalTitle); // Оригинальное название вторым
-                tr.append(tdYear);
-                tr.append(tdActions);
+                tr.append(tdRussianTitle); // Русское название
+                tr.append(tdOriginalTitle); // Оригинальное название
+                tr.append(tdYear); // Год
+                tr.append(tdActions); // Действия
 
                 // Добавляем строку в таблицу
                 tbody.append(tr);
@@ -94,30 +94,41 @@ function addFilm() {
     showModal();
 }
 
+function editFilm(id) {
+    fetch(`/lab7/rest-api/films/${id}`)
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(film) {
+        // Заполняем поля формы
+        document.getElementById('film-id').value = film.id; // Заполняем скрытое поле id
+        console.log('Заполненный id:', film.id); // Отладочный вывод
+        document.getElementById('title').value = film.title;
+        document.getElementById('title-ru').value = film.title_ru;
+        document.getElementById('year').value = film.year;
+        document.getElementById('description').value = film.description;
+        showModal();
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     fillFilmList();
 
     function addFilm() {
-        const idElement = document.getElementById('id');
-        const titleElement = document.getElementById('title');
-        const titleRuElement = document.getElementById('title-ru');
-        const yearElement = document.getElementById('year');
-        const descriptionElement = document.getElementById('description');
-
-        if (idElement) idElement.value = '';
-        if (titleElement) titleElement.value = '';
-        if (titleRuElement) titleRuElement.value = '';
-        if (yearElement) yearElement.value = '';
-        if (descriptionElement) descriptionElement.value = '';
-
+        // Очищаем поля формы
+        document.getElementById('title').value = '';
+        document.getElementById('title-ru').value = '';
+        document.getElementById('year').value = '';
+        document.getElementById('description').value = '';
+    
         showModal();
     }
+    
 
     document.getElementById('add-film-button').addEventListener('click', addFilm);
 });
 
 function sendFilm() {
-    const id = document.getElementById('id').value;
     const film = {
         title: document.getElementById('title').value.trim(), // Удаляем пробелы
         title_ru: document.getElementById('title-ru').value.trim(), // Удаляем пробелы
@@ -125,8 +136,11 @@ function sendFilm() {
         description: document.getElementById('description').value.trim() // Удаляем пробелы
     };
 
-    const url = id === '' ? '/lab7/rest-api/films/' : `/lab7/rest-api/films/${id}`;
-    const method = id === '' ? 'POST' : 'PUT';
+    // Проверяем, редактируем ли мы существующий фильм
+    const id = document.getElementById('film-id').value; // Получаем id из скрытого поля
+    console.log('Отправляемый id:', id); // Отладочный вывод
+    const url = id ? `/lab7/rest-api/films/${id}` : '/lab7/rest-api/films/';
+    const method = id ? 'PUT' : 'POST';
 
     fetch(url, {
         method: method,
@@ -163,20 +177,5 @@ function sendFilm() {
     .catch(function(error) {
         console.error('Ошибка при отправке данных:', error);
         document.getElementById('error-message').innerText = 'Произошла ошибка при отправке данных. Пожалуйста, попробуйте позже.';
-    });
-}
-
-function editFilm(id) {
-    fetch(`/lab7/rest-api/films/${id}`)
-    .then(function(response) {
-        return response.json();
-    })
-    .then(function(film) {
-        document.getElementById('id').value = id;
-        document.getElementById('title').value = film.title;
-        document.getElementById('title-ru').value = film.title_ru;
-        document.getElementById('year').value = film.year;
-        document.getElementById('description').value = film.description;
-        showModal();
     });
 }
