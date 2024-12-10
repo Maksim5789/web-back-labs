@@ -40,3 +40,11 @@ def get_film(id):
     if id < 0 or id >= len(films):
         abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
     return films[id]
+
+@lab7.route('/lab7/rest-api/films/<int:id>', methods=['DELETE'])
+def del_film(id):
+    # Проверка на корректность id
+    if id < 0 or id >= len(films):
+        abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
+    del films[id]
+    return '', 204  # Возвращаем статус 204 No Content
