@@ -56,8 +56,15 @@ def put_film(id):
         abort(404)  # Возвращаем ошибку 404, если id выходит за пределы
     
     film = request.get_json()  # Получаем данные из запроса
-    if film['description'] == '':
+    
+    # Проверка описания
+    if not film.get('description'):
         return {'description': 'Заполните описание'}, 400
+    
+    # Если title пустое, заполняем его значением из title_ru
+    if not film.get('title') and film.get('title_ru'):
+        film['title'] = film['title_ru']
+    
     films[id] = film  # Обновляем фильм в списке
     return films[id], 200  # Возвращаем обновленный фильм с кодом 200 OK
 
@@ -68,6 +75,10 @@ def add_film():
     # Проверка описания
     if not film.get('description'):
         return {'description': 'Заполните описание'}, 400
+    
+    # Если title пустое, заполняем его значением из title_ru
+    if not film.get('title') and film.get('title_ru'):
+        film['title'] = film['title_ru']
     
     films.append(film)  # Добавляем новый фильм в конец списка
     new_index = len(films) - 1  # Получаем индекс нового элемента
