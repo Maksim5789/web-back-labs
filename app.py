@@ -11,19 +11,22 @@ from rgz import rgz
 
 import os
 from os import path
-from db import db  # Импортируем db из пакета db
+from db import db  
 
 app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'маню_ня_ня_ни_ни')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
 
+# Настройки базы данных
 db_name = 'lab8'
 host_ip = '127.0.0.1'
 host_port = 5432
+db_type = 'sqlite'  # Установите 'postgres' для использования PostgreSQL
 
-if app.config['DB_TYPE'] == 'postgres':
-    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{host_ip}:{host_port}/{db_name}'
+# Установка конфигурации для SQLAlchemy
+if db_type == 'postgres':
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://username:password@{host_ip}:{host_port}/{db_name}'
 else:
     dir_path = path.dirname(path.realpath(__file__))
     db_path = path.join(dir_path, "lab8.db")
@@ -32,7 +35,6 @@ else:
 # Инициализация db с приложением
 db.init_app(app)
 
-#db = SQLAlchemy(app)
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)

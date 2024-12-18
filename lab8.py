@@ -2,6 +2,8 @@ from flask import Blueprint, redirect, url_for, render_template, request, sessio
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import path
+from db import db
+from db.models import users, articles
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -64,42 +66,34 @@ def login():
     db_close(conn, cur)
     return render_template('lab8/success_login.html', login=login)
 
+
 @lab8.route('/lab8/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'GET':
         return render_template('lab8/register.html')
     
-    login = request.form.get('login')
-    password = request.form.get('password')
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
 
-    if not (login or password):
+    # Проверка на заполнение всех полей
+    if not login_form or not password_form:
         return render_template('lab8/register.html', error='Заполните все поля')
     
-
-    conn, cur = db_connect()
-
-    # if current_app.config['DB_TYPE'] == 'postgres':
-    #     cur.execute(f"SELECT login FROM users WHERE login=%s;", (login,))
-    # else:
-    #     cur.execute("SELECT login FROM users WHERE login=?", (login,))
-
-    cur.execute("SELECT login FROM users WHERE login=?", (login,))
-    
-    if cur.fetchone():
-        db_close(conn,cur)
+    # Проверка на существование пользователя
+    login_exists = users.query.filter_by(login=login_form).first()  # Убедитесь, что users — это класс модели
+    if login_exists:
         return render_template('lab8/register.html', error='Такой пользователь уже существует')
     
-    password_hash = generate_password_hash(password)
-
-    # if current_app.config['DB_TYPE'] == 'postgres':
-    #     cur.execute(f"INSERT INTO users (login, password) VALUES (%s,%s)", (login, password_hash))
-    # else:
-    #     cur.execute("INSERT INTO users (login, password) VALUES (?,?)", (login, password_hash))
+    # Хэширование пароля
+    password_hash = generate_password_hash(password_form)
     
-    cur.execute("INSERT INTO users (login, password) VALUES (?,?)", (login, password_hash))
+    # Создание нового пользователя
+    new_user = users(login=login_form, password=password_hash)  # Убедитесь, что users — это класс модели
+    db.session.add(new_user)
+    db.session.commit()
+    
+    return redirect('/lab8/')
 
-    db_close(conn,cur)
-    return render_template('lab8/success.html', login=login)
 
 @lab8.route('/lab8/create', methods=['GET', 'POST'])
 def create():
@@ -200,13 +194,13 @@ def delete(id):
     return redirect('/lab8/list')
 
 @lab8.route('/lab8/users')
-def users():
+def list_users():  # Переименуйте функцию
     conn, cur = db_connect()
     cur.execute("SELECT login FROM users;")
-    users = cur.fetchall()
+    users_list = cur.fetchall()  # Переименуйте переменную, чтобы избежать путаницы
     db_close(conn, cur)
 
-    return render_template('lab8/users.html', users=users)
+    return render_template('lab8/users.html', users=users_list)
 
 @lab8.route('/lab8/public_list')
 def public_list():
