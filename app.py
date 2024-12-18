@@ -11,7 +11,7 @@ from rgz import rgz
 
 import os
 from os import path
-from flask_sqlalchemy import SQLAlchemy
+from db import db  # Импортируем db из пакета db
 
 app = Flask(__name__)
 
@@ -29,7 +29,10 @@ else:
     db_path = path.join(dir_path, "lab8.db")
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
-db = SQLAlchemy(app)
+# Инициализация db с приложением
+db.init_app(app)
+
+#db = SQLAlchemy(app)
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
