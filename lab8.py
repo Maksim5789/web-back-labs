@@ -17,7 +17,7 @@ def db_connect():
         cur = conn.cursor()
     else:
         dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "database.db")
+        db_path = path.join(dir_path, "lab8.db")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
@@ -27,6 +27,7 @@ def db_close(conn,cur):
     conn.commit()
     cur.close()
     conn.close()
+
 
 @lab8.route('/lab8/login', methods=['GET', 'POST'])
 def login():
