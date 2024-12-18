@@ -193,15 +193,6 @@ def delete(id):
     db_close(conn, cur)
     return redirect('/lab8/list')
 
-@lab8.route('/lab8/users')
-def list_users():  # Переименуйте функцию
-    conn, cur = db_connect()
-    cur.execute("SELECT login FROM users;")
-    users_list = cur.fetchall()  # Переименуйте переменную, чтобы избежать путаницы
-    db_close(conn, cur)
-
-    return render_template('lab8/users.html', users=users_list)
-
 @lab8.route('/lab8/public_list')
 def public_list():
     conn, cur = db_connect()
