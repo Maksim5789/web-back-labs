@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block lab %}Личные статьи{% endblock %}
+
+{% block main %}
+    <h1>Личные статьи</h1>
+    {% for article in articles %}
+        <h2>{{ article['title'] }}</h2>
+        <blockquote>{{ article['article'] }}</blockquote>
+        <form method="POST" action="{{ url_for('lab8.toggle_favorite', id=article['id']) }}">
+            <button type="submit">{{ "Убрать из любимых" if article['is_favorite'] else "Добавить в любимые" }}</button>
+        </form>
+        <form method="POST" action="{{ url_for('lab8.toggle_public', id=article['id']) }}">
+            <button type="submit">{{ "Сделать приватной" if article['is_public'] else "Сделать публичной" }}</button>
+        </form>
+        <hr>
+    {% endfor %}
+    <a href="{{ url_for('lab8.public_list') }}">Перейти к публичным статьям</a>
+    <p> </p>
+    <a href="/lab8/">Меню лабораторной</a>
+{% endblock %}
