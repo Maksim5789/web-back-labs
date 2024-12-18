@@ -12,9 +12,8 @@ from rgz import rgz
 import os
 from os import path
 from flask_sqlalchemy import SQLAlchemy
-from db import db
 
-app = Flask (__name__)
+app = Flask(__name__)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'маню_ня_ня_ни_ни')
 app.config['DB_TYPE'] = os.getenv('DB_TYPE', 'postgres')
@@ -24,17 +23,13 @@ host_ip = '127.0.0.1'
 host_port = 5432
 
 if app.config['DB_TYPE'] == 'postgres':
-    db_name = 'lab8'
-    host_ip = '127.0.0.1'
-    host_port = 5432
-    app.config['SQLALCHEMY_DATABASE_URI'] = \
-        f'postgresql://{host_ip}:{host_port}/{db_name}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'postgresql://{host_ip}:{host_port}/{db_name}'
 else:
     dir_path = path.dirname(path.realpath(__file__))
     db_path = path.join(dir_path, "lab8.db")
-    app.config['SQLALCHEMY_DATABASE_URL'] = f'sqlite:///{db_path}'
+    app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{db_path}'
 
-db.init_app(app)
+db = SQLAlchemy(app)
 
 app.register_blueprint(lab1)
 app.register_blueprint(lab2)
