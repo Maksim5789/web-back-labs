@@ -12,12 +12,12 @@ def lab():
 def db_connect():
     if current_app.config['DB_TYPE'] == 'postgres':
         # Подключение к базе данных
-        conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\database_web') 
+        conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\lab8') 
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
     else:
         dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "database.db")
+        db_path = path.join(dir_path, "lab8.db")
         conn = sqlite3.connect(db_path)
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
