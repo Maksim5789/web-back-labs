@@ -27,7 +27,7 @@ if app.config['DB_TYPE'] == 'postgres':
     db_name = 'lab8'
     host_ip = '127.0.0.1'
     host_port = 5432
-    app.config['SQLALCHEMY_DATABASE_URL'] = \
+    app.config['SQLALCHEMY_DATABASE_URI'] = \
         f'postgresql://{host_ip}:{host_port}/{db_name}'
 else:
     dir_path = path.dirname(path.realpath(__file__))
