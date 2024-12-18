@@ -137,8 +137,38 @@ def logout():
     session.pop('login', None)  # Удаляем логин из сессии
     return redirect('/lab8/login')
 
+@lab8.route('/lab8/edit/<int:id>', methods=['GET', 'POST'])
+def edit(id):
+    conn, cur = db_connect()
+    
+    if request.method == 'GET':
+        cur.execute("SELECT * FROM articles WHERE id=?;", (id,))
+        article = cur.fetchone()
+        db_close(conn, cur)
+        
+        if not article:
+            return render_template('lab8/error.html', error='Статья не найдена.')  # Можно сделать отдельный шаблон для ошибок
 
+        return render_template('lab8/edit_article.html', article=article)
 
+    title = request.form.get('title')
+    article_text = request.form.get('article_text')
+
+    # Валидация пустых полей
+    if not title or not article_text:
+        # При наличии ошибки отображаем её
+        return render_template('lab8/edit_article.html', article=article, error='Название и текст статьи не могут быть пустыми.')
+
+    cur.execute("UPDATE articles SET title=?, article=? WHERE id=?;", (title, article_text, id))
+    db_close(conn, cur)
+    return redirect('/lab8/list')
+
+@lab8.route('/lab8/delete/<int:id>', methods=['POST'])
+def delete(id):
+    conn, cur = db_connect()
+    cur.execute("DELETE FROM articles WHERE id=?;", (id,))
+    db_close(conn, cur)
+    return redirect('/lab8/list')
 
 
 
