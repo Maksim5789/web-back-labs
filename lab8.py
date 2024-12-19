@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import path
 from db import db
 from db.models import users, articles
-from flask_login import login_user, login_required, current_user
+from flask_login import login_user, login_required, current_user, logout_user
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -124,13 +124,16 @@ def create():
 
 @lab8.route('/lab8/personal_articles/')
 @login_required
-def article_list():
-    return "Список статей"
+def personal_articles():
+    # Доступ к статьям, связанным с текущим пользователем
+    articles = current_user.articles
+    return render_template('lab8/personal_articles.html', articles=articles)
 
 @lab8.route('/lab8/logout')
+@login_required
 def logout():
-    session.pop('login', None)  # Удаляем логин из сессии
-    return redirect('/lab8/login')
+    logout_user()
+    return redirect('/lab8/')
 
 
 @lab8.route('/lab8/edit/<int:id>', methods=['GET', 'POST'])
@@ -166,13 +169,14 @@ def delete(id):
     db_close(conn, cur)
     return redirect('/lab8/list')
 
-@lab8.route('/lab8/public_list')
-def public_list():
-    conn, cur = db_connect()
-    cur.execute("SELECT * FROM articles WHERE public=1;")
-    articles = cur.fetchall()
-    db_close(conn, cur)
+@lab8.route('/lab8/public_articles/')
+@login_required
+def public_articles():
+    # Получение статей для текущего пользователя
+    articles = current_user.articles  # Убедитесь, что articles определены в модели users
     return render_template('lab8/public_articles.html', articles=articles)
+
+
 
 
 @lab8.route('/lab8/toggle_favorite/<int:id>', methods=['POST'])
