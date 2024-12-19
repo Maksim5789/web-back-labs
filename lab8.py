@@ -4,6 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from os import path
 from db import db
 from db.models import users, articles
+from flask_login import login_user, login_required, current_user
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -36,36 +37,20 @@ def login():
     if request.method == 'GET':
         return render_template('lab8/login.html')
     
-    login = request.form.get('login')
-    password = request.form.get('password')
+    login_form = request.form.get('login')
+    password_form = request.form.get('password')
 
-    if not (login and password):
+    if not (login_form and password_form):
         return render_template('lab8/login.html', error='Заполните поля')
-
-    # Подключение к базе данных
-    conn, cur = db_connect()
-
-    # Выполнение SQL-запроса с параметризованным запросом
-    # if current_app.config['DB_TYPE'] == 'postgres':
-    #     cur.execute("SELECT * FROM users WHERE login=%s;", (login,))
-    # else:
-    #     cur.execute("SELECT * FROM users WHERE login=?;", (login,))
-    cur.execute("SELECT * FROM users WHERE login=?;", (login,))
-    user = cur.fetchone()  # Получаем одну строку
-
-    if not user:  
-        db_close(conn, cur)
-        return render_template('lab8/login.html', error='Логин и/или пароль неверны')
     
-    # Проверка пароля
-    if not check_password_hash(user['password'], password):  
-        db_close(conn, cur)
-        return render_template('lab8/login.html', error='Логин и/или пароль неверны')
-    
-    session['login'] = login
-    db_close(conn, cur)
-    return render_template('lab8/success_login.html', login=login)
+    user = users.query.filter_by(login = login_form).first()
 
+    if user:
+        if check_password_hash(user.password, password_form):
+            login_user(user, remember = False)
+            return redirect('/lab8/')
+    
+    return render_template('/lab8/login.html', error = 'Ошибка входа: логин и/или пароль неверны')
 
 @lab8.route('/lab8/register', methods=['GET', 'POST'])
 def register():
@@ -137,22 +122,10 @@ def create():
     db_close(conn,cur)
     return redirect('/lab8')
 
-@lab8.route('/lab8/list')
-def list_articles():
-    login = session.get('login')
-    if not login:
-        return redirect('/lab8/login')
-    
-    conn, cur = db_connect()
-    
-    cur.execute("SELECT * FROM users WHERE login=?;", (login,))
-    login_id = cur.fetchone()["id"]
-
-    cur.execute("SELECT * FROM articles WHERE login_id=? ORDER BY is_favorite DESC;", (login_id,))
-    articles = cur.fetchall()
-
-    db_close(conn, cur)
-    return render_template('lab8/articles.html', articles=articles)
+@lab8.route('/lab8/personal_articles/')
+@login_required
+def article_list():
+    return "Список статей"
 
 @lab8.route('/lab8/logout')
 def logout():

@@ -29,7 +29,7 @@
             background-color: deepskyblue; /* Цвет кнопки при наведении */
         }
     </style>
-    <h1>Flask и БД</h1>
+    <h1>Flask и ORM</h1>
     <div>
         Тема лабораторной - Flask и ORM.
     </div>
@@ -44,7 +44,7 @@
                 <button class="nav-button"><a href="{{ url_for('lab8.login') }}">Войти</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab8.register') }}">Регистрация</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab8.create') }}">Создать статью</a></button>
-                <button class="nav-button"><a href="{{ url_for('lab8.list_articles') }}">Личные статьи</a></button>
+                <button class="nav-button"><a href="{{ url_for('lab8.personal_articles') }}">Личные статьи</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab8.public_list') }}">Публичные статьи</a></button>
                 <button class="nav-button"><a href="{{ url_for('lab8.logout') }}">Выйти</a></button>         
             </div>                  
