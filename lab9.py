@@ -66,19 +66,19 @@ def congratulations():
     if category == 'что-то вкусное':
         if subcategory == 'сытное':
             image = 'Торт.png'
-            gift = "Тортик"
+            gift = "тортик"
         elif subcategory == 'сладкое':
             image = 'Конфеты.png'
-            gift = "Мешочек конфет"
+            gift = "мешочек конфет"
         else:
             return "Ошибка: неверная подкатегория для категории 'Что-то вкусное'."
     elif category == 'что-то красивое':
         if subcategory == 'природа':
             image = 'Природа.jpg'
-            gift = "Подарок"
+            gift = "картина"
         elif subcategory == 'искусство':
             image = 'Искусство.jpg'
-            gift = "Подарок"
+            gift = "ёлочная игрушка"
         else:
             return "Ошибка: неверная подкатегория для категории 'Что-то красивое'."
     else:
