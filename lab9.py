@@ -44,25 +44,60 @@ def sub_preference():
     preference = request.args.get('preference')
     if request.method == 'POST':
         sub_preference = request.form['sub_preference']
-        return redirect(url_for('lab9.congratulations', name=name, age=age, gender=gender, preference=preference, sub_preference=sub_preference))
+        return redirect(url_for('lab9.congratulations', name=name, age=age, gender=gender, category=preference, subcategory=sub_preference))
     return render_template('lab9/sub_preference.html', name=name, age=age, gender=gender, preference=preference)
 
 @lab9.route('/lab9/congratulations/')
 def congratulations():
     name = request.args.get('name')
-    age = request.args.get('age')
+    age = int(request.args.get('age'))  # Преобразуем возраст в целое число
     gender = request.args.get('gender')
-    preference = request.args.get('preference')
-    sub_preference = request.args.get('sub_preference')
+    category = request.args.get('category', '').strip().lower()  # Приводим к нижнему регистру и убираем пробелы
+    subcategory = request.args.get('subcategory', '').strip().lower()  # Приводим к нижнему регистру и убираем пробелы
 
-    # Логика для выбора поздравления и картинки
-    if gender == 'male':
-        greeting = f"Поздравляю тебя, {name}, желаю, чтобы ты быстро вырос, был умным..."
-        gift = "мешочек конфет"
-        image = "candies.jpg"  # Путь к картинке с конфетами
+    # Отладочный вывод
+    print(f"Category: {category}, Subcategory: {subcategory}")
+
+    # Инициализация переменных
+    gift = None
+    image = None
+
+    # Логика для выбора картинки и надписи подарка
+    if category == 'что-то вкусное':
+        if subcategory == 'сытное':
+            image = 'Торт.png'
+            gift = "Тортик"
+        elif subcategory == 'сладкое':
+            image = 'Конфеты.png'
+            gift = "Мешочек конфет"
+        else:
+            return "Ошибка: неверная подкатегория для категории 'Что-то вкусное'."
+    elif category == 'что-то красивое':
+        if subcategory == 'природа':
+            image = 'Природа.jpg'
+            gift = "Подарок"
+        elif subcategory == 'искусство':
+            image = 'Искусство.jpg'
+            gift = "Подарок"
+        else:
+            return "Ошибка: неверная подкатегория для категории 'Что-то красивое'."
     else:
-        greeting = f"Поздравляю тебя, {name}, желаю, чтобы ты быстро выросла, была умной..."
-        gift = "тортик"
-        image = "cake.jpg"  # Путь к картинке с тортом
+        return "Ошибка: неверная категория."
+
+    # Логика для выбора поздравления
+    if age >= 18:  # Проверка на возраст
+        if gender == 'male':
+            greeting = f"Поздравляю вас, {name}! Желаю, чтобы воплощались все мечты и достигались цели, а стремление к ним было вдохновляющим и интересным. Пусть открываются новые перспективные грани и возможности, а удача просто преследует везде и всюду, и как талисман, помогает во всех делах и начинаниях. Пусть будет много радостных событий и хороших людей рядом."
+        else:
+            greeting = f"Поздравляю вас, {name}! Желаю оставаться такой же красивой, милой и прекрасной! Любви и радости желаю, крепкого здоровья, сил, сил, терпения! Будьте по-настоящему счастливы!"
+    else:
+        if gender == 'male':
+            greeting = f"Поздравляю тебя, {name}, желаю побольше приятностей и поменьше неприятностей! Никогда не сомневайся в себе и достигай своих целей!"
+        else:
+            greeting = f"Поздравляю тебя, {name}, желаю, чтобы каждый день будет для тебя приятным сюрпризом! Сияй, как самая яркая звёздочка на небе! "
+
+    # Проверка, что переменные gift и image были инициализированы
+    if gift is None or image is None:
+        return "Ошибка: не удалось определить подарок или картинку."
 
     return render_template('lab9/congratulations.html', greeting=greeting, gift=gift, image=image)

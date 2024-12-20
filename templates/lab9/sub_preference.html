@@ -3,12 +3,12 @@
 {% block main %}
 <h1>Выберите подкатегорию, {{ name }}!</h1>
 <form method="POST">
-    {% if preference == 'delicious' %}
-        <input type="radio" name="sub_preference" value="sweet" required> Сладкое<br>
-        <input type="radio" name="sub_preference" value="hearty"> Сытное<br>
+    {% if preference == 'что-то вкусное' %}
+        <input type="radio" name="sub_preference" value="сладкое" required> Сладкое<br>
+        <input type="radio" name="sub_preference" value="сытное"> Сытное<br>
     {% else %}
-        <input type="radio" name="sub_preference" value="art" required> Искусство<br>
-        <input type="radio" name="sub_preference" value="nature"> Природа<br>
+        <input type="radio" name="sub_preference" value="природа" required> Природа<br>
+        <input type="radio" name="sub_preference" value="искусство"> Искусство<br>
     {% endif %}
     <button type="submit">Далее</button>
 </form>
