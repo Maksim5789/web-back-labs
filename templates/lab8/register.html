@@ -3,6 +3,32 @@
 {% block lab %}Лабораторная работа №8{% endblock %}
 
 {% block main %}
+<style>
+    .input-field {
+        width: 500px;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .form-button {
+      background-color: lightblue;
+      border: none;
+      color: black;
+      padding: 10px 20px;
+      margin-top: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;  
+  }
+
+    .form-button:hover {
+        background-color: deepskyblue;
+    }
+</style>
   <h1>Регистрация</h1>
   
   {% if error %}
@@ -12,14 +38,14 @@
   <form action="/lab8/register" method="post">
     <div>
       <label>Логин:</label>
-      <input type="text" name="login">
+      <input type="text" name="login" class="input-field"> 
     </div>
     <div>
       <label>Пароль:</label>
-      <input type="password" name="password">
+      <input type="password" name="password" class="input-field"> 
     </div>
-    <button type="submit">Зарегистрироваться</button>
+    <button type="submit" class="form-button">Зарегистрироваться</button> 
     <p> </p>
-    <a href="/lab8/">Меню лабораторной</a>
+    <a href="/lab8/" class="form-button">Меню лабораторной</a> 
   </form>
 {% endblock %}

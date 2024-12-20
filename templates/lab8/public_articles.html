@@ -3,17 +3,34 @@
 {% block lab %}Публичные статьи{% endblock %}
 
 {% block main %}
+<style>
+    .form-button {
+        background-color: lightblue;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        margin-top: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;  
+    }
+
+    .form-button:hover {
+        background-color: deepskyblue;
+    }
+
+</style>
     <h1>Публичные статьи</h1>
     {% for article in articles %}
         <h2>{{ article.title }}</h2>
         <blockquote>{{ article.article_text }}</blockquote>
         
-        <!-- Кнопка для лайка статьи -->
         <form method="POST" action="{{ url_for('lab8.like_article', id=article.id) }}">
-            <button type="submit">{{ "Снять лайк" if article.likes == 1 else "Поставить лайк" }}</button>
+            <button type="submit" class="form-button">{{ "Снять лайк" if article.likes == 1 else "Поставить лайк" }}</button> 
         </form>
         
         <hr>
     {% endfor %}
-    <a href="{{ url_for('lab8.personal_articles') }}">Перейти к личным статьям</a>
+    <a href="{{ url_for('lab8.personal_articles') }}" class="form-button">Перейти к личным статьям</a> 
 {% endblock %}

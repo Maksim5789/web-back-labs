@@ -3,31 +3,69 @@
 {% block lab %}Личные статьи{% endblock %}
 
 {% block main %}
-    <h1>Личные статьи</h1>
-    {% for article in articles %}
+<style>
+    .input-field {
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+    .form-button {
+        background-color: lightblue;
+        border: none;
+        color: black;
+        padding: 10px 20px;
+        margin: 5px; /* Отступ между кнопками */
+        font-size: 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        text-decoration: none;  
+        flex: 1; /* Равномерное распределение пространства между кнопками */
+        text-align: center; /* Центрирование текста */
+    }
+
+    .form-button:hover {
+        background-color: deepskyblue;
+    }
+
+    .button-container {
+        display: flex; /* Используем Flexbox для горизонтального расположения */
+        gap: 10px; /* Отступ между кнопками */
+        margin-top: 10px; /* Отступ сверху для навигационной панели */
+        padding: 10px; /* Отступ внутри контейнера */
+        border: 1px solid #ccc; /* Серая рамка */
+        background-color: white; /* Белый фон */
+        justify-content: center; /* Центрирование кнопок */
+        width: fit-content; /* Ширина контейнера по размеру кнопок */
+    }
+</style>
+
+<h1>Личные статьи</h1>
+{% for article in articles %}
+    <div class="article-container">  <!-- Контейнер для статьи -->
         <h2>{{ article['title'] }}</h2>
         <blockquote>{{ article['article_text'] }}</blockquote>
-        
-        <!-- Кнопка для редактирования статьи -->
-        <a href="{{ url_for('lab8.edit', id=article['id']) }}">
-            <button type="button">Редактировать</button>
-        </a>
-        
-        <form method="POST" action="{{ url_for('lab8.toggle_favorite', id=article['id']) }}">
-            <button type="submit">{{ "Убрать из любимых" if article['is_favorite'] else "Добавить в любимые" }}</button>
-        </form>
-        <form method="POST" action="{{ url_for('lab8.toggle_public', id=article['id']) }}">
-            <button type="submit">{{ "Сделать приватной" if article['is_public'] else "Сделать публичной" }}</button>
-        </form>
-        
-        <!-- Форма для удаления статьи -->
-        <form method="POST" action="{{ url_for('lab8.delete', id=article['id']) }}">
-            <button type="submit" onclick="return confirm('Вы уверены, что хотите удалить эту статью?');">Удалить</button>
-        </form>
-        
-        <hr>
-    {% endfor %}
-    <a href="{{ url_for('lab8.public_articles') }}">Перейти к публичным статьям</a>  
-    <p> </p>
-    <a href="/lab8/">Меню лабораторной</a>
+
+        <div class="button-container"> <!-- Контейнер для кнопок -->
+            <form method="GET" action="{{ url_for('lab8.edit', id=article['id']) }}">
+                <button type="submit" class="form-button">Редактировать</button>
+            </form>
+            <form method="POST" action="{{ url_for('lab8.toggle_favorite', id=article['id']) }}">
+                <button type="submit" class="form-button">{{ "Убрать из любимых" if article['is_favorite'] else "Добавить в любимые" }}</button>
+            </form>
+            <form method="POST" action="{{ url_for('lab8.toggle_public', id=article['id']) }}">
+                <button type="submit" class="form-button">{{ "Сделать приватной" if article['is_public'] else "Сделать публичной" }}</button>
+            </form>
+            <form method="POST" action="{{ url_for('lab8.delete', id=article['id']) }}">
+                <button type="submit" class="form-button" onclick="return confirm('Вы уверены, что хотите удалить эту статью?');">Удалить</button>
+            </form>
+        </div>
+    </div>
+    <hr>
+{% endfor %}
+<a href="{{ url_for('lab8.public_articles') }}" class="form-button">Перейти к публичным статьям</a>  
+<a href="/lab8/" class="form-button">Меню лабораторной</a> 
 {% endblock %}
