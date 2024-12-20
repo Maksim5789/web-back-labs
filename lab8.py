@@ -5,6 +5,7 @@ from os import path
 from db import db
 from db.models import users, articles
 from flask_login import login_user, login_required, current_user, logout_user
+from sqlalchemy.exc import IntegrityError
 
 lab8 = Blueprint('lab8', __name__)
 
@@ -86,14 +87,11 @@ def register():
 
 
 @lab8.route('/lab8/create', methods=['GET', 'POST'])
+@login_required # Добавляем декоратор для авторизации
 def create():
-    login=session.get('login')
-    if not login:
-        return redirect('/lab8/login')
-    
     if request.method == 'GET':
         return render_template('lab8/create_article.html')
-    
+
     title = request.form.get('title')
     article_text = request.form.get('article_text')
 
@@ -101,31 +99,18 @@ def create():
     if not title or not article_text:
         return render_template('lab8/create_article.html', error='Название и текст статьи не могут быть пустыми.')
 
-    conn, cur = db_connect()
+    try:
+        new_article = articles(login_id=current_user.id, title=title, article_text=article_text) # Используем current_user
+        db.session.add(new_article)
+        db.session.commit()
+        return redirect('/lab8')
+    except IntegrityError as e:
+        db.session.rollback() # Отмена транзакции в случае ошибки
+        return render_template('lab8/create_article.html', error=f'Ошибка при создании статьи: {e}')  #Обработка ошибки
+    except Exception as e:
+        db.session.rollback() # Отмена транзакции в случае ошибки
+        return render_template('lab8/create_article.html', error=f'Произошла неизвестная ошибка: {e}')  #Обработка ошибки
 
-    # if current_app.config['DB_TYPE'] == 'postgres':
-    #     cur.execute(f"SELECT * FROM users WHERE login=%s;", (login,))
-    # else:
-    #     cur.execute("SELECT * FROM users WHERE login=?;", (login,))
-    
-    cur.execute("SELECT * FROM users WHERE login=?;", (login,))
-    
-    login_id = cur.fetchone()["id"]
-
-    # if current_app.config['DB_TYPE'] == 'postgres':
-    #     cur.execute(
-    #         f"INSERT INTO articles (user_id, title, article) VALUES (%s, %s, %s);", (user_id, title, article_text))
-    # else:
-    #     cur.execute(
-    #         "INSERT INTO articles (user_id, title, article) VALUES (?, ?, ?);", (user_id, title, article_text))
-        
-    cur.execute(
-            "INSERT INTO articles (login_id, title, article_text) VALUES (?, ?, ?);", (login_id, title, article_text))
-
-    cur.fetchone()
-
-    db_close(conn,cur)
-    return redirect('/lab8')
 
 @lab8.route('/lab8/personal_articles/')
 @login_required
@@ -178,10 +163,8 @@ def delete(id):
 @login_required
 def public_articles():
     # Получение статей для текущего пользователя
-    articles = current_user.articles  # Убедитесь, что articles определены в модели users
+    articles = current_user.articles  # articles определены в модели users
     return render_template('lab8/public_articles.html', articles=articles)
-
-
 
 
 @lab8.route('/lab8/toggle_favorite/<int:id>', methods=['POST'])

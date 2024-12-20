@@ -13,12 +13,15 @@
         <div>
             <label>
                 Название статьи:
-                <input type="text" maxlength="50" name="title">
+                <input type="text" maxlength="50" name="title" required> <!-- Добавлено required для валидации -->
             </label>
         </div>
     
         <div>
-            <textarea name="article_text"></textarea>
+            <label>
+                Текст статьи:
+                <textarea name="article_text" required></textarea> <!-- Добавлено required для валидации -->
+            </label>
         </div>
     
         <div>
