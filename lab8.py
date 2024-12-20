@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect, url_for, render_template, request, session, current_app
+from flask import Blueprint, redirect, url_for, render_template, request, session, current_app, flash
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 from os import path
@@ -131,6 +131,11 @@ def logout():
 def edit(id):
     article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
 
+    # Проверка, является ли текущий пользователь автором статьи
+    if article.login_id != current_user.id:  
+        flash('У Вас нет прав на редактирование этой статьи.', 'error')  # Используем flash для вывода ошибки
+        return redirect(url_for('lab8.personal_articles'))  # Перенаправляем на страницу со статьями
+
     if request.method == 'GET':
         return render_template('lab8/edit_article.html', article=article)  # Отображаем форму редактирования
 
@@ -148,14 +153,25 @@ def edit(id):
 
     return redirect(url_for('lab8.personal_articles'))  
 
+
  
 
 @lab8.route('/lab8/delete/<int:id>', methods=['POST'])
+@login_required  # Проверка, что пользователь авторизован
 def delete(id):
-    conn, cur = db_connect()
-    cur.execute("DELETE FROM articles WHERE id=?;", (id,))
-    db_close(conn, cur)
-    return redirect('/lab8/list')
+    article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
+
+    # Проверка, является ли текущий пользователь автором статьи
+    if article.login_id != current_user.id:
+        flash('У Вас нет прав на удаление этой статьи.', 'error')  # Используем flash для вывода ошибки
+        return redirect(url_for('lab8.personal_articles'))  # Перенаправляем на страницу со статьями
+
+    db.session.delete(article)  # Удаляем статью
+    db.session.commit()  # Сохраняем изменения в базе данных
+
+    flash('Статья успешно удалена.', 'success')  # Сообщение об успешном удалении
+    return redirect(url_for('lab8.personal_articles'))  # Перенаправляем на страницу со статьями
+
 
 @lab8.route('/lab8/public_articles/')
 @login_required
