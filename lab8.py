@@ -13,25 +13,6 @@ lab8 = Blueprint('lab8', __name__)
 def lab():
     return render_template('lab8/lab8.html', login = session.get('login'))
 
-def db_connect():
-    if current_app.config['DB_TYPE'] == 'postgres':
-        # Подключение к базе данных
-        conn = sqlite3.connect(r'C:\Users\PC\Desktop\Документы\ВУЗ\3 курс\Web-программирование\База данных\database_web') 
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-    else:
-        dir_path = path.dirname(path.realpath(__file__))
-        db_path = path.join(dir_path, "lab8.db")
-        conn = sqlite3.connect(db_path)
-        conn.row_factory = sqlite3.Row
-        cur = conn.cursor()
-    return conn, cur
-
-def db_close(conn,cur):
-    conn.commit()
-    cur.close()
-    conn.close()
-
 
 @lab8.route('/lab8/login', methods=['GET', 'POST'])
 def login():
@@ -182,43 +163,37 @@ def public_articles():
 
 
 @lab8.route('/lab8/toggle_favorite/<int:id>', methods=['POST'])
+@login_required  # Проверка, что пользователь авторизован
 def toggle_favorite(id):
-    conn, cur = db_connect()
-    cur.execute("SELECT is_favorite FROM articles WHERE id=?", (id,))
-    article = cur.fetchone()
+    article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
 
-    new_value = 1 if article['is_favorite'] == 0 else 0
-    cur.execute("UPDATE articles SET is_favorite=? WHERE id=?", (new_value, id))
-    db_close(conn, cur)
-    return redirect('/lab8/list')
+    # Инвертируем состояние is_favorite
+    article.is_favorite = not article.is_favorite
+    db.session.commit()  # Сохраняем изменения в базе данных
+
+    return redirect(url_for('lab8.personal_articles'))  # Перенаправляем обратно к списку личных статей
 
 
 @lab8.route('/lab8/toggle_public/<int:id>', methods=['POST'])
+@login_required  # Проверка, что пользователь авторизован
 def toggle_public(id):
-    conn, cur = db_connect()
-    cur.execute("SELECT is_public FROM articles WHERE id=?;", (id,))
-    is_public = cur.fetchone()["is_public"]
+    article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
 
-    new_public_status = 0 if is_public else 1  # 0 - приватная, 1 - публичная
-    cur.execute("UPDATE articles SET is_public=? WHERE id=?;", (new_public_status, id))
-    
-    db_close(conn, cur)
-    return redirect('/lab8/list')
+    # Инвертируем состояние is_public
+    article.is_public = not article.is_public
+    db.session.commit()  # Сохраняем изменения в базе данных
+
+    return redirect(url_for('lab8.personal_articles'))  # Перенаправляем обратно к списку личных статей
 
 
 @lab8.route('/lab8/like_article/<int:id>', methods=['POST'])
+@login_required  # Проверка, что пользователь авторизован
 def like_article(id):
-    conn, cur = db_connect()
+    article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
 
-    # Получение текущего состояния лайка
-    cur.execute("SELECT likes FROM articles WHERE id=?", (id,))
-    article = cur.fetchone()
-    
-    if article:
-        new_likes = 1 if article['likes'] == 0 else 0  # Инверсируем состояние лайка (допоскаем только два состояния)
-        cur.execute("UPDATE articles SET likes=? WHERE id=?", (new_likes, id))
+    # Инвертируем состояние лайка
+    article.likes = 1 if article.likes == 0 else 0  # Допускаем только два состояния
+    db.session.commit()  # Сохраняем изменения в базе данных
 
-    db_close(conn, cur)
-    return redirect('/lab8/public_list')
-
+    return redirect(url_for('lab8.public_articles'))  # Перенаправляем обратно к списку публичных статей
 
