@@ -16,17 +16,23 @@
 
     .content {
         background: rgba(255, 255, 255, 0.9); /* Полупрозрачный фон для контента */
-        padding: 40px; /* Увеличиваем отступы внутри блока */
+        padding: 30px; /* Уменьшаем отступы внутри блока */
         border-radius: 15px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Тень для контейнера */
-        margin: 50px auto;
-        max-width: 900px; /* Увеличиваем максимальную ширину блока */
+        max-width: 600px; /* Максимальная ширина блока */
+        width: 90%; /* Ширина блока — 90% доступной ширины */
         text-align: center;
+        overflow-y: auto; /* Добавляем вертикальный скролл, если содержимое не помещается */
+        max-height: 90vh; /* Максимальная высота блока — 90% высоты экрана */
+        position: absolute; /* Центрируем блок */
+        top: 50%; /* Смещаем блок на 50% от верхней границы */
+        left: 50%; /* Смещаем блок на 50% от левой границы */
+        transform: translate(-50%, -50%); /* Сдвигаем блок на половину его ширины и высоты обратно */
     }
 
     .gift-image {
         width: 100%; /* Изображение занимает всю ширину контейнера */
-        max-width: 600px; /* Максимальная ширина изображения */
+        max-width: 400px; /* Максимальная ширина изображения */
         height: auto; /* Автоматическая высота, чтобы сохранить пропорции */
         border-radius: 10px; /* Закругленные углы */
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Более выраженная тень */
@@ -34,24 +40,40 @@
     }
 
     h1 {
-        font-size: 32px;
-        margin-bottom: 20px;
+        font-size: 28px; /* Уменьшаем размер заголовка */
+        margin-bottom: 15px;
         color: #444; /* Цвет заголовка */
     }
 
     p {
-        font-size: 18px;
+        font-size: 16px; /* Уменьшаем размер текста */
         line-height: 1.6; /* Увеличиваем межстрочный интервал */
         color: #555; /* Цвет текста */
     }
 
-    h1, p {
-        line-height: 1.6; /* Увеличиваем межстрочный интервал */
+    .reset-button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 16px;
+        color: white;
+        background-color: #f44336; /* Красный цвет для кнопки сброса */
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .reset-button:hover {
+        background-color: #d32f2f; /* Темнее красный при наведении */
     }
 </style>
 <div class="content">
     <h1>{{ greeting }}</h1>
-    <p style = "font-size: 20px">Ваш подарок — {{ gift }}</p>
+    <p>Вот ваш подарок — {{ gift }}</p>
     <img src="{{ url_for('static', filename=image) }}" alt="Подарок" class="gift-image">
+    <br>
+    <a href="{{ url_for('lab9.reset') }}" class="reset-button">Сбросить и начать заново</a>
 </div>
 {% endblock %}
