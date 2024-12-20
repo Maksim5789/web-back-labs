@@ -77,6 +77,9 @@ def register():
     db.session.add(new_user)
     db.session.commit()
     
+    # Автоматический логин после регистрации
+    login_user(new_user, remember=False)  # Добавлено для автоматического входа
+    
     return redirect('/lab8/')
 
 
