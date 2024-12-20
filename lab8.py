@@ -96,9 +96,17 @@ def create():
 @lab8.route('/lab8/personal_articles/')
 @login_required
 def personal_articles():
-    # Доступ к статьям, связанным с текущим пользователем
-    articles = current_user.articles
-    return render_template('lab8/personal_articles.html', articles=articles)
+    search_query = request.args.get('search')  # Получаем строку поиска
+    if search_query:
+        articles_list = articles.query.filter(
+            articles.login_id == current_user.id,  # Убедитесь, что статьи принадлежат текущему пользователю
+            articles.title.ilike(f'%{search_query}%')  # Фильтруем по названию
+        ).all()
+    else:
+        articles_list = current_user.articles  # Доступ к статьям, связанным с текущим пользователем
+    return render_template('lab8/personal_articles.html', articles=articles_list)
+
+
 
 @lab8.route('/lab8/logout')
 @login_required
@@ -153,10 +161,15 @@ def delete(id):
 
 @lab8.route('/lab8/public_articles/')
 def public_articles():
-    # Получение всех публичных статей
-    public_articles_list = articles.query.filter_by(is_public=True).all()  # Получаем только публичные статьи
+    search_query = request.args.get('search')  # Получаем строку поиска
+    if search_query:
+        public_articles_list = articles.query.filter(
+            articles.is_public == True,  # Получаем только публичные статьи
+            articles.title.ilike(f'%{search_query}%')  # Фильтруем по названию
+        ).all()
+    else:
+        public_articles_list = articles.query.filter_by(is_public=True).all()  # Получаем только публичные статьи
     return render_template('lab8/public_articles.html', articles=public_articles_list)
-
 
 
 

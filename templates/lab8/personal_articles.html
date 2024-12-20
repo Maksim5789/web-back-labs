@@ -4,62 +4,82 @@
 
 {% block main %}
 <style>
+    .search-container {
+        display: flex; /* Используем Flexbox для горизонтального расположения */
+        width: 100%; /* Уменьшаем ширину поля поиска */
+        padding: 5px; /* Уменьшен отступ внутри контейнера */
+        border: 1px solid #ccc; /* Серая рамка */
+        background-color: white; /* Белый фон */
+        margin-bottom: 20px; /* Отступ снизу для разделения с контентом */
+        box-sizing: border-box; /* Учитываем padding и border в общей ширине */
+    }
+
     .input-field {
-        width: 100%;
-        padding: 10px;
-        margin: 10px 0;
+        flex: 1; /* Поле ввода занимает оставшееся пространство */
+        padding: 8px; /* Уменьшен отступ внутри поля ввода */
         border: 1px solid #ccc;
         border-radius: 5px;
-        font-size: 16px;
+        font-size: 25px;
+        margin-right: 10px; /* Отступ между полем ввода и кнопками */
     }
 
     .form-button {
         background-color: lightblue;
         border: none;
         color: black;
-        padding: 10px 20px;
-        margin: 5px; /* Отступ между кнопками */
-        font-size: 16px;
+        padding: 10px 20px; /* Увеличены отступы для кнопок */
+        font-size: 16px; /* Увеличен размер шрифта */
         border-radius: 5px;
         cursor: pointer;
-        text-decoration: none;  
-        flex: 1; /* Равномерное распределение пространства между кнопками */
-        text-align: center; /* Центрирование текста */
+        margin-left: 5px; /* Отступ между кнопками */
+        text-decoration: none; /* Убираем подчеркивание */
+        width: auto; /* Ширина кнопок адаптируется к содержимому */
     }
 
     .form-button:hover {
         background-color: deepskyblue;
     }
 
-    .button-container {
-        display: flex; /* Используем Flexbox для горизонтального расположения */
-        gap: 10px; /* Отступ между кнопками */
-        margin-top: 10px; /* Отступ сверху для навигационной панели */
+    .nav-container {
+        display: inline-flex; /* Используем inline-flex, чтобы ширина подстраивалась под содержимое */
+        justify-content: flex-start; /* Равномерное распределение кнопок */
+        align-items: center; /* Выравнивание по вертикали */
         padding: 10px; /* Отступ внутри контейнера */
-        border: 1px solid #ccc; /* Серая рамка */
+        border: 3px solid #ccc; /* Серая рамка */
         background-color: white; /* Белый фон */
-        justify-content: center; /* Центрирование кнопок */
-        width: fit-content; /* Ширина контейнера по размеру кнопок */
+        margin-bottom: 20px; /* Отступ снизу для разделения с контентом */
+        box-sizing: border-box; /* Учитываем padding и border в общей ширине */
     }
 </style>
 
 <h1>Личные статьи</h1>
+
+<!-- Форма поиска -->
+<div class="search-container">
+    <form method="GET" action="{{ url_for('lab8.personal_articles') }}" style="display: flex; width: 100%;">
+        <input type="text" name="search" class="input-field" placeholder="Поиск по названию">
+        <button type="submit" class="form-button">Найти</button>
+        <a href="{{ url_for('lab8.personal_articles') }}" class="form-button">Сбросить</a>
+    </form>
+</div>
+
 {% for article in articles %}
     <div class="article-container">  <!-- Контейнер для статьи -->
-        <h2>{{ article['title'] }}</h2>
-        <blockquote>{{ article['article_text'] }}</blockquote>
+        <h2>{{ article.title }}</h2>
+        <blockquote>{{ article.article_text }}</blockquote>
 
-        <div class="button-container"> <!-- Контейнер для кнопок -->
-            <form method="GET" action="{{ url_for('lab8.edit', id=article['id']) }}">
+        <!-- Навигационная панель для кнопок для каждой статьи -->
+        <div class="nav-container">
+            <form method="GET" action="{{ url_for('lab8.edit', id=article.id) }}">
                 <button type="submit" class="form-button">Редактировать</button>
             </form>
-            <form method="POST" action="{{ url_for('lab8.toggle_favorite', id=article['id']) }}">
-                <button type="submit" class="form-button">{{ "Убрать из любимых" if article['is_favorite'] else "Добавить в любимые" }}</button>
+            <form method="POST" action="{{ url_for('lab8.toggle_favorite', id=article.id) }}">
+                <button type="submit" class="form-button">{{ "Убрать из любимых" if article.is_favorite else "Добавить в любимые" }}</button>
             </form>
-            <form method="POST" action="{{ url_for('lab8.toggle_public', id=article['id']) }}">
-                <button type="submit" class="form-button">{{ "Сделать приватной" if article['is_public'] else "Сделать публичной" }}</button>
+            <form method="POST" action="{{ url_for('lab8.toggle_public', id=article.id) }}">
+                <button type="submit" class="form-button">{{ "Сделать приватной" if article.is_public else "Сделать публичной" }}</button>
             </form>
-            <form method="POST" action="{{ url_for('lab8.delete', id=article['id']) }}">
+            <form method="POST" action="{{ url_for('lab8.delete', id=article.id) }}">
                 <button type="submit" class="form-button" onclick="return confirm('Вы уверены, что хотите удалить эту статью?');">Удалить</button>
             </form>
         </div>

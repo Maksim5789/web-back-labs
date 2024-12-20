@@ -4,16 +4,36 @@
 
 {% block main %}
 <style>
+    .search-container {
+        display: flex; /* Используем Flexbox для горизонтального расположения */
+        width: 100%; /* Уменьшаем ширину поля поиска */
+        padding: 5px; /* Уменьшен отступ внутри контейнера */
+        border: 3px solid #ccc; /* Серая рамка */
+        background-color: white; /* Белый фон */
+        margin-bottom: 20px; /* Отступ снизу для разделения с контентом */
+        box-sizing: border-box; /* Учитываем padding и border в общей ширине */
+    }
+
+    .input-field {
+        flex: 1; /* Поле ввода занимает оставшееся пространство */
+        padding: 8px; /* Уменьшен отступ внутри поля ввода */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-size: 25px;
+        margin-right: 10px; /* Отступ между полем ввода и кнопками */
+    }
+
     .form-button {
         background-color: lightblue;
         border: none;
         color: black;
-        padding: 10px 20px;
-        margin-top: 10px;
-        font-size: 16px;
+        padding: 10px 20px; /* Увеличены отступы для кнопок */
+        font-size: 16px; /* Увеличен размер шрифта */
         border-radius: 5px;
         cursor: pointer;
-        text-decoration: none;  
+        margin-left: 5px; /* Отступ между кнопками */
+        text-decoration: none; /* Убираем подчеркивание */
+        width: auto; /* Ширина кнопок адаптируется к содержимому */
     }
 
     .form-button:hover {
@@ -21,16 +41,26 @@
     }
 
 </style>
-    <h1>Публичные статьи</h1>
-    {% for article in articles %}
-        <h2>{{ article.title }}</h2>
-        <blockquote>{{ article.article_text }}</blockquote>
-        
-        <form method="POST" action="{{ url_for('lab8.like_article', id=article.id) }}">
-            <button type="submit" class="form-button">{{ "Снять лайк" if article.likes == 1 else "Поставить лайк" }}</button> 
-        </form>
-        
-        <hr>
-    {% endfor %}
-    <a href="{{ url_for('lab8.personal_articles') }}" class="form-button">Перейти к личным статьям</a> 
+<h1>Публичные статьи</h1>
+
+<!-- Форма поиска -->
+<div class="search-container">
+    <form method="GET" action="{{ url_for('lab8.public_articles') }}" style="display: flex; width: 100%;">
+        <input type="text" name="search" class="input-field" placeholder="Поиск по названию">
+        <button type="submit" class="form-button">Найти</button>
+        <a href="{{ url_for('lab8.public_articles') }}" class="form-button">Сбросить</a>
+    </form>
+</div>
+
+{% for article in articles %}
+    <h2>{{ article.title }}</h2>
+    <blockquote>{{ article.article_text }}</blockquote>
+    
+    <form method="POST" action="{{ url_for('lab8.like_article', id=article.id) }}">
+        <button type="submit" class="form-button">{{ "Снять лайк" if article.likes == 1 else "Поставить лайк" }}</button> 
+    </form>
+    
+    <hr>
+{% endfor %}
+<a href="{{ url_for('lab8.personal_articles') }}" class="form-button">Перейти к личным статьям</a> 
 {% endblock %}
