@@ -134,9 +134,6 @@ def edit(id):
 
     return redirect(url_for('lab8.personal_articles'))  
 
-
- 
-
 @lab8.route('/lab8/delete/<int:id>', methods=['POST'])
 @login_required  # Проверка, что пользователь авторизован
 def delete(id):
@@ -155,11 +152,12 @@ def delete(id):
 
 
 @lab8.route('/lab8/public_articles/')
-@login_required
 def public_articles():
-    # Получение статей для текущего пользователя
-    articles = current_user.articles  # articles определены в модели users
-    return render_template('lab8/public_articles.html', articles=articles)
+    # Получение всех публичных статей
+    public_articles_list = articles.query.filter_by(is_public=True).all()  # Получаем только публичные статьи
+    return render_template('lab8/public_articles.html', articles=public_articles_list)
+
+
 
 
 @lab8.route('/lab8/toggle_favorite/<int:id>', methods=['POST'])
@@ -187,7 +185,6 @@ def toggle_public(id):
 
 
 @lab8.route('/lab8/like_article/<int:id>', methods=['POST'])
-@login_required  # Проверка, что пользователь авторизован
 def like_article(id):
     article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
 
@@ -196,4 +193,5 @@ def like_article(id):
     db.session.commit()  # Сохраняем изменения в базе данных
 
     return redirect(url_for('lab8.public_articles'))  # Перенаправляем обратно к списку публичных статей
+
 
