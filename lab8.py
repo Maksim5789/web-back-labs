@@ -127,30 +127,28 @@ def logout():
 
 
 @lab8.route('/lab8/edit/<int:id>', methods=['GET', 'POST'])
+@login_required  # Проверка, что пользователь авторизован
 def edit(id):
-    conn, cur = db_connect()
-    
+    article = articles.query.get_or_404(id)  # Получаем статью по ID или возвращаем 404 ошибку
+
     if request.method == 'GET':
-        cur.execute("SELECT * FROM articles WHERE id=?;", (id,))
-        article = cur.fetchone()
-        db_close(conn, cur)
-        
-        if not article:
-            return render_template('lab8/error.html', error='Статья не найдена.')  # Можно сделать отдельный шаблон для ошибок
+        return render_template('lab8/edit_article.html', article=article)  # Отображаем форму редактирования
 
-        return render_template('lab8/edit_article.html', article=article)
+    title = request.form.get('title')  # Получаем название статьи из формы
+    article_text = request.form.get('article_text')  # Получаем текст статьи из формы
 
-    title = request.form.get('title')
-    article_text = request.form.get('article_text')
-
-    # Валидация пустых полей
+    # Валидация: проверяем, что поля не пустые
     if not title or not article_text:
-        # При наличии ошибки отображаем её
         return render_template('lab8/edit_article.html', article=article, error='Название и текст статьи не могут быть пустыми.')
 
-    cur.execute("UPDATE articles SET title=?, article=? WHERE id=?;", (title, article_text, id))
-    db_close(conn, cur)
-    return redirect('/lab8/list')
+    # Обновляем поля статьи
+    article.title = title
+    article.article_text = article_text  # Исправлено: используем правильное имя поля
+    db.session.commit()  # Сохраняем изменения в базе данных
+
+    return redirect(url_for('lab8.personal_articles'))  
+
+ 
 
 @lab8.route('/lab8/delete/<int:id>', methods=['POST'])
 def delete(id):

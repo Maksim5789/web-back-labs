@@ -21,7 +21,7 @@
         <div>
             <label>
                 Текст статьи:
-                <textarea name="article_text">{{ article['article'] }}</textarea>
+                <textarea name="article_text">{{ article.article_text }}</textarea>  {{ edit_1 }}
             </label>
         </div>
         
@@ -30,5 +30,6 @@
         </div>
     </form>
     
-    <a href="{{ url_for('lab8.list_articles') }}">Назад к списку статей</a>
+    <a href="{{ url_for('lab8.personal_articles') }}">Назад к списку статей</a>
 {% endblock %}
+
