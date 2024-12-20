@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>{{ greeting }}</h1>
+<p>Вот тебе подарок — {{ gift }}.</p>
+<img src="{{ url_for('static', filename=image) }}" alt="Подарок">
+{% endblock %}

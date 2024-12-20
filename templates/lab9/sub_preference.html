@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>Выберите подкатегорию, {{ name }}!</h1>
+<form method="POST">
+    {% if preference == 'delicious' %}
+        <input type="radio" name="sub_preference" value="sweet" required> Сладкое<br>
+        <input type="radio" name="sub_preference" value="hearty"> Сытное<br>
+    {% else %}
+        <input type="radio" name="sub_preference" value="art" required> Искусство<br>
+        <input type="radio" name="sub_preference" value="nature"> Природа<br>
+    {% endif %}
+    <button type="submit">Далее</button>
+</form>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>Привет, {{ name }}! Сколько Вам лет?</h1>
+<form method="POST">
+    <input type="number" name="age" required>
+    <button type="submit">Далее</button>
+</form>
+{% endblock %}

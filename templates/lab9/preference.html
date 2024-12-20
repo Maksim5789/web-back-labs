@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block main %}
+<h1>Что Вам больше нравится, {{ name }}?</h1>
+<form method="POST">
+    <input type="radio" name="preference" value="delicious" required> Что-то вкусное<br>
+    <input type="radio" name="preference" value="beautiful"> Что-то красивое<br>
+    <button type="submit">Далее</button>
+</form>
+{% endblock %}
