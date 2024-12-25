@@ -49,7 +49,7 @@ def register():
         return render_template('lab8/register.html', error='Заполните все поля')
     
     # Проверка на существование пользователя
-    login_exists = users.query.filter_by(login=login_form).first()  # Убедитесь, что users — это класс модели
+    login_exists = users.query.filter_by(login=login_form).first()  
     if login_exists:
         return render_template('lab8/register.html', error='Такой пользователь уже существует')
     
@@ -57,7 +57,7 @@ def register():
     password_hash = generate_password_hash(password_form)
     
     # Создание нового пользователя
-    new_user = users(login=login_form, password=password_hash)  # Убедитесь, что users — это класс модели
+    new_user = users(login=login_form, password=password_hash)  
     db.session.add(new_user)
     db.session.commit()
     
@@ -99,7 +99,7 @@ def personal_articles():
     search_query = request.args.get('search')  # Получаем строку поиска
     if search_query:
         articles_list = articles.query.filter(
-            articles.login_id == current_user.id,  # Убедитесь, что статьи принадлежат текущему пользователю
+            articles.login_id == current_user.id,  # Убеждаемся, что статьи принадлежат текущему пользователю
             articles.title.ilike(f'%{search_query}%')  # Фильтруем по названию
         ).all()
     else:
